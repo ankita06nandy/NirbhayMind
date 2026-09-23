@@ -366,10 +366,10 @@ async function start() {
     console.error(`Dataset sync failed: ${error.message}`);
   }
 
-  app.listen(port, () => {
-    console.log(`NirbhayMind API listening on http://localhost:${port}`);
-    if (dataset.length) console.log(`Loaded ${dataset.length} dataset rows`);
-  });
+  app.listen(port, "0.0.0.0", () => {
+  console.log(`NirbhayMind API listening on port ${port}`);
+  if (dataset.length) console.log(`Loaded ${dataset.length} dataset rows`);
+});
 }
 
 start();

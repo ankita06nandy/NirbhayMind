@@ -230,6 +230,125 @@ const sharedTranslations = {
   }
 };
 
+// Keep the complete interface localized even when a newly added copy key has
+// not yet received a polished regional translation. The marker is intentional:
+// it prevents silently showing English in a selected language.
+const localeFallbackLabels = {
+  Assamese: "অসমীয়াত",
+  Odia: "ଓଡ଼ିଆରେ",
+  Tamil: "தமிழில்",
+  Telugu: "తెలుగులో",
+  Kannada: "ಕನ್ನಡದಲ್ಲಿ",
+  Malayalam: "മലയാളത്തിൽ",
+  Marathi: "मराठीत",
+  Gujarati: "ગુજરાતીમાં",
+  Punjabi: "ਪੰਜਾਬੀ ਵਿੱਚ",
+  Urdu: "اردو میں",
+};
+
+const commonInterfaceTranslations = {
+  Assamese: {
+    "Profile & Settings": "প্ৰ’ফাইল আৰু ছেটিংছ", "Account Information": "একাউণ্টৰ তথ্য",
+    Preferences: "পছন্দসমূহ", Language: "ভাষা", Change: "সলনি কৰক",
+    Notifications: "জাননীসমূহ", Appearance: "আবিৰ্ভাৱ", Support: "সহায়",
+    "Case & Support": "গোচৰ আৰু সহায়", "Case Journey": "গোচৰৰ অগ্ৰগতি",
+    "Next Hearing": "পৰৱৰ্তী শুনানি", "A safe space to talk": "কথা পাতিবলৈ নিৰাপদ স্থান",
+    "Type your message...": "আপোনাৰ বাৰ্তা লিখক...", "Voice Support": "ভইচ সহায়",
+    "Preferred Language": "পছন্দৰ ভাষা", "National Helpline": "ৰাষ্ট্ৰীয় হেল্পলাইন",
+    "Toll Free Support": "টোল-ফ্ৰী সহায়", "Risk Level": "ঝুঁকিৰ স্তৰ",
+  },
+  Odia: {
+    "Profile & Settings": "ପ୍ରୋଫାଇଲ୍ ଏବଂ ସେଟିଂସ୍", "Account Information": "ଆକାଉଣ୍ଟ ସୂଚନା",
+    Preferences: "ପସନ୍ଦ", Language: "ଭାଷା", Change: "ପରିବର୍ତ୍ତନ",
+    Notifications: "ବିଜ୍ଞପ୍ତି", Appearance: "ଦୃଶ୍ୟ", Support: "ସହାୟତା",
+    "Case & Support": "ମାମଲା ଏବଂ ସହାୟତା", "Case Journey": "ମାମଲାର ପ୍ରଗତି",
+    "Next Hearing": "ପରବର୍ତ୍ତୀ ଶୁଣାଣି", "A safe space to talk": "କଥା ହେବା ପାଇଁ ନିରାପଦ ସ୍ଥାନ",
+    "Type your message...": "ଆପଣଙ୍କ ବାର୍ତ୍ତା ଲେଖନ୍ତୁ...", "Voice Support": "ଭଏସ୍ ସହାୟତା",
+    "Preferred Language": "ପସନ୍ଦର ଭାଷା", "National Helpline": "ଜାତୀୟ ହେଲ୍ପଲାଇନ୍",
+    "Toll Free Support": "ଟୋଲ୍-ଫ୍ରି ସହାୟତା", "Risk Level": "ବିପଦ ସ୍ତର",
+  },
+  Tamil: {
+    "Profile & Settings": "சுயவிவரம் மற்றும் அமைப்புகள்", "Account Information": "கணக்கு தகவல்",
+    Preferences: "விருப்பங்கள்", Language: "மொழி", Change: "மாற்று",
+    Notifications: "அறிவிப்புகள்", Appearance: "தோற்றம்", Support: "ஆதரவு",
+    "Case & Support": "வழக்கு மற்றும் ஆதரவு", "Case Journey": "வழக்கின் முன்னேற்றம்",
+    "Next Hearing": "அடுத்த விசாரணை", "A safe space to talk": "பேசுவதற்கான பாதுகாப்பான இடம்",
+    "Type your message...": "உங்கள் செய்தியை எழுதுங்கள்...", "Voice Support": "குரல் ஆதரவு",
+    "Preferred Language": "விருப்ப மொழி", "National Helpline": "தேசிய உதவி எண்",
+    "Toll Free Support": "கட்டணமில்லா ஆதரவு", "Risk Level": "ஆபத்து நிலை",
+  },
+  Telugu: {
+    "Profile & Settings": "ప్రొఫైల్ మరియు సెట్టింగ్‌లు", "Account Information": "ఖాతా సమాచారం",
+    Preferences: "ప్రాధాన్యతలు", Language: "భాష", Change: "మార్చండి",
+    Notifications: "నోటిఫికేషన్‌లు", Appearance: "రూపం", Support: "సహాయం",
+    "Case & Support": "కేసు మరియు సహాయం", "Case Journey": "కేసు పురోగతి",
+    "Next Hearing": "తదుపరి విచారణ", "A safe space to talk": "మాట్లాడేందుకు సురక్షితమైన స్థలం",
+    "Type your message...": "మీ సందేశాన్ని టైప్ చేయండి...", "Voice Support": "వాయిస్ సహాయం",
+    "Preferred Language": "ఇష్టమైన భాష", "National Helpline": "జాతీయ హెల్ప్‌లైన్",
+    "Toll Free Support": "టోల్ ఫ్రీ సహాయం", "Risk Level": "ప్రమాద స్థాయి",
+  },
+  Kannada: {
+    "Profile & Settings": "ಪ್ರೊಫೈಲ್ ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು", "Account Information": "ಖಾತೆ ಮಾಹಿತಿ",
+    Preferences: "ಆದ್ಯತೆಗಳು", Language: "ಭಾಷೆ", Change: "ಬದಲಾಯಿಸಿ",
+    Notifications: "ಅಧಿಸೂಚನೆಗಳು", Appearance: "ನೋಟ", Support: "ಬೆಂಬಲ",
+    "Case & Support": "ಪ್ರಕರಣ ಮತ್ತು ಬೆಂಬಲ", "Case Journey": "ಪ್ರಕರಣದ ಪ್ರಗತಿ",
+    "Next Hearing": "ಮುಂದಿನ ವಿಚಾರಣೆ", "A safe space to talk": "ಮಾತನಾಡಲು ಸುರಕ್ಷಿತ ಸ್ಥಳ",
+    "Type your message...": "ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ...", "Voice Support": "ಧ್ವನಿ ಬೆಂಬಲ",
+    "Preferred Language": "ಆದ್ಯತೆಯ ಭಾಷೆ", "National Helpline": "ರಾಷ್ಟ್ರೀಯ ಸಹಾಯವಾಣಿ",
+    "Toll Free Support": "ಟೋಲ್ ಫ್ರೀ ಬೆಂಬಲ", "Risk Level": "ಅಪಾಯದ ಮಟ್ಟ",
+  },
+  Malayalam: {
+    "Profile & Settings": "പ്രൊഫൈലും ക്രമീകരണങ്ങളും", "Account Information": "അക്കൗണ്ട് വിവരങ്ങൾ",
+    Preferences: "മുൻഗണനകൾ", Language: "ഭാഷ", Change: "മാറ്റുക",
+    Notifications: "അറിയിപ്പുകൾ", Appearance: "രൂപം", Support: "പിന്തുണ",
+    "Case & Support": "കേസും പിന്തുണയും", "Case Journey": "കേസിന്റെ പുരോഗതി",
+    "Next Hearing": "അടുത്ത ഹിയറിംഗ്", "A safe space to talk": "സംസാരിക്കാൻ സുരക്ഷിതമായ ഇടം",
+    "Type your message...": "നിങ്ങളുടെ സന്ദേശം ടൈപ്പ് ചെയ്യുക...", "Voice Support": "വോയ്സ് പിന്തുണ",
+    "Preferred Language": "ഇഷ്ടപ്പെട്ട ഭാഷ", "National Helpline": "ദേശീയ ഹെൽപ്പ്‌ലൈൻ",
+    "Toll Free Support": "ടോൾ ഫ്രീ പിന്തുണ", "Risk Level": "അപകട നില",
+  },
+  Marathi: {
+    "Profile & Settings": "प्रोफाइल आणि सेटिंग्ज", "Account Information": "खाते माहिती",
+    Preferences: "प्राधान्ये", Language: "भाषा", Change: "बदला",
+    Notifications: "सूचना", Appearance: "दिसणे", Support: "मदत",
+    "Case & Support": "प्रकरण आणि मदत", "Case Journey": "प्रकरणाची प्रगती",
+    "Next Hearing": "पुढील सुनावणी", "A safe space to talk": "बोलण्यासाठी सुरक्षित जागा",
+    "Type your message...": "तुमचा संदेश लिहा...", "Voice Support": "व्हॉइस मदत",
+    "Preferred Language": "पसंतीची भाषा", "National Helpline": "राष्ट्रीय हेल्पलाइन",
+    "Toll Free Support": "टोल-फ्री मदत", "Risk Level": "जोखीम पातळी",
+  },
+  Gujarati: {
+    "Profile & Settings": "પ્રોફાઇલ અને સેટિંગ્સ", "Account Information": "ખાતા માહિતી",
+    Preferences: "પસંદગીઓ", Language: "ભાષા", Change: "બદલો",
+    Notifications: "સૂચનાઓ", Appearance: "દેખાવ", Support: "સહાય",
+    "Case & Support": "કેસ અને સહાય", "Case Journey": "કેસની પ્રગતિ",
+    "Next Hearing": "આગામી સુનાવણી", "A safe space to talk": "વાત કરવા માટે સુરક્ષિત જગ્યા",
+    "Type your message...": "તમારો સંદેશ લખો...", "Voice Support": "વૉઇસ સહાય",
+    "Preferred Language": "પસંદગીની ભાષા", "National Helpline": "રાષ્ટ્રીય હેલ્પલાઇન",
+    "Toll Free Support": "ટોલ-ફ્રી સહાય", "Risk Level": "જોખમ સ્તર",
+  },
+  Punjabi: {
+    "Profile & Settings": "ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਸੈਟਿੰਗਾਂ", "Account Information": "ਖਾਤਾ ਜਾਣਕਾਰੀ",
+    Preferences: "ਪਸੰਦਾਂ", Language: "ਭਾਸ਼ਾ", Change: "ਬਦਲੋ",
+    Notifications: "ਸੂਚਨਾਵਾਂ", Appearance: "ਦਿੱਖ", Support: "ਮਦਦ",
+    "Case & Support": "ਕੇਸ ਅਤੇ ਮਦਦ", "Case Journey": "ਕੇਸ ਦੀ ਤਰੱਕੀ",
+    "Next Hearing": "ਅਗਲੀ ਸੁਣਵਾਈ", "A safe space to talk": "ਗੱਲ ਕਰਨ ਲਈ ਸੁਰੱਖਿਅਤ ਥਾਂ",
+    "Type your message...": "ਆਪਣਾ ਸੁਨੇਹਾ ਲਿਖੋ...", "Voice Support": "ਵੌਇਸ ਮਦਦ",
+    "Preferred Language": "ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ", "National Helpline": "ਰਾਸ਼ਟਰੀ ਹੈਲਪਲਾਈਨ",
+    "Toll Free Support": "ਟੋਲ-ਫ੍ਰੀ ਮਦਦ", "Risk Level": "ਜੋਖਮ ਪੱਧਰ",
+  },
+  Urdu: {
+    "Profile & Settings": "پروفائل اور ترتیبات", "Account Information": "اکاؤنٹ کی معلومات",
+    Preferences: "ترجیحات", Language: "زبان", Change: "تبدیل کریں",
+    Notifications: "اطلاعات", Appearance: "ظاہری شکل", Support: "مدد",
+    "Case & Support": "کیس اور مدد", "Case Journey": "کیس کی پیش رفت",
+    "Next Hearing": "اگلی سماعت", "A safe space to talk": "بات کرنے کے لیے محفوظ جگہ",
+    "Type your message...": "اپنا پیغام لکھیں...", "Voice Support": "وائس سپورٹ",
+    "Preferred Language": "پسندیدہ زبان", "National Helpline": "قومی ہیلپ لائن",
+    "Toll Free Support": "ٹول فری مدد", "Risk Level": "خطرے کی سطح",
+  },
+};
+
 const I18nContext = createContext(null);
 
 export function I18nProvider({ children, initialLanguage = "English" }) {
@@ -258,7 +377,10 @@ export function I18nProvider({ children, initialLanguage = "English" }) {
     language,
     setLanguage,
     t: (key, variables = {}) => {
-      let text = translations[language]?.[key] || sharedTranslations[language]?.[key] || key;
+      let text = translations[language]?.[key]
+        || sharedTranslations[language]?.[key]
+        || commonInterfaceTranslations[language]?.[key]
+        || (language === "English" ? key : `${localeFallbackLabels[language]}: ${key}`);
       Object.entries(variables).forEach(([name, value]) => {
         text = text.replace(`{{${name}}}`, value);
       });
