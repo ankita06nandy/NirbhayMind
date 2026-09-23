@@ -10,66 +10,12 @@ import {
 } from "lucide-react";
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import { useI18n } from "../i18n";
 
-function Alerts({ onBack }) {
+function Alerts({ onBack, alerts: initialAlerts }) {
+  const { t } = useI18n();
   const [activeFilter, setActiveFilter] = useState("All");
-
-  const [alerts, setAlerts] = useState([
-    {
-      id: 1,
-      type: "high",
-      category: "Well-being",
-      title: "Well-being Alert",
-      message:
-        "Your recent check-in indicates increased distress. Consider connecting with a counsellor for additional support.",
-      time: "10 min ago",
-      unread: true,
-    },
-
-    {
-      id: 2,
-      type: "case",
-      category: "Case",
-      title: "Upcoming Hearing",
-      message:
-        "Your next hearing is scheduled for 28 September 2026. Keep your case information and required documents ready.",
-      time: "2 hours ago",
-      unread: true,
-    },
-
-    {
-      id: 3,
-      type: "support",
-      category: "Support",
-      title: "Counselling Follow-up",
-      message:
-        "Your counselling follow-up is due soon. You can connect with a counsellor through NirbhayMind.",
-      time: "Yesterday",
-      unread: true,
-    },
-
-    {
-      id: 4,
-      type: "case",
-      category: "Case",
-      title: "Case Information Updated",
-      message:
-        "Your case record was updated on 18 September 2026.",
-      time: "2 days ago",
-      unread: false,
-    },
-
-    {
-      id: 5,
-      type: "wellbeing",
-      category: "Well-being",
-      title: "Mood Check Reminder",
-      message:
-        "Regular check-ins help NirbhayMind understand changes in your well-being over time.",
-      time: "3 days ago",
-      unread: false,
-    },
-  ]);
+  const [alerts, setAlerts] = useState(initialAlerts);
 
   const filters = [
     "All",
@@ -137,8 +83,8 @@ function Alerts({ onBack }) {
           </div>
 
           <div>
-            <h1>Alerts & Notifications</h1>
-            <p>Stay updated about your case & well-being</p>
+            <h1>{t("Alerts & Notifications")}</h1>
+            <p>{t("Stay updated about your case & well-being")}</p>
           </div>
 
         </div>
@@ -153,12 +99,12 @@ function Alerts({ onBack }) {
         <div className="alerts-summary">
 
           <div>
-            <h2>Notifications</h2>
+            <h2>{t("Notifications")}</h2>
 
             <p>
               {unreadCount > 0
                 ? `${unreadCount} new alerts`
-                : "You're all caught up"}
+                : t("You're all caught up")}
             </p>
           </div>
 
@@ -168,7 +114,7 @@ function Alerts({ onBack }) {
               onClick={markAllAsRead}
             >
               <CheckCheck size={14} />
-              Mark all as read
+              {t("Mark all as read")}
             </button>
           )}
 
@@ -251,7 +197,7 @@ function Alerts({ onBack }) {
               <Bell size={27} />
             </div>
 
-            <h3>No alerts here</h3>
+            <h3>{t("No alerts here")}</h3>
 
             <p>
               There are no notifications in this category.

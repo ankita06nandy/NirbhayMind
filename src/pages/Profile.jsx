@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "../i18n";
 import {
   ArrowLeft,
   User,
@@ -15,35 +16,22 @@ import {
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
 
-function Profile({ onBack }) {
-  const [language, setLanguage] = useState("English");
+function Profile({ onBack, profile, language, onLanguageChange, onNavigate, onLogout }) {
+  const { t } = useI18n();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
 
-  const languages = [
-    "English",
-    "বাংলা",
-    "हिंदी",
-    "অসমীয়া",
-    "ଓଡ଼ିଆ",
-    "தமிழ்",
-    "తెలుగు",
-    "ಕನ್ನಡ",
-    "മലയാളം",
-    "मराठी",
-    "ગુજરાતી",
-    "ਪੰਜਾਬੀ",
-    "اردو",
-  ];
+  const languages = LANGUAGES;
 
   const handleLogout = () => {
     const confirmed = window.confirm(
-      "Are you sure you want to log out?"
+      t("Are you sure you want to log out?")
     );
 
     if (confirmed) {
-      alert("You have been logged out.");
+      alert(t("You have been logged out."));
+      onLogout();
     }
   };
 
@@ -73,8 +61,8 @@ function Profile({ onBack }) {
           </div>
 
           <div>
-            <h1>Profile & Settings</h1>
-            <p>Your account & preferences</p>
+            <h1>{t("Profile & Settings")}</h1>
+            <p>{t("Your account & preferences")}</p>
           </div>
 
         </div>
@@ -100,19 +88,19 @@ function Profile({ onBack }) {
 
           <div className="profile-user-info">
 
-            <h2>Ankita</h2>
+            <h2>{profile.name}</h2>
 
             <span className="profile-user-type">
-              Registered User
+              {t("Registered User")}
             </span>
 
             <div className="profile-case-info">
               <span>
-                Case ID
+                {t("Case ID")}
               </span>
 
               <strong>
-                NHAA-2026-00124
+                {profile.caseId}
               </strong>
             </div>
 
@@ -128,27 +116,27 @@ function Profile({ onBack }) {
         <section className="profile-section">
 
           <div className="profile-section-heading">
-            <h2>Account Information</h2>
-            <p>Your registered information</p>
+            <h2>{t("Account Information")}</h2>
+            <p>{t("Your registered information")}</p>
           </div>
 
           <div className="profile-info-card">
 
             <div className="profile-info-row">
-              <span>District</span>
-              <strong>Kolkata</strong>
+              <span>{t("District")}</span>
+              <strong>{profile.district}</strong>
             </div>
 
             <div className="profile-info-row">
-              <span>State</span>
-              <strong>West Bengal</strong>
+              <span>{t("State")}</span>
+              <strong>{profile.state}</strong>
             </div>
 
             <div className="profile-info-row">
-              <span>Case Status</span>
+              <span>{t("Case Status")}</span>
 
               <strong className="profile-status">
-                Investigation
+                {profile.caseStatus}
               </strong>
             </div>
 
@@ -164,8 +152,8 @@ function Profile({ onBack }) {
         <section className="profile-section">
 
           <div className="profile-section-heading">
-            <h2>Preferences</h2>
-            <p>Customize your NirbhayMind experience</p>
+            <h2>{t("Preferences")}</h2>
+            <p>{t("Customize your NirbhayMind experience")}</p>
           </div>
 
 
@@ -178,8 +166,8 @@ function Profile({ onBack }) {
             </div>
 
             <div className="profile-setting-info">
-              <h3>Language</h3>
-              <p>{language}</p>
+              <h3>{t("Language")}</h3>
+              <p>{LANGUAGE_LABELS[language] || language}</p>
             </div>
 
             <button
@@ -188,7 +176,7 @@ function Profile({ onBack }) {
                 setShowLanguages(!showLanguages)
               }
             >
-              <span>Change</span>
+              <span>{t("Change")}</span>
               <ChevronRight size={18} />
             </button>
 
@@ -209,11 +197,11 @@ function Profile({ onBack }) {
                       : "profile-language-option"
                   }
                   onClick={() => {
-                    setLanguage(item);
+                    onLanguageChange(item);
                     setShowLanguages(false);
                   }}
                 >
-                  {item}
+                  {LANGUAGE_LABELS[item]}
 
                   {language === item && (
                     <span>✓</span>
@@ -234,11 +222,11 @@ function Profile({ onBack }) {
             </div>
 
             <div className="profile-setting-info">
-              <h3>Notifications</h3>
+              <h3>{t("Notifications")}</h3>
               <p>
                 {notifications
-                  ? "Alerts are enabled"
-                  : "Alerts are disabled"}
+                  ? t("Alerts are enabled")
+                  : t("Alerts are disabled")}
               </p>
             </div>
 
@@ -267,11 +255,11 @@ function Profile({ onBack }) {
             </div>
 
             <div className="profile-setting-info">
-              <h3>Appearance</h3>
+              <h3>{t("Appearance")}</h3>
               <p>
                 {darkMode
-                  ? "Dark mode"
-                  : "Light mode"}
+                  ? t("Dark mode")
+                  : t("Light mode")}
               </p>
             </div>
 
@@ -300,19 +288,19 @@ function Profile({ onBack }) {
         <section className="profile-section">
 
           <div className="profile-section-heading">
-            <h2>Privacy & Security</h2>
-            <p>Keep your information protected</p>
+            <h2>{t("Privacy & Security")}</h2>
+            <p>{t("Keep your information protected")}</p>
           </div>
 
-          <button className="profile-setting-card clickable">
+          <button className="profile-setting-card clickable" onClick={() => alert(t("Your privacy controls are managed securely by NirbhayMind."))}>
 
             <div className="profile-setting-icon green">
               <Lock size={20} />
             </div>
 
             <div className="profile-setting-info">
-              <h3>Privacy & Data</h3>
-              <p>Manage your privacy preferences</p>
+              <h3>{t("Privacy & Data")}</h3>
+              <p>{t("Manage your privacy preferences")}</p>
             </div>
 
             <ChevronRight size={18} />
@@ -320,15 +308,15 @@ function Profile({ onBack }) {
           </button>
 
 
-          <button className="profile-setting-card clickable">
+          <button className="profile-setting-card clickable" onClick={() => alert(t("Your account security is active."))}>
 
             <div className="profile-setting-icon lavender">
               <ShieldCheck size={20} />
             </div>
 
             <div className="profile-setting-info">
-              <h3>Security</h3>
-              <p>Your account security settings</p>
+              <h3>{t("Security")}</h3>
+              <p>{t("Your account security settings")}</p>
             </div>
 
             <ChevronRight size={18} />
@@ -345,20 +333,20 @@ function Profile({ onBack }) {
         <section className="profile-section">
 
           <div className="profile-section-heading">
-            <h2>Support</h2>
-            <p>Need help with NirbhayMind?</p>
+            <h2>{t("Support")}</h2>
+            <p>{t("Need help with NirbhayMind?")}</p>
           </div>
 
 
-          <button className="profile-setting-card clickable">
+          <button className="profile-setting-card clickable" onClick={() => onNavigate("resources")}>
 
             <div className="profile-setting-icon peach">
               <HelpCircle size={20} />
             </div>
 
             <div className="profile-setting-info">
-              <h3>Help & FAQ</h3>
-              <p>Find answers to common questions</p>
+              <h3>{t("Help & FAQ")}</h3>
+              <p>{t("Find answers to common questions")}</p>
             </div>
 
             <ChevronRight size={18} />
@@ -366,15 +354,15 @@ function Profile({ onBack }) {
           </button>
 
 
-          <button className="profile-setting-card clickable">
+          <button className="profile-setting-card clickable" onClick={() => onNavigate("voice-support")}>
 
             <div className="profile-setting-icon sage">
               <Phone size={20} />
             </div>
 
             <div className="profile-setting-info">
-              <h3>Contact Support</h3>
-              <p>Get help from the support team</p>
+              <h3>{t("Contact Support")}</h3>
+              <p>{t("Get help from the support team")}</p>
             </div>
 
             <ChevronRight size={18} />
@@ -393,12 +381,12 @@ function Profile({ onBack }) {
           onClick={handleLogout}
         >
           <LogOut size={18} />
-          Log Out
+          {t("Log Out")}
         </button>
 
 
         <p className="profile-version">
-          NirbhayMind · Your Voice. Your Well-being. Our Priority.
+          {t("NirbhayMind · Your Voice. Your Well-being. Our Priority.")}
         </p>
 
       </main>

@@ -2,7 +2,7 @@ import VoiceSupport from "./pages/VoiceSupport";
 import AIChat from "./pages/AIChat";
 import welcomeScene from "./assets/welcome_scenario.jpg";
 import nirbhaymindLogo from "./assets/nirbhaymind_logo.jpeg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MoodCheck from "./pages/MoodCheck";
 import History from "./pages/History";
 import MyCase from "./pages/MyCase";
@@ -10,6 +10,10 @@ import Alerts from "./pages/Alerts";
 import Resources from "./pages/Resources";
 import Profile from "./pages/Profile";
 import SMS from "./pages/SMS";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import { createCheckin, getDashboard } from "./api";
+import { login } from "./api";
 
 import {
   Bell,
@@ -34,70 +38,92 @@ import {
   TrendingUp,
   MoreHorizontal,
   ArrowRight,
+  LogOut,
 } from "lucide-react";
 
 import "./App.css";
+import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "./i18n";
 
 function App() {
+  const { t, language, setLanguage } = useI18n();
+  const [authenticatedVictimId, setAuthenticatedVictimId] = useState(
+    () => localStorage.getItem("nirbhaymind_victim_id")
+  );
+  const [authPage, setAuthPage] = useState("landing");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const [currentPage, setCurrentPage] = useState("home");
+  const [dashboard, setDashboard] = useState(null);
+  const [loadError, setLoadError] = useState("");
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const changeLanguage = (nextLanguage) => {
+    setLanguage(nextLanguage);
+  };
 
-  /* =========================================
-     LOAD CHECK-INS
-  ========================================= */
-
-  const [checkIns, setCheckIns] = useState(() => {
-    const savedCheckIns = localStorage.getItem("nirbhaymind_checkins");
-
-    try {
-      return savedCheckIns ? JSON.parse(savedCheckIns) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  /* =========================================
-     LOAD LATEST SCORE
-  ========================================= */
-
-  const [wellbeingScore, setWellbeingScore] = useState(() => {
-    const savedCheckIns = localStorage.getItem("nirbhaymind_checkins");
-
-    try {
-      if (savedCheckIns) {
-        const parsedCheckIns = JSON.parse(savedCheckIns);
-
-        if (parsedCheckIns.length > 0) {
-          return parsedCheckIns[parsedCheckIns.length - 1].score;
+  useEffect(() => {
+    if (!authenticatedVictimId) return;
+    getDashboard(authenticatedVictimId)
+      .then((data) => {
+        setDashboard(data);
+        if (!localStorage.getItem("nirbhaymind_language")) {
+          setLanguage(data.profile.language || "English");
         }
-      }
-    } catch {
-      return 72;
-    }
+      })
+      .catch((error) => setLoadError(error.message));
+  }, [authenticatedVictimId, setLanguage]);
 
-    return 72;
-  });
-
-  /* =========================================
-     LOAD LATEST RISK
-  ========================================= */
-
-  const [riskLevel, setRiskLevel] = useState(() => {
-    const savedCheckIns = localStorage.getItem("nirbhaymind_checkins");
-
+  const handleLogin = async (victimId, caseId) => {
+    setAuthLoading(true);
+    setAuthError("");
     try {
-      if (savedCheckIns) {
-        const parsedCheckIns = JSON.parse(savedCheckIns);
-
-        if (parsedCheckIns.length > 0) {
-          return parsedCheckIns[parsedCheckIns.length - 1].risk;
-        }
-      }
-    } catch {
-      return "Low";
+      const result = await login(victimId, caseId);
+      localStorage.setItem("nirbhaymind_victim_id", result.victimId);
+      setAuthenticatedVictimId(result.victimId);
+      setAuthPage("landing");
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthLoading(false);
     }
+  };
 
-    return "Low";
-  });
+  const handleLogout = () => {
+    if (!window.confirm(t("Are you sure you want to log out?"))) return;
+    localStorage.removeItem("nirbhaymind_victim_id");
+    setAuthenticatedVictimId(null);
+    setDashboard(null);
+    setCurrentPage("home");
+  };
+
+  if (!authenticatedVictimId) {
+    if (authPage === "login") {
+      return (
+        <Login
+          onBack={() => {
+            setAuthError("");
+            setAuthPage("landing");
+          }}
+          onLogin={handleLogin}
+          loading={authLoading}
+          error={authError}
+        />
+      );
+    }
+    return <Landing onLogin={() => setAuthPage("login")} />;
+  }
+
+  if (loadError) {
+    return <main className="app"><p role="alert">Unable to load your data: {loadError}</p></main>;
+  }
+
+  if (!dashboard) {
+    return <main className="app"><p>{t("Loading your secure dashboard...")}</p></main>;
+  }
+
+  const checkIns = dashboard.checkins;
+  const latestCheckin = dashboard.latestCheckin;
+  const wellbeingScore = latestCheckin?.score ?? "--";
+  const riskLevel = latestCheckin?.risk ?? "Unknown";
 
   /* =========================================
      MOOD CHECK PAGE
@@ -105,38 +131,20 @@ function App() {
 
   if (currentPage === "mood") {
     return (
+      <>
+      <SessionControls onLogout={handleLogout} />
       <MoodCheck
         onBack={() => setCurrentPage("home")}
-        onComplete={(result) => {
-          setWellbeingScore(result.score);
-          setRiskLevel(result.risk);
-
-          const newCheckIn = {
-            id: Date.now(),
-            score: result.score,
-            risk: result.risk,
-            message: result.message,
-
-            date: new Date().toLocaleDateString("en-IN"),
-
-            time: new Date().toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-          };
-
-          setCheckIns((previous) => {
-            const updated = [...previous, newCheckIn];
-
-            localStorage.setItem(
-              "nirbhaymind_checkins",
-              JSON.stringify(updated)
-            );
-
-            return updated;
-          });
+        onComplete={async (result) => {
+          const savedCheckin = await createCheckin(authenticatedVictimId, result.answers);
+          setDashboard((previous) => ({
+            ...previous,
+            checkins: [...previous.checkins, savedCheckin],
+            latestCheckin: savedCheckin
+          }));
         }}
       />
+      </>
     );
   }
 
@@ -146,59 +154,99 @@ function App() {
 
   if (currentPage === "history") {
     return (
+      <>
+      <SessionControls onLogout={handleLogout} />
       <History
         checkIns={checkIns}
         onBack={() => setCurrentPage("home")}
       />
+      </>
     );
   }
   if (currentPage === "ai-chat") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <AIChat
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
   if (currentPage === "voice-support") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <VoiceSupport
+      language={language}
+      onLanguageChange={changeLanguage}
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
  if (currentPage === "my-case") {
   return (
-    <MyCase
+  <>
+  <SessionControls onLogout={handleLogout} />
+  <MyCase
+      caseData={dashboard.case}
+      onSupport={() => setCurrentPage("resources")}
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
 if (currentPage === "alerts") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <Alerts
+      alerts={dashboard.alerts}
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
 if (currentPage === "resources") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <Resources
+      onNavigate={setCurrentPage}
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
 if (currentPage === "profile") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <Profile
+      profile={dashboard.profile}
+      language={language}
+      onLanguageChange={changeLanguage}
+      onNavigate={setCurrentPage}
+      onLogout={() => {
+        localStorage.removeItem("nirbhaymind_victim_id");
+        setAuthenticatedVictimId(null);
+        setDashboard(null);
+        setCurrentPage("home");
+      }}
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
 if (currentPage === "sms") {
   return (
+    <>
+    <SessionControls onLogout={handleLogout} />
     <SMS
       onBack={() => setCurrentPage("home")}
     />
+    </>
   );
 }
   /* =========================================
@@ -210,8 +258,8 @@ if (currentPage === "sms") {
       ? checkIns.slice(-7)
       : [
           {
-            score: 72,
-            date: "Today",
+            score: wellbeingScore === "--" ? 0 : wellbeingScore,
+            date: "Latest",
           },
         ];
 
@@ -252,7 +300,7 @@ if (currentPage === "sms") {
               </h1>
 
             <p>
-              Your Voice. Your Well-being. Our Priority.
+              {t("Your Voice. Your Well-being. Our Priority.")}
             </p>
 
           </div>
@@ -261,7 +309,7 @@ if (currentPage === "sms") {
 
         <div className="header-actions">
 
-          <button className="notification-button">
+          <button className="notification-button" onClick={() => setCurrentPage("alerts")} aria-label={t("Open alerts")}>
 
             <Bell size={22} />
 
@@ -269,14 +317,36 @@ if (currentPage === "sms") {
 
           </button>
 
-          <button className="language-button">
+          <div className="language-picker">
+          <button className="language-button" onClick={() => setLanguageMenuOpen((open) => !open)} aria-label={t("Change language")}>
 
             <Globe size={20} />
 
-            <span>EN</span>
+            <span>{language === "English" ? "EN" : language}</span>
 
             <ChevronDown size={17} />
 
+          </button>
+          {languageMenuOpen && (
+            <div className="language-menu">
+              {LANGUAGES.map((item) => (
+                <button
+                  type="button"
+                  key={item}
+                  className={language === item ? "selected" : ""}
+                  onClick={() => {
+                    changeLanguage(item);
+                    setLanguageMenuOpen(false);
+                  }}
+                >
+                  {LANGUAGE_LABELS[item]}
+                </button>
+              ))}
+            </div>
+          )}
+          </div>
+          <button className="header-logout-button" onClick={handleLogout}>
+            {t("Log Out")}
           </button>
 
         </div>
@@ -299,12 +369,10 @@ if (currentPage === "sms") {
 
           <div className="welcome-content">
 
-            <h2>
-              Hello, Ankita 👋
-            </h2>
+            <h2>{t("Hello, {{name}} 👋", { name: dashboard.profile.name })}</h2>
 
             <p>
-              You are not alone. We are here for you.
+              {t("You are not alone. We are here for you.")}
             </p>
 
           </div>
@@ -313,9 +381,9 @@ if (currentPage === "sms") {
 
         <div className="quote">
 
-          “Your strength
+          {t("Your strength")}
           <br />
-          matters.” 🌿
+          {t("matters.")} 🌿
 
         </div>
 
@@ -333,7 +401,7 @@ if (currentPage === "sms") {
           <div className="section-title">
 
             <h3>
-              Your Well-being Score
+              {t("Your Well-being Score")}
             </h3>
 
             <Info size={16} />
@@ -374,18 +442,18 @@ if (currentPage === "sms") {
 
               <p>
 
-                Your current well-being
+                {t("Your current well-being")}
                 <br />
 
-                status is{" "}
+                {t("status is")}{" "}
 
                 {riskLevel.toLowerCase()}.
 
               </p>
 
-              <button className="soft-button">
+              <button className="soft-button" onClick={() => setCurrentPage("history")}>
 
-                View Trend
+                {t("View Trend")}
 
                 <ArrowRight size={17} />
 
@@ -407,21 +475,21 @@ if (currentPage === "sms") {
             <CalendarDays size={24} />
 
             <span>
-              Next Check-in
+              {t("Next Check-in")}
             </span>
 
           </div>
 
           <h3>
-            In 2 days
+            {t("In 2 days")}
           </h3>
 
           <p>
-            23 Sep 2026 · 10:00 AM
+            {t("Next check-in scheduled from the backend")}
           </p>
 
-          <button className="schedule-button">
-            View Schedule
+          <button className="schedule-button" onClick={() => setCurrentPage("my-case")}>
+            {t("View Schedule")}
           </button>
 
         </div>
@@ -438,7 +506,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<MessageCircle />}
           iconClass="green"
-          title="Chat with AI"
+          title={t("Chat with AI")}
           description={
             <>
               Talk anytime, in your
@@ -452,7 +520,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<Phone />}
           iconClass="purple"
-          title="Voice Call (IVRS)"
+          title={t("Voice Call (IVRS)")}
           description={
             <>
               Get support via
@@ -480,7 +548,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<Brain />}
           iconClass="lavender"
-          title="Mood Check"
+          title={t("Mood Check")}
           description={
             <>
               Share how you feel
@@ -503,7 +571,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<Users />}
           iconClass="pink"
-          title="My Case"
+          title={t("My Case")}
           description={
             <>
               Track your case &
@@ -517,7 +585,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<FileWarning />}
           iconClass="yellow"
-          title="Alerts & Notifications"
+          title={t("Alerts & Notifications")}
           description={
             <>
               Important updates
@@ -531,7 +599,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<BookOpen />}
           iconClass="teal"
-          title="Resources & Help"
+          title={t("Resources & Help")}
           description={
             <>
               Guides, helplines,
@@ -545,7 +613,7 @@ if (currentPage === "sms") {
         <ActionCard
           icon={<User />}
           iconClass="purple"
-          title="Profile & Settings"
+          title={t("Profile & Settings")}
           description={
             <>
               Manage your details
@@ -749,21 +817,21 @@ if (currentPage === "sms") {
             <div>
 
               <strong>
-                Risk Level: {riskLevel}
+                {t("Risk Level")}: {riskLevel}
               </strong>
 
               <p>
 
                 {riskLevel === "High"
-                  ? "Your distress level may need attention."
+                  ? t("Your distress level may need attention.")
                   : riskLevel === "Moderate"
-                  ? "Your distress level is showing some changes."
-                  : "Your distress level is currently stable."}
+                  ? t("Your distress level is showing some changes.")
+                  : t("Your distress level is currently stable.")}
 
               </p>
 
               <span>
-                Keep going!
+                {t("Keep going!")}
               </span>
 
             </div>
@@ -789,11 +857,11 @@ if (currentPage === "sms") {
             <div>
 
               <h3>
-                Need Support Now?
+                {t("Need Support Now?")}
               </h3>
 
               <p>
-                You can reach out to a counsellor
+                {t("You can reach out to a counsellor")}
               </p>
 
             </div>
@@ -801,11 +869,11 @@ if (currentPage === "sms") {
           </div>
 
 
-          <button className="counsellor-button">
+          <button className="counsellor-button" onClick={() => setCurrentPage("voice-support")}>
 
             <Phone size={21} />
 
-            Talk to Counsellor
+            {t("Talk to Counsellor")}
 
             <ArrowRight size={18} />
 
@@ -813,51 +881,51 @@ if (currentPage === "sms") {
 
 
           <p className="quick-title">
-            Quick Actions
+            {t("Quick Actions")}
           </p>
 
 
           <div className="support-actions">
 
-            <button>
+            <button onClick={() => setCurrentPage("resources")}>
 
               <ShieldCheck size={21} />
 
               <span>
 
-                Report
+                {t("Report")}
                 <br />
-                Threat
+                {t("Threat")}
 
               </span>
 
             </button>
 
 
-            <button>
+            <button onClick={() => setCurrentPage("my-case")}>
 
               <MapPin size={21} />
 
               <span>
 
-                Request
+                {t("Request")}
                 <br />
-                Relocation
+                {t("Relocation")}
 
               </span>
 
             </button>
 
 
-            <button>
+            <button onClick={() => setCurrentPage("my-case")}>
 
               <FileText size={21} />
 
               <span>
 
-                Legal Aid
+                {t("Legal Aid")}
                 <br />
-                Support
+                {t("Support")}
 
               </span>
 
@@ -997,6 +1065,16 @@ function NavItem({
         {label}
       </span>
 
+    </button>
+  );
+}
+
+function SessionControls({ onLogout }) {
+  const { t } = useI18n();
+  return (
+    <button className="session-logout-button" onClick={onLogout}>
+      <LogOut size={15} />
+      {t("Log Out")}
     </button>
   );
 }

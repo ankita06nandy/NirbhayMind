@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useI18n } from "../i18n";
 import {
   ArrowLeft,
   Wind,
@@ -11,8 +12,10 @@ import {
 } from "lucide-react";
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import { SUPPORT_NUMBERS } from "../support";
 
-function Resources({ onBack }) {
+function Resources({ onBack, onNavigate }) {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState("Self Care");
   const [selectedResource, setSelectedResource] = useState(null);
 
@@ -70,7 +73,7 @@ function Resources({ onBack }) {
       description: "Understand your rights",
       className: "lavender",
       content:
-        "Learn about your rights as a victim or complainant and understand the different forms of support that may be available to you.",
+        "You have the right to be treated with dignity, to receive information about your case, to request safety support, and to access legal assistance. Ask the investigating authority or your legal-aid provider about the protections available in your situation.",
     },
 
     {
@@ -79,7 +82,8 @@ function Resources({ onBack }) {
       description: "Understand the case journey",
       className: "green",
       content:
-        "Understand the general stages of a case, from complaint registration and investigation through later stages of the case journey.",
+        "A case generally moves through complaint registration, investigation, evidence collection, charge sheet filing, court proceedings, and resolution. Your timeline can vary. Use My Case to review the latest stage and upcoming hearing information.",
+      action: "case-process",
     },
 
     {
@@ -88,7 +92,8 @@ function Resources({ onBack }) {
       description: "Learn about available support",
       className: "peach",
       content:
-        "Access information about legal assistance and support services that may be available during your case.",
+        "Legal aid can help you understand your rights, prepare documents, communicate with the appropriate authorities, and understand court processes. You may request support through the NHAA helpline or your assigned support service.",
+      action: "legal-aid",
     },
   ];
 
@@ -169,8 +174,8 @@ function Resources({ onBack }) {
           </div>
 
           <div>
-            <h1>Resources</h1>
-            <p>Support & helpful information</p>
+            <h1>{t("Resources & Help")}</h1>
+            <p>{t("Support & helpful information")}</p>
           </div>
 
         </div>
@@ -199,7 +204,7 @@ function Resources({ onBack }) {
                 }
                 onClick={() => setActiveTab(tab)}
               >
-                {tab}
+                {t(tab)}
               </button>
             )
           )}
@@ -214,7 +219,7 @@ function Resources({ onBack }) {
           {resources.map((resource) => (
             <button
               className="resource-card"
-              key={resource.title}
+              key=              {t(resource.title)}
               onClick={() => setSelectedResource(resource)}
             >
 
@@ -226,7 +231,7 @@ function Resources({ onBack }) {
 
               <div className="resource-info">
                 <h3>{resource.title}</h3>
-                <p>{resource.description}</p>
+                <p>                {t(resource.description)}</p>
               </div>
 
               <span className="resource-arrow">
@@ -250,8 +255,8 @@ function Resources({ onBack }) {
           </div>
 
           <div>
-            <strong>You are not alone.</strong>
-            <p>Help is always available.</p>
+            <strong>{t("You are not alone.")}</strong>
+            <p>{t("Help is always available.")}</p>
           </div>
 
         </div>
@@ -295,14 +300,14 @@ function Resources({ onBack }) {
               {/* TITLE */}
 
               <h2>
-                {selectedResource.title}
+                {t(selectedResource.title)}
               </h2>
 
 
               {/* DESCRIPTION */}
 
               <p className="resource-modal-description">
-                {selectedResource.content}
+                {t(selectedResource.content)}
               </p>
 
 
@@ -312,11 +317,11 @@ function Resources({ onBack }) {
 
               {selectedResource.action === "call" && (
                 <a
-                  href="tel:14566"
+                  href={`tel:${SUPPORT_NUMBERS.nhaa}`}
                   className="resource-modal-action"
                 >
                   <Phone size={18} />
-                  Call 14566
+                  Call {SUPPORT_NUMBERS.nhaa}
                 </a>
               )}
 
@@ -330,14 +335,37 @@ function Resources({ onBack }) {
                   className="resource-modal-action"
                   onClick={() => {
                     setSelectedResource(null);
-
-                    alert(
-                      "Safety support can be accessed from your NirbhayMind dashboard."
-                    );
+                    onNavigate("sms");
                   }}
                 >
                   <ShieldAlert size={18} />
                   Continue to Safety Support
+                </button>
+              )}
+
+              {selectedResource.action === "case-process" && (
+                <button
+                  className="resource-modal-action"
+                  onClick={() => {
+                    setSelectedResource(null);
+                    onNavigate("my-case");
+                  }}
+                >
+                  <FileText size={18} />
+                  {t("Open My Case")}
+                </button>
+              )}
+
+              {selectedResource.action === "legal-aid" && (
+                <button
+                  className="resource-modal-action"
+                  onClick={() => {
+                    setSelectedResource(null);
+                    onNavigate("voice-support");
+                  }}
+                >
+                  <Phone size={18} />
+                  {t("Contact Legal Support")}
                 </button>
               )}
 
@@ -350,11 +378,7 @@ function Resources({ onBack }) {
                 <button
                   className="resource-modal-action"
                   onClick={() => {
-                    setSelectedResource(null);
-
-                    alert(
-                      "If you are in immediate danger, contact emergency services or a trusted person nearby."
-                    );
+                    window.location.href = `tel:${SUPPORT_NUMBERS.emergency}`;
                   }}
                 >
                   <Phone size={18} />

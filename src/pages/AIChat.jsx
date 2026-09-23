@@ -7,94 +7,19 @@ import {
 } from "lucide-react";
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
-
-function getAIResponse(message) {
-  const text = message.toLowerCase();
-
-  // Immediate safety / threat-related messages
-  if (
-    text.includes("threat") ||
-    text.includes("danger") ||
-    text.includes("unsafe") ||
-    text.includes("attack") ||
-    text.includes("harm me")
-  ) {
-    return "Your safety comes first. If you are in immediate danger, please contact local emergency services or a trusted person nearby. You can also use the Report Threat option from your NirbhayMind dashboard.";
-  }
-
-  // Anxiety
-  if (
-    text.includes("anxious") ||
-    text.includes("anxiety") ||
-    text.includes("panic") ||
-    text.includes("worried") ||
-    text.includes("worry")
-  ) {
-    return "It sounds like you're carrying a lot of worry right now. Try taking a few slow breaths and focus on what you can control at this moment. If this feeling continues, consider talking to a counsellor.";
-  }
-
-  // Stress
-  if (
-    text.includes("stress") ||
-    text.includes("stressed") ||
-    text.includes("pressure") ||
-    text.includes("overwhelmed")
-  ) {
-    return "I'm sorry you're feeling under pressure. You don't have to handle everything at once. Taking a short break, breathing slowly, and talking to someone you trust may help. Would you like to tell me what's causing the most stress?";
-  }
-
-  // Sleep
-  if (
-    text.includes("sleep") ||
-    text.includes("insomnia") ||
-    text.includes("can't sleep") ||
-    text.includes("cannot sleep")
-  ) {
-    return "Poor sleep can make stress and emotions feel stronger. Try keeping your surroundings calm and taking some time away from screens before sleeping. If sleep problems continue, consider speaking with a healthcare professional.";
-  }
-
-  // Case-related concerns
-  if (
-    text.includes("case") ||
-    text.includes("court") ||
-    text.includes("hearing") ||
-    text.includes("investigation")
-  ) {
-    return "I understand that dealing with a case can feel stressful and uncertain. You don't have to navigate those feelings alone. Your NirbhayMind dashboard can also help you access legal aid, support services, and counselling.";
-  }
-
-  // Sadness
-  if (
-    text.includes("sad") ||
-    text.includes("cry") ||
-    text.includes("lonely") ||
-    text.includes("alone")
-  ) {
-    return "I'm glad you shared that with me. Feeling low or alone can be difficult. Please consider reaching out to someone you trust or a counsellor who can support you personally.";
-  }
-
-  // Positive emotions
-  if (
-    text.includes("good") ||
-    text.includes("happy") ||
-    text.includes("better") ||
-    text.includes("fine")
-  ) {
-    return "I'm glad to hear that. 🌿 Keep taking care of yourself and remember that it's okay to check in again whenever you need support.";
-  }
-
-  // Default response
-  return "Thank you for sharing that with me. I'm here to listen. You can tell me more about how you're feeling, what's worrying you, or what you'd like support with.";
-}
+import { sendChatMessage } from "../api";
+import { useI18n } from "../i18n";
 
 function AIChat({ onBack }) {
+  const { t } = useI18n();
   const [message, setMessage] = useState("");
 
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: "ai",
-      text: "Hello Ankita 🌿 I'm here to listen. How are you feeling today?",
+      text: "Hello 🌿 I'm here to listen. How are you feeling today?",
+      translationKey: "Hello 🌿 I'm here to listen. How are you feeling today?",
     },
   ]);
 
@@ -112,18 +37,19 @@ function AIChat({ onBack }) {
     setMessages((prev) => [...prev, userMessage]);
     setMessage("");
 
-    setTimeout(() => {
-      const aiResponse = getAIResponse(trimmedMessage);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: "ai",
-          text: aiResponse,
-        },
-      ]);
-    }, 600);
+    sendChatMessage(trimmedMessage)
+      .then(({ text }) => {
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now() + 1, sender: "ai", text },
+        ]);
+      })
+      .catch((error) => {
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now() + 1, sender: "ai", text: `Unable to connect to support: ${error.message}` },
+        ]);
+      });
   };
 
   const handleKeyDown = (e) => {
@@ -222,7 +148,7 @@ function AIChat({ onBack }) {
 
           <div>
             <h1>NirbhayMind AI</h1>
-            <p>A safe space to talk</p>
+            <p>{t("A safe space to talk")}</p>
           </div>
 
         </div>
@@ -265,7 +191,7 @@ function AIChat({ onBack }) {
 
 
             <div className="ai-message-bubble">
-              {msg.text}
+              {msg.translationKey ? t(msg.translationKey) : msg.text}
             </div>
 
           </div>
@@ -294,7 +220,7 @@ function AIChat({ onBack }) {
 
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder={t("Type your message...")}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}

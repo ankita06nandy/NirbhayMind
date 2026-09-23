@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "../i18n";
 import {
   ArrowLeft,
   Phone,
@@ -8,9 +9,10 @@ import {
 } from "lucide-react";
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import { SUPPORT_NUMBERS } from "../support";
 
-function VoiceSupport({ onBack }) {
-  const [language, setLanguage] = useState("English");
+function VoiceSupport({ onBack, language, onLanguageChange }) {
+  const { t } = useI18n();
   const [callStarted, setCallStarted] = useState(false);
   const [seconds, setSeconds] = useState(0);
 
@@ -37,8 +39,6 @@ function VoiceSupport({ onBack }) {
   };
 
   const handleStartCall = () => {
-    if (phone.trim().length < 10) return;
-
     setCallStarted(true);
   };
 
@@ -72,7 +72,7 @@ function VoiceSupport({ onBack }) {
 
           <div>
             <h1>NirbhayMind</h1>
-            <p>Voice Support</p>
+            <p>{t("Voice Support")}</p>
           </div>
 
         </div>
@@ -93,7 +93,7 @@ function VoiceSupport({ onBack }) {
                 <Phone size={30} />
               </div>
 
-              <h2>IVRS Call</h2>
+              <h2>{t("IVRS Call")}</h2>
 
               <p>
                 Get support through a guided voice call
@@ -108,26 +108,12 @@ function VoiceSupport({ onBack }) {
 
               <div className="voice-support-label">
                 <Globe2 size={18} />
-                <span>Preferred Language</span>
+                <span>{t("Preferred Language")}</span>
               </div>
 
               <div className="voice-language-options">
 
-                {[
-                  "English",
-                  "বাংলা",
-                  "हिंदी",
-                  "অসমীয়া",
-                  "ଓଡ଼ିଆ",
-                  "தமிழ்",
-                  "తెలుగు",
-                  "ಕನ್ನಡ",
-                  "മലയാളം",
-                  "मराठी",
-                  "ગુજરાતી",
-                  "ਪੰਜਾਬੀ",
-                  "اردو",
-                ].map((item) => (
+                {LANGUAGES.map((item) => (
                   <button
                     key={item}
                     className={
@@ -135,9 +121,9 @@ function VoiceSupport({ onBack }) {
                         ? "voice-language active"
                         : "voice-language"
                     }
-                    onClick={() => setLanguage(item)}
+                    onClick={() => onLanguageChange(item)}
                   >
-                    {item}
+                    {LANGUAGE_LABELS[item]}
                   </button>
                 ))}
 
@@ -158,19 +144,19 @@ function VoiceSupport({ onBack }) {
                   </div>
 
                  <div>
-                     <h3>NHAA Helpline</h3>
-                     <p>National Helpline Against Atrocities</p>
+                     <h3>{t("NHAA Helpline")}</h3>
+                     <p>{t("National Helpline Against Atrocities")}</p>
                  </div>
              </div>
 
             <div className="nhaa-number-row">
                  <div>
-                     <span>National Helpline</span>
-                     <strong>14566</strong>
+                     <span>{t("National Helpline")}</span>
+                     <strong>{SUPPORT_NUMBERS.nhaa}</strong>
                 </div>
 
                   <a
-                     href="tel:14566"
+                     href={`tel:${SUPPORT_NUMBERS.nhaa}`}
                      className="nhaa-call-button"
                      onClick={handleStartCall}
                   >
@@ -181,12 +167,12 @@ function VoiceSupport({ onBack }) {
 
                <div className="nhaa-number-row">
                  <div>
-                      <span>Toll Free Support</span>
-                     <strong>18002021989</strong>
+                      <span>{t("Toll Free Support")}</span>
+                     <strong>{SUPPORT_NUMBERS.nhaaTollFree}</strong>
                  </div>
 
                  <a
-                     href="tel:18002021989"
+                     href={`tel:${SUPPORT_NUMBERS.nhaaTollFree}`}
                      className="nhaa-call-button secondary"
                       onClick={handleStartCall}
                  >
@@ -273,7 +259,7 @@ function VoiceSupport({ onBack }) {
 
             {/* LANGUAGE */}
             <div className="ivrs-number">
-             NHAA • 14566
+             NHAA • {SUPPORT_NUMBERS.nhaa}
             </div>
 
 
@@ -290,7 +276,7 @@ function VoiceSupport({ onBack }) {
             {/* SECURITY */}
             <div className="ivrs-secure">
               <ShieldCheck size={15} />
-              <span>This call is secure and confidential</span>
+              <span>{t("This call is secure and confidential")}</span>
             </div>
 
           </div>

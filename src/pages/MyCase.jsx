@@ -1,4 +1,3 @@
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
 import {
   ArrowLeft,
   FileText,
@@ -12,44 +11,50 @@ import {
   Scale,
   Home,
 } from "lucide-react";
+import { useI18n } from "../i18n";
 
-function MyCase({ onBack }) {
-  const caseData = {
-    caseId: "NHAA-2026-00124",
-    registrationDate: "12 August 2026",
-    district: "Kolkata",
-    state: "West Bengal",
-    currentStage: "Investigation",
-    nextHearing: "28 September 2026",
-    daysToHearing: 5,
-    lastUpdate: "18 September 2026",
+function MyCase({ onBack, caseData, onSupport }) {
+  const { t } = useI18n();
+  const formatDatasetDate = (value) => {
+    const match = String(value || "").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!match) return value || t("Not available");
+    const [, day, month, year] = match;
+    return new Intl.DateTimeFormat(undefined, {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(new Date(Number(year), Number(month) - 1, Number(day)));
   };
+  const registrationDate = formatDatasetDate(caseData.registrationDate);
+  const nextHearing = caseData.nextHearingDays === null
+    ? t("Not scheduled")
+    : `${t("In")} ${caseData.nextHearingDays} ${t("days")}`;
 
   const caseStages = [
     {
-      title: "Complaint Registered",
-      date: "12 August 2026",
+      title: t("Complaint Registered"),
+      date: registrationDate,
       completed: true,
     },
     {
-      title: "Investigation",
-      date: "In Progress",
+      title: caseData.caseStage,
+      date: t("In Progress"),
       completed: false,
       current: true,
     },
     {
-      title: "Charge Sheet",
-      date: "Pending",
+      title: t("Charge Sheet"),
+      date: t("Pending"),
       completed: false,
     },
     {
-      title: "Trial",
-      date: "Pending",
+      title: t("Trial"),
+      date: t("Pending"),
       completed: false,
     },
     {
-      title: "Case Resolution",
-      date: "Pending",
+      title: t("Case Resolution"),
+      date: t("Pending"),
       completed: false,
     },
   ];
@@ -76,8 +81,8 @@ function MyCase({ onBack }) {
           </div>
 
           <div>
-            <h1>My Case</h1>
-            <p>Case & Support</p>
+            <h1>{t("My Case")}</h1>
+            <p>{t("Case & Support")}</p>
           </div>
         </div>
 
@@ -97,7 +102,7 @@ function MyCase({ onBack }) {
             </div>
 
             <div>
-              <span>Case ID</span>
+              <span>{t("Case ID")}</span>
               <h2>{caseData.caseId}</h2>
             </div>
 
@@ -105,7 +110,7 @@ function MyCase({ onBack }) {
 
           <div className="case-status-badge">
             <span></span>
-            {caseData.currentStage}
+            {caseData.caseStage}
           </div>
 
           <div className="case-info-grid">
@@ -113,15 +118,15 @@ function MyCase({ onBack }) {
             <div className="case-info-item">
               <CalendarDays size={17} />
               <div>
-                <span>Registered</span>
-                <strong>{caseData.registrationDate}</strong>
+                <span>{t("Registered")}</span>
+                <strong>                {registrationDate}</strong>
               </div>
             </div>
 
             <div className="case-info-item">
               <MapPin size={17} />
               <div>
-                <span>Location</span>
+                <span>{t("Location")}</span>
                 <strong>
                   {caseData.district}, {caseData.state}
                 </strong>
@@ -138,8 +143,8 @@ function MyCase({ onBack }) {
 
           <div className="case-section-heading">
             <div>
-              <h2>Case Journey</h2>
-              <p>Track the progress of your case.</p>
+              <h2>{t("Case Journey")}</h2>
+              <p>{t("Track the progress of your case.")}</p>
             </div>
           </div>
 
@@ -174,7 +179,7 @@ function MyCase({ onBack }) {
 
                   {stage.current && (
                     <div className="timeline-current">
-                      Currently here
+                      {t("Currently here")}
                     </div>
                   )}
 
@@ -202,12 +207,12 @@ function MyCase({ onBack }) {
 
           <div className="hearing-details">
 
-            <span>Next Hearing</span>
+            <span>{t("Next Hearing")}</span>
 
-            <h3>{caseData.nextHearing}</h3>
+            <h3>{nextHearing}</h3>
 
             <p>
-              {caseData.daysToHearing} days from now
+              {caseData.nextHearingDays === null ? t("No upcoming hearing") : t("from now")}
             </p>
 
           </div>
@@ -227,10 +232,10 @@ function MyCase({ onBack }) {
           </div>
 
           <div>
-            <span>Last Case Update</span>
-            <strong>{caseData.lastUpdate}</strong>
+            <span>{t("Last Case Update")}</span>
+            <strong>{formatDatasetDate(caseData.checkinDate)}</strong>
             <p>
-              Your case information was last updated.
+              {t("Your case information was last updated.")}
             </p>
           </div>
 
@@ -242,38 +247,42 @@ function MyCase({ onBack }) {
 
           <div className="case-section-heading">
             <div>
-              <h2>Support</h2>
-              <p>Services available through NirbhayMind.</p>
+              <h2>{t("Support")}</h2>
+              <p>{t("Services available through NirbhayMind.")}</p>
             </div>
           </div>
 
           <div className="case-support-grid">
 
             <SupportCard
+              onClick={onSupport}
               icon={<HeartHandshake size={21} />}
-              title="Counselling"
-              description="Talk to a counsellor"
+              title={t("Counselling")}
+              description={t("Talk to a counsellor")}
               className="green"
             />
 
             <SupportCard
+              onClick={onSupport}
               icon={<Scale size={21} />}
-              title="Legal Aid"
-              description="Get legal support"
+              title={t("Legal Aid")}
+              description={t("Get legal support")}
               className="purple"
             />
 
             <SupportCard
+              onClick={onSupport}
               icon={<ShieldCheck size={21} />}
-              title="Protection"
-              description="Report a safety concern"
+              title={t("Protection")}
+              description={t("Report a safety concern")}
               className="peach"
             />
 
             <SupportCard
+              onClick={onSupport}
               icon={<Home size={21} />}
-              title="Relocation"
-              description="Request relocation support"
+              title={t("Relocation")}
+              description={t("Request relocation support")}
               className="yellow"
             />
 
@@ -288,8 +297,9 @@ function MyCase({ onBack }) {
           <ShieldCheck size={20} />
 
           <p>
-            You don't have to navigate your case alone.
-            NirbhayMind is here to help you access support.
+            {t("You don't have to navigate your case alone.")}
+            {" "}
+            {t("NirbhayMind is here to help you access support.")}
           </p>
 
         </div>
@@ -306,9 +316,10 @@ function SupportCard({
   title,
   description,
   className,
+  onClick,
 }) {
   return (
-    <button className={`case-support-card ${className}`}>
+    <button className={`case-support-card ${className}`} onClick={onClick}>
 
       <div className="case-support-icon">
         {icon}

@@ -8,8 +8,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import "./MoodCheck.css";
+import { useI18n } from "../i18n";
 
 function MoodCheck({ onBack, onComplete }) {
+  const { t } = useI18n();
   const [mood, setMood] = useState("");
   const [stress, setStress] = useState("");
   const [anxiety, setAnxiety] = useState("");
@@ -21,7 +23,7 @@ function MoodCheck({ onBack, onComplete }) {
     e.preventDefault();
 
     if (!mood || !stress || !anxiety || !sleep) {
-      alert("Please answer all questions before submitting.");
+      alert(t("Please answer all questions before submitting."));
       return;
     }
 
@@ -89,6 +91,7 @@ function MoodCheck({ onBack, onComplete }) {
       score: finalScore,
       risk: riskLevel,
       message: statusMessage,
+      answers: { mood, stress, anxiety, sleep },
     };
     setResult(checkInResult);
     onComplete(checkInResult);
@@ -105,21 +108,20 @@ function MoodCheck({ onBack, onComplete }) {
             <CheckCircle2 size={52} />
           </div>
 
-          <h1>Check-in Complete 💚</h1>
+          <h1>{t("Check-in Complete 💚")}</h1>
 
           <p>
-            Thank you for sharing how you're feeling today.
-            Your responses have been recorded securely.
+            {t("Thank you for sharing how you're feeling today. Your responses have been recorded securely.")}
           </p>
 
           <div className="score-preview">
 
-            <span>Your Well-being Score</span>
+            <span>{t("Your Well-being Score")}</span>
 
             <strong>{result.score}/100</strong>
 
             <small>
-              Risk Level: {result.risk}
+              {t("Risk Level")}: {t(result.risk)}
             </small>
 
           </div>
@@ -132,7 +134,7 @@ function MoodCheck({ onBack, onComplete }) {
             className="back-home-btn"
             onClick={onBack}
           >
-            Back to Dashboard
+            {t("Back to Dashboard")}
           </button>
 
         </div>
@@ -155,10 +157,10 @@ function MoodCheck({ onBack, onComplete }) {
         </button>
 
         <div>
-          <h1>Mood Check</h1>
+          <h1>{t("Mood Check")}</h1>
 
           <p>
-            A quick check-in to understand how you're feeling.
+            {t("A quick check-in to understand how you're feeling.")}
           </p>
         </div>
 
@@ -173,11 +175,10 @@ function MoodCheck({ onBack, onComplete }) {
         </div>
 
         <div>
-          <h2>How are you feeling today?</h2>
+          <h2>{t("How are you feeling today?")}</h2>
 
           <p>
-            Your answers help NirbhayMind understand changes
-            in your well-being over time.
+            {t("Your answers help NirbhayMind understand changes in your well-being over time.")}
           </p>
         </div>
 
@@ -193,7 +194,7 @@ function MoodCheck({ onBack, onComplete }) {
             <HeartPulse size={22} />
 
             <h3>
-              How would you describe your mood?
+              {t("How would you describe your mood?")}
             </h3>
           </div>
 
@@ -218,7 +219,7 @@ function MoodCheck({ onBack, onComplete }) {
 
                 <span>{emoji}</span>
 
-                <small>{label}</small>
+                <small>{t(label)}</small>
 
               </button>
 
@@ -237,7 +238,7 @@ function MoodCheck({ onBack, onComplete }) {
             <Brain size={22} />
 
             <h3>
-              How stressed do you feel right now?
+              {t("How stressed do you feel right now?")}
             </h3>
 
           </div>
@@ -260,7 +261,7 @@ function MoodCheck({ onBack, onComplete }) {
                 }`}
                 onClick={() => setStress(level)}
               >
-                {level}
+                {t(level)}
               </button>
 
             ))}
@@ -278,7 +279,7 @@ function MoodCheck({ onBack, onComplete }) {
             <Brain size={22} />
 
             <h3>
-              How anxious have you been feeling?
+              {t("How anxious have you been feeling?")}
             </h3>
 
           </div>
@@ -319,7 +320,7 @@ function MoodCheck({ onBack, onComplete }) {
             <Moon size={22} />
 
             <h3>
-              How was your sleep recently?
+              {t("How was your sleep recently?")}
             </h3>
 
           </div>
@@ -360,7 +361,7 @@ function MoodCheck({ onBack, onComplete }) {
 
           <Send size={19} />
 
-          Submit Check-in
+          {t("Submit Check-in")}
 
         </button>
 

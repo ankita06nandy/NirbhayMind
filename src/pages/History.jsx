@@ -5,8 +5,10 @@ import {
   Leaf,
   AlertTriangle,
 } from "lucide-react";
+import { useI18n } from "../i18n";
 
 function History({ checkIns, onBack }) {
+  const { t } = useI18n();
   return (
     <div className="history-page">
 
@@ -21,8 +23,8 @@ function History({ checkIns, onBack }) {
         </button>
 
         <div>
-          <h1>Check-in History</h1>
-          <p>Your previous well-being check-ins</p>
+          <h1>{t("Check-in History")}</h1>
+          <p>{t("Your previous well-being check-ins")}</p>
         </div>
 
       </div>
@@ -38,7 +40,7 @@ function History({ checkIns, onBack }) {
           </div>
 
           <div>
-            <span>Total Check-ins</span>
+            <span>{t("Total Check-ins")}</span>
             <strong>{checkIns.length}</strong>
           </div>
 
@@ -52,7 +54,7 @@ function History({ checkIns, onBack }) {
           </div>
 
           <div>
-            <span>Latest Score</span>
+            <span>{t("Latest Score")}</span>
 
             <strong>
               {checkIns.length > 0
@@ -71,7 +73,7 @@ function History({ checkIns, onBack }) {
           </div>
 
           <div>
-            <span>Latest Risk</span>
+            <span>{t("Latest Risk")}</span>
 
             <strong>
               {checkIns.length > 0
@@ -91,8 +93,8 @@ function History({ checkIns, onBack }) {
         <div className="history-section-heading">
 
           <div>
-            <h2>Your Check-ins</h2>
-            <p>Review how you've been feeling over time.</p>
+            <h2>{t("Your Check-ins")}</h2>
+            <p>{t("Review how you've been feeling over time.")}</p>
           </div>
 
         </div>
@@ -108,11 +110,10 @@ function History({ checkIns, onBack }) {
               <Clock3 size={34} />
             </div>
 
-            <h3>No check-ins yet</h3>
+            <h3>{t("No check-ins yet")}</h3>
 
             <p>
-              Complete your first Mood Check to start
-              tracking your well-being.
+              {t("Complete your first Mood Check to start tracking your well-being.")}
             </p>
 
           </div>
@@ -149,7 +150,7 @@ function History({ checkIns, onBack }) {
                     <div className="history-title-row">
 
                       <h3>
-                        Well-being Check-in
+                        {t("Well-being Check-in")}
                       </h3>
 
                       <span
@@ -195,7 +196,7 @@ function History({ checkIns, onBack }) {
 
 
                     <p className="history-message">
-                      {checkIn.message}
+                      {t(checkIn.message)}
                     </p>
 
                   </div>

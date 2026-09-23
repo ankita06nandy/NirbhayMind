@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useI18n } from "../i18n";
 import {
   ArrowLeft,
   MessageSquare,
@@ -8,8 +9,10 @@ import {
 } from "lucide-react";
 
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import { SUPPORT_NUMBERS } from "../support";
 
 function SMS({ onBack }) {
+  const { t } = useI18n();
   const [message, setMessage] = useState(
     "Hello, I need support regarding my case."
   );
@@ -24,9 +27,7 @@ function SMS({ onBack }) {
   const handleSendSMS = () => {
     if (!message.trim()) return;
 
-    const phoneNumber = "14566";
-
-    window.location.href = `sms:${phoneNumber}?body=${encodeURIComponent(
+    window.location.href = `sms:${SUPPORT_NUMBERS.nhaa}?body=${encodeURIComponent(
       message
     )}`;
   };
@@ -46,8 +47,8 @@ function SMS({ onBack }) {
           </div>
 
           <div>
-            <h1>SMS Support</h1>
-            <p>Reach out when you need help</p>
+            <h1>{t("SMS Support")}</h1>
+            <p>{t("Reach out when you need help")}</p>
           </div>
         </div>
       </header>
@@ -60,7 +61,7 @@ function SMS({ onBack }) {
             <MessageSquare size={28} />
           </div>
 
-          <h2>Send a Support Message</h2>
+          <h2>{t("Send a Support Message")}</h2>
 
           <p>
             You can send an SMS to the NHAA support service
@@ -68,8 +69,8 @@ function SMS({ onBack }) {
           </p>
 
           <div className="sms-number">
-            <span>NHAA Support</span>
-            <strong>14566</strong>
+            <span>{t("NHAA Support")}</span>
+            <strong>{SUPPORT_NUMBERS.nhaa}</strong>
           </div>
         </section>
 
@@ -77,8 +78,8 @@ function SMS({ onBack }) {
         <section className="sms-section">
 
           <div className="sms-section-heading">
-            <h2>Quick Messages</h2>
-            <p>Choose a message or write your own.</p>
+            <h2>{t("Quick Messages")}</h2>
+            <p>{t("Choose a message or write your own.")}</p>
           </div>
 
           <div className="sms-quick-list">
@@ -99,8 +100,8 @@ function SMS({ onBack }) {
         <section className="sms-section">
 
           <div className="sms-section-heading">
-            <h2>Your Message</h2>
-            <p>Write what you would like to communicate.</p>
+            <h2>{t("Your Message")}</h2>
+            <p>{t("Write what you would like to communicate.")}</p>
           </div>
 
           <div className="sms-input-card">
@@ -108,7 +109,7 @@ function SMS({ onBack }) {
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={t("Type your message...")}
               rows={5}
               maxLength={320}
             />
@@ -127,7 +128,7 @@ function SMS({ onBack }) {
           onClick={handleSendSMS}
         >
           <Send size={18} />
-          Send SMS to 14566
+          Send SMS to {SUPPORT_NUMBERS.nhaa}
         </button>
 
         {/* SAFETY NOTE */}
@@ -138,7 +139,7 @@ function SMS({ onBack }) {
           </div>
 
           <div>
-            <strong>Private & Supportive</strong>
+            <strong>{t("Private & Supportive")}</strong>
 
             <p>
               Your message is intended for support services.
