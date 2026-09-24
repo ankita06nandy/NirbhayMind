@@ -133,6 +133,11 @@ function Profile({ onBack, profile, language, onLanguageChange, onNavigate, onLo
             </div>
 
             <div className="profile-info-row">
+              <span>{t("Gender")}</span>
+              <strong>{profile.gender || "--"}</strong>
+            </div>
+
+            <div className="profile-info-row">
               <span>{t("Case Status")}</span>
 
               <strong className="profile-status">

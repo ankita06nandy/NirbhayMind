@@ -14,6 +14,8 @@ export const LANGUAGE_LABELS = {
 const translations = {
   English: {},
   Bengali: {
+    "Hello, {{name}} 👋": "হ্যালো, {{name}} 👋",
+    Gender: "লিঙ্গ",
     "Your Voice. Your Well-being. Our Priority.": "আপনার কণ্ঠ। আপনার সুস্থতা। আমাদের অগ্রাধিকার।",
     "You are not alone. We are here for you.": "আপনি একা নন। আমরা আপনার পাশে আছি।",
     "Your Well-being Score": "আপনার সুস্থতার স্কোর", "View Trend": "প্রবণতা দেখুন",
@@ -28,6 +30,8 @@ const translations = {
     "Open My Case": "আমার মামলা খুলুন", "Contact Legal Support": "আইনি সহায়তার সঙ্গে যোগাযোগ করুন",
   },
   Hindi: {
+    "Hello, {{name}} 👋": "नमस्ते, {{name}} 👋",
+    Gender: "लिंग",
     "Your Voice. Your Well-being. Our Priority.": "आपकी आवाज़। आपका स्वास्थ्य। हमारी प्राथमिकता।",
     "You are not alone. We are here for you.": "आप अकेले नहीं हैं। हम आपके साथ हैं।",
     "Your Well-being Score": "आपका स्वास्थ्य स्कोर", "View Trend": "रुझान देखें",
@@ -230,22 +234,6 @@ const sharedTranslations = {
   }
 };
 
-// Keep the complete interface localized even when a newly added copy key has
-// not yet received a polished regional translation. The marker is intentional:
-// it prevents silently showing English in a selected language.
-const localeFallbackLabels = {
-  Assamese: "অসমীয়াত",
-  Odia: "ଓଡ଼ିଆରେ",
-  Tamil: "தமிழில்",
-  Telugu: "తెలుగులో",
-  Kannada: "ಕನ್ನಡದಲ್ಲಿ",
-  Malayalam: "മലയാളത്തിൽ",
-  Marathi: "मराठीत",
-  Gujarati: "ગુજરાતીમાં",
-  Punjabi: "ਪੰਜਾਬੀ ਵਿੱਚ",
-  Urdu: "اردو میں",
-};
-
 const commonInterfaceTranslations = {
   Assamese: {
     "Profile & Settings": "প্ৰ’ফাইল আৰু ছেটিংছ", "Account Information": "একাউণ্টৰ তথ্য",
@@ -380,9 +368,9 @@ export function I18nProvider({ children, initialLanguage = "English" }) {
       let text = translations[language]?.[key]
         || sharedTranslations[language]?.[key]
         || commonInterfaceTranslations[language]?.[key]
-        || (language === "English" ? key : `${localeFallbackLabels[language]}: ${key}`);
+        || key;
       Object.entries(variables).forEach(([name, value]) => {
-        text = text.replace(`{{${name}}}`, value);
+        text = text.replace(`{{${name}}}`, String(value ?? ""));
       });
       return text;
     },

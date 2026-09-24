@@ -97,6 +97,14 @@ function number(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function text(row, ...keys) {
+  for (const key of keys) {
+    const value = row[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
 function scoreAsPercent(value, direction = "positive") {
   if (value === null) return null;
   if (value >= 0 && value <= 5) {
@@ -117,13 +125,14 @@ function riskForScore(score) {
 
 function normalizeRow(row) {
   return {
-    victimId: row.Victim_id,
+    victimId: text(row, "Victim_id", "victim_id", "Victim ID", "victimId"),
     caseId: row.Case_id,
+    name: text(row, "Name", "name", "Victims", "Victim_name", "victim_name", "Full_name", "full_name"),
     registrationDate: row.Registration_Date,
     category: row.Victim_category,
     incidentType: row.incident_type,
     ageGroup: row.age_group,
-    gender: row.gender,
+    gender: text(row, "Gender", "gender"),
     district: row.district,
     state: row.state,
     urbanRural: row.urban_rural,
@@ -353,9 +362,10 @@ app.get("/api/v1/dashboard/:victimId", async (request, response, next) => {
     const checkins = [...(stored[victim.victimId] || []), toCheckin(victim)];
     response.json({
       profile: {
-        name: "Registered User",
+        name: victim.name || "Registered User",
         victimId: victim.victimId,
         caseId: victim.caseId,
+        gender: victim.gender,
         district: victim.district,
         state: victim.state,
         language: victim.language,

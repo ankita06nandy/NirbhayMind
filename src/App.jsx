@@ -43,6 +43,7 @@ import {
 
 import "./App.css";
 import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "./i18n";
+import { sortCheckIns } from "./checkinUtils";
 
 function App() {
   const { t, language, setLanguage } = useI18n();
@@ -116,8 +117,8 @@ function App() {
     return <main className="app"><p>{t("Loading your secure dashboard...")}</p></main>;
   }
 
-  const checkIns = dashboard.checkins;
-  const latestCheckin = dashboard.latestCheckin;
+  const checkIns = sortCheckIns(dashboard.checkins);
+  const latestCheckin = checkIns.at(-1);
   const wellbeingScore = latestCheckin?.score ?? "--";
   const riskLevel = latestCheckin?.risk ?? "Unknown";
 

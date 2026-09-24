@@ -6,9 +6,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useI18n } from "../i18n";
+import { sortCheckIns } from "../checkinUtils";
 
 function History({ checkIns, onBack }) {
   const { t } = useI18n();
+  const orderedCheckIns = sortCheckIns(checkIns, "descending");
   return (
     <div className="history-page">
 
@@ -124,8 +126,7 @@ function History({ checkIns, onBack }) {
 
           <div className="history-list">
 
-            {[...checkIns]
-              .reverse()
+            {orderedCheckIns
               .map((checkIn) => (
 
                 <div
