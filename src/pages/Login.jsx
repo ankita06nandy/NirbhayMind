@@ -24,9 +24,19 @@ function Login({ onBack, onLogin, loading, error }) {
         <h1>{t("Login to NirbhayMind")}</h1>
         <p>{t("Use the ID details provided by your support service.")}</p>
         <label htmlFor="victim-id">{t("Victim ID")}</label>
-        <input id="victim-id" value={victimId} onChange={(event) => setVictimId(event.target.value)} required />
+        <input
+          type="text"
+          placeholder="Victim ID"
+          style={{ color: "black", caretColor: "black" }}
+          className="w-full p-2 border rounded text-black caret-black placeholder-gray-500"
+        />
         <label htmlFor="case-id">{t("Case ID")}</label>
-        <input id="case-id" value={caseId} onChange={(event) => setCaseId(event.target.value)} required />
+        <input
+         type="text"
+          placeholder="Case ID"
+          style={{ color: "black", caretColor: "black" }}
+          className="w-full p-2 border rounded text-black caret-black placeholder-gray-500"
+        />
         {error && <div className="login-error" role="alert">{t(error)}</div>}
         <button className="login-submit" type="submit" disabled={loading}>
           <LogIn size={18} />
