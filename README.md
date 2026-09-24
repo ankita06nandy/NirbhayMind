@@ -16,6 +16,12 @@ The API starts on `http://localhost:4000`. The main frontend endpoint is:
 
 `GET /api/v1/dashboard/V1001`
 
+Chat uses Google's Gemini model. Set `GEMINI_API_KEY` in `backend/.env` (and
+optionally `GEMINI_MODEL`) before using the Chat with AI screen. The key stays
+on the backend and is never exposed to the browser. The value must be an active
+Google AI Studio API key, not the placeholder from `.env.example`; restart the
+backend after changing it.
+
 Submit a mood check-in with `POST /api/v1/victims/V1001/checkins` and a JSON body
 containing `mood`, `stress`, `anxiety`, and `sleep` using the labels shown in the
 Mood Check screen. New check-ins are stored in `backend/data/checkins.json`, while
@@ -42,6 +48,7 @@ Available endpoints:
 - `GET /api/v1/victims/:victimId/checkins`
 - `POST /api/v1/victims/:victimId/checkins`
 - `POST /api/dataset/sync`
+- `POST /api/v1/chat`
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

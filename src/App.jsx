@@ -46,9 +46,7 @@ import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "./i18n";
 
 function App() {
   const { t, language, setLanguage } = useI18n();
-  const [authenticatedVictimId, setAuthenticatedVictimId] = useState(
-    () => localStorage.getItem("nirbhaymind_victim_id")
-  );
+  const [authenticatedVictimId, setAuthenticatedVictimId] = useState(null);
   const [authPage, setAuthPage] = useState("landing");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -77,7 +75,6 @@ function App() {
     setAuthError("");
     try {
       const result = await login(victimId, caseId);
-      localStorage.setItem("nirbhaymind_victim_id", result.victimId);
       setAuthenticatedVictimId(result.victimId);
       setAuthPage("landing");
     } catch (error) {
@@ -89,7 +86,6 @@ function App() {
 
   const handleLogout = () => {
     if (!window.confirm(t("Are you sure you want to log out?"))) return;
-    localStorage.removeItem("nirbhaymind_victim_id");
     setAuthenticatedVictimId(null);
     setDashboard(null);
     setCurrentPage("home");
@@ -229,7 +225,6 @@ if (currentPage === "profile") {
       onLanguageChange={changeLanguage}
       onNavigate={setCurrentPage}
       onLogout={() => {
-        localStorage.removeItem("nirbhaymind_victim_id");
         setAuthenticatedVictimId(null);
         setDashboard(null);
         setCurrentPage("home");

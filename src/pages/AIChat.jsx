@@ -13,6 +13,7 @@ import { useI18n } from "../i18n";
 function AIChat({ onBack }) {
   const { t } = useI18n();
   const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const [messages, setMessages] = useState([
     {
@@ -23,10 +24,10 @@ function AIChat({ onBack }) {
     },
   ]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmedMessage = message.trim();
 
-    if (!trimmedMessage) return;
+    if (!trimmedMessage || isSending) return;
 
     const userMessage = {
       id: Date.now(),
@@ -36,24 +37,30 @@ function AIChat({ onBack }) {
 
     setMessages((prev) => [...prev, userMessage]);
     setMessage("");
+    setIsSending(true);
 
-    sendChatMessage(trimmedMessage)
-      .then(({ text }) => {
-        setMessages((prev) => [
-          ...prev,
-          { id: Date.now() + 1, sender: "ai", text },
-        ]);
-      })
-      .catch((error) => {
-        setMessages((prev) => [
-          ...prev,
-          { id: Date.now() + 1, sender: "ai", text: `Unable to connect to support: ${error.message}` },
-        ]);
-      });
+    try {
+      const { text } = await sendChatMessage(trimmedMessage);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: "ai", text }]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: "ai",
+          text: error.message.includes("API key")
+            ? "AI support is not configured yet. Please ask the administrator to add a valid Gemini API key."
+            : `Unable to connect to support: ${error.message}`,
+        },
+      ]);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSend();
     }
   };
@@ -226,7 +233,7 @@ function AIChat({ onBack }) {
           onKeyDown={handleKeyDown}
         />
 
-        <button onClick={handleSend}>
+        <button onClick={handleSend} disabled={isSending || !message.trim()}>
           <Send size={19} />
         </button>
 

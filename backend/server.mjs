@@ -1,8 +1,11 @@
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDirectory = path.join(__dirname, "data");
@@ -12,6 +15,8 @@ const datasetUrl =
   process.env.DATASET_URL ||
   "https://docs.google.com/spreadsheets/d/1qWwxA1IpWQfhUJialshiwMeJ2kFtTto6DvHlSyCoDlA/gviz/tq?tqx=out:csv&gid=0";
 const defaultVictimId = process.env.DEFAULT_VICTIM_ID || "V1001";
+const geminiApiKey = process.env.GEMINI_API_KEY;
+const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
@@ -90,6 +95,24 @@ function parseCsv(csv) {
 function number(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function scoreAsPercent(value, direction = "positive") {
+  if (value === null) return null;
+  if (value >= 0 && value <= 5) {
+    return direction === "inverse" ? (5 - value) * 20 : value * 20;
+  }
+  if (value >= 0 && value <= 10) {
+    return direction === "inverse" ? (10 - value) * 10 : value * 10;
+  }
+  if (value >= 0 && value <= 100) {
+    return direction === "inverse" ? 100 - value : value;
+  }
+  return null;
+}
+
+function riskForScore(score) {
+  return score >= 70 ? "Low" : score >= 45 ? "Moderate" : "High";
 }
 
 function normalizeRow(row) {
@@ -187,16 +210,19 @@ function getVictim(victimId) {
 
 function toCheckin(row) {
   const scoreParts = [
-    row.moodScore === null ? null : row.moodScore * 20,
-    row.stressScore === null ? null : (10 - row.stressScore) * 20,
-    row.anxietyScore === null ? null : (10 - row.anxietyScore) * 20,
-    row.sleepScore === null ? null : row.sleepScore * 20
+    scoreAsPercent(row.moodScore),
+    scoreAsPercent(row.stressScore, "inverse"),
+    scoreAsPercent(row.anxietyScore, "inverse"),
+    scoreAsPercent(row.sleepScore)
   ].filter((score) => score !== null);
+  const score = scoreParts.length
+    ? Math.round(scoreParts.reduce((sum, part) => sum + part, 0) / scoreParts.length)
+    : null;
 
   return {
     id: row.checkinId,
-    score: scoreParts.length ? Math.round(scoreParts.reduce((sum, score) => sum + score, 0) / scoreParts.length) : null,
-    risk: row.riskLevel,
+    score,
+    risk: score === null ? row.riskLevel : riskForScore(score),
     date: row.checkinDate,
     channel: row.interactionChannel,
     language: row.language,
@@ -217,7 +243,7 @@ function calculateCheckin(body) {
   const score = Math.round(
     fields.reduce((total, field) => total + scoreMaps[field][body[field]], 0) / fields.length
   );
-  const risk = score >= 70 ? "Low" : score >= 45 ? "Moderate" : "High";
+  const risk = riskForScore(score);
   return {
     id: `LOCAL-${Date.now()}`,
     score,
@@ -243,17 +269,58 @@ app.get("/api/health", (_request, response) => {
 
 });
 
-app.post("/api/v1/chat", (request, response) => {
+app.post("/api/v1/chat", async (request, response, next) => {
   if (typeof request.body.message !== "string" || !request.body.message.trim()) {
     return response.status(400).json({ error: "message is required" });
   }
-  const text = request.body.message.toLowerCase();
-  const responseText = ["threat", "danger", "unsafe", "attack", "harm me"].some((term) => text.includes(term))
-    ? "Your safety comes first. If you are in immediate danger, please contact local emergency services or a trusted person nearby. You can also use the Report Threat option from your NirbhayMind dashboard."
-    : ["anxious", "anxiety", "panic", "worried", "worry"].some((term) => text.includes(term))
-      ? "It sounds like you're carrying a lot of worry right now. Try taking a few slow breaths and focus on what you can control at this moment. If this feeling continues, consider talking to a counsellor."
-      : "Thank you for sharing that with me. I'm here to listen. You can tell me more about how you're feeling, what's worrying you, or what you'd like support with.";
-  response.json({ text: responseText });
+  if (!geminiApiKey) {
+    return response.status(503).json({ error: "AI support is not configured. Add GEMINI_API_KEY to the backend environment." });
+  }
+
+  try {
+    const modelResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{
+              text: "You are NirbhayMind, a warm and trauma-informed emotional support assistant. Listen without judgment, use simple language, do not diagnose or give legal or medical certainty, and suggest a trusted person or qualified professional when appropriate. If the user says they are in immediate danger or may hurt themselves, encourage contacting local emergency services and a trusted person immediately. Keep replies concise and practical."
+            }]
+          },
+          contents: [{ role: "user", parts: [{ text: request.body.message.trim() }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 400 }
+        })
+      }
+    );
+    const body = await modelResponse.json();
+    if (!modelResponse.ok) {
+      const providerMessage = body.error?.message || "";
+      const invalidKey = modelResponse.status === 400 &&
+        /api key not valid|invalid api key/i.test(providerMessage);
+      const error = new Error(
+        invalidKey
+          ? "The Gemini API key configured for AI support is invalid."
+          : providerMessage || `AI provider returned status ${modelResponse.status}`
+      );
+      error.status = invalidKey ? 503 : 502;
+      throw error;
+    }
+    const text = body.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text)
+      .filter(Boolean)
+      .join("")
+      .trim();
+    if (!text) {
+      const error = new Error("AI provider returned an empty response");
+      error.status = 502;
+      throw error;
+    }
+    response.json({ text });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post("/api/auth/login", (request, response) => {
