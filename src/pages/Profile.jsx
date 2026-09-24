@@ -391,7 +391,7 @@ function Profile({ onBack, profile, language, onLanguageChange, onNavigate, onLo
 
 
         <p className="profile-version">
-          {t("NirbhayMind · Your Voice. Your Well-being. Our Priority.")}
+          {t("NirbhayMind · for all the battles you've won that nobody knows about...")}
         </p>
 
       </main>

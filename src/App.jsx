@@ -1,3 +1,4 @@
+import SplashScreen from "./pages/SplashScreen";
 import VoiceSupport from "./pages/VoiceSupport";
 import AIChat from "./pages/AIChat";
 import welcomeScene from "./assets/welcome_scenario.jpg";
@@ -14,6 +15,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import { createCheckin, getDashboard } from "./api";
 import { login } from "./api";
+
 
 import {
   Bell,
@@ -46,6 +48,8 @@ import { LANGUAGE_LABELS, LANGUAGES, useI18n } from "./i18n";
 import { sortCheckIns } from "./checkinUtils";
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  console.log("SPLASH TEST");
   const { t, language, setLanguage } = useI18n();
   const [authenticatedVictimId, setAuthenticatedVictimId] = useState(null);
   const [authPage, setAuthPage] = useState("landing");
@@ -58,6 +62,8 @@ function App() {
   const changeLanguage = (nextLanguage) => {
     setLanguage(nextLanguage);
   };
+  
+
 
   useEffect(() => {
     if (!authenticatedVictimId) return;
@@ -91,7 +97,13 @@ function App() {
     setDashboard(null);
     setCurrentPage("home");
   };
-
+  if (showSplash) {
+    return (
+      <SplashScreen
+        onComplete={() => setShowSplash(false)}
+      />
+    );
+  }
   if (!authenticatedVictimId) {
     if (authPage === "login") {
       return (
@@ -245,6 +257,7 @@ if (currentPage === "sms") {
     </>
   );
 }
+ 
   /* =========================================
      DYNAMIC TREND DATA
   ========================================= */
@@ -296,7 +309,7 @@ if (currentPage === "sms") {
               </h1>
 
             <p>
-              {t("Your Voice. Your Well-being. Our Priority.")}
+              {t("for all the battles you've won that nobody knows about...")}
             </p>
 
           </div>
