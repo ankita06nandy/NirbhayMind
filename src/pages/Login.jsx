@@ -27,6 +27,8 @@ function Login({ onBack, onLogin, loading, error }) {
         <input
           type="text"
           placeholder="Victim ID"
+          value={victimId}
+          onChange={(e) => setVictimId(e.target.value)}
           style={{ color: "black", caretColor: "black" }}
           className="w-full p-2 border rounded text-black caret-black placeholder-gray-500"
         />
@@ -34,6 +36,8 @@ function Login({ onBack, onLogin, loading, error }) {
         <input
          type="text"
           placeholder="Case ID"
+          value={caseId}
+          onChange={(e) => setCaseId(e.target.value)}
           style={{ color: "black", caretColor: "black" }}
           className="w-full p-2 border rounded text-black caret-black placeholder-gray-500"
         />

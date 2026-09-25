@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
 import "./Landing.css";
 
-function Landing({ onLogin }) {
+function Landing({ onLogin, onCounsellorDemo}) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const touchStartX = useRef(null);
@@ -191,6 +191,13 @@ function Landing({ onLogin }) {
           </span>
 
           <ArrowRight size={19} />
+        </button>
+        <button
+          className="counsellor-demo-button"
+          onClick={onCounsellorDemo}
+        >
+          <HeartHandshake size={17} />
+          <span>District Counsellor Demo</span>
         </button>
       </footer>
     </main>

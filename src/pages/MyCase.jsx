@@ -75,7 +75,7 @@ function MyCase({ onBack, caseData, onSupport }) {
         <div className="my-case-title">
           <div className="my-case-logo">
             <img
-              src="/src/assets/nirbhaymind_logo.jpeg"
+              src="/nirbhaymind_logo.jpeg"
               alt="NirbhayMind"
             />
           </div>

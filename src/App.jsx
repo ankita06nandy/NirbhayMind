@@ -15,6 +15,9 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import { createCheckin, getDashboard } from "./api";
 import { login } from "./api";
+import CounsellorDashboard from "./pages/CounsellorDashboard";
+
+
 
 
 import {
@@ -53,6 +56,7 @@ function App() {
   const { t, language, setLanguage } = useI18n();
   const [authenticatedVictimId, setAuthenticatedVictimId] = useState(null);
   const [authPage, setAuthPage] = useState("landing");
+  const [portal, setPortal] = useState("victim");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [currentPage, setCurrentPage] = useState("home");
@@ -76,7 +80,7 @@ function App() {
       })
       .catch((error) => setLoadError(error.message));
   }, [authenticatedVictimId, setLanguage]);
-
+ 
   const handleLogin = async (victimId, caseId) => {
     setAuthLoading(true);
     setAuthError("");
@@ -104,6 +108,15 @@ function App() {
       />
     );
   }
+  if (portal === "counsellor") {
+  return (
+    <CounsellorDashboard
+      onLogout={() => {
+        setPortal("victim");
+      }}
+    />
+  );
+}
   if (!authenticatedVictimId) {
     if (authPage === "login") {
       return (
@@ -118,7 +131,12 @@ function App() {
         />
       );
     }
-    return <Landing onLogin={() => setAuthPage("login")} />;
+  return (
+  <Landing
+    onLogin={() => setAuthPage("login")}
+    onCounsellorDemo={() => setPortal("counsellor")}
+  />
+  );
   }
 
   if (loadError) {
@@ -257,6 +275,8 @@ if (currentPage === "sms") {
     </>
   );
 }
+
+  
  
   /* =========================================
      DYNAMIC TREND DATA

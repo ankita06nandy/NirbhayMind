@@ -590,3 +590,41 @@
 
   animation: iconAppear 0.5s ease;
 }
+
+/* =========================================
+   COUNSELLOR DEMO ACCESS
+========================================= */
+
+.counsellor-demo-button {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 280px;
+
+  border: 1px solid #315c3a;
+  background: transparent;
+  color: #315c3a;
+
+  padding: 10px 16px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.counsellor-demo-button:hover {
+  background: #315c3a;
+  color: #faf7ef;
+  transform: translateY(-1px);
+}
+
+.counsellor-demo-button:active {
+  transform: translateY(0);
+}
