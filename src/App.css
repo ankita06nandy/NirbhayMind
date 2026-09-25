@@ -698,6 +698,38 @@ button {
   font: inherit;
 }
 
+.login-role-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.login-role-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #dfd0c8;
+  border-radius: 10px;
+  background: white;
+  color: #5d2632;
+  font-weight: 700;
+}
+
+.login-role-option.selected {
+  border-color: #5d2632;
+  background: #f5e9e4;
+  box-shadow: inset 0 0 0 1px #5d2632;
+}
+
+.login-hint {
+  margin: 10px 0 0;
+  color: #6f6560;
+  font-size: 13px;
+}
+
 .login-submit {
   margin-top: 24px;
 }
@@ -5515,4 +5547,3 @@ button.profile-setting-card {
     padding: 23px 17px;
   }
 }
-

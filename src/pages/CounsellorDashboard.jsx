@@ -50,7 +50,7 @@ const INDIA_STATES_GEO_URL =
    DEMO DATA
 ===================================================== */
 
-const demoStateData = {
+const demoCounsellorData = {
   state: "West Bengal",
 
   total_registered_victims: 142,
@@ -179,7 +179,7 @@ const demoSearchItems = [
 ];
 
 
-function CounsellorDashboard({ onLogout }) {
+function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchItems }) {
 
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
@@ -196,7 +196,9 @@ function CounsellorDashboard({ onLogout }) {
   const [searchQuery, setSearchQuery] =
     useState("");
 
-  const data = demoStateData;
+  const data = dashboardData || demoCounsellorData;
+  const counsellorName = profile?.name || data.counsellor_name || data.counsellor_id || "Counsellor";
+  const searchableItems = searchItems || demoSearchItems;
 
 
   /* =====================================================
@@ -304,7 +306,7 @@ function CounsellorDashboard({ onLogout }) {
   const filteredSearchResults =
     searchQuery.trim().length === 0
       ? []
-      : demoSearchItems.filter((item) =>
+      : searchableItems.filter((item) =>
           `${item.id} ${item.type} ${item.title} ${item.subtitle}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
@@ -1074,7 +1076,7 @@ function CounsellorDashboard({ onLogout }) {
                 <div className="profile-main-info">
 
                   <strong>
-                    State Counsellor
+                    Counsellor
                   </strong>
 
                   <small>
@@ -1125,7 +1127,7 @@ function CounsellorDashboard({ onLogout }) {
                     <div className="profile-dropdown-identity">
 
                       <strong>
-                        State Counsellor
+                        Counsellor
                       </strong>
 
                       <span>
@@ -1173,7 +1175,7 @@ function CounsellorDashboard({ onLogout }) {
                       </span>
 
                       <strong>
-                        State Counsellor
+                        Counsellor
                       </strong>
 
                     </div>
@@ -1370,7 +1372,7 @@ function CounsellorDashboard({ onLogout }) {
                 </p>
 
                 <h1>
-                  Good morning, Counsellor
+                  Hello, {counsellorName}
                 </h1>
 
                 <p>

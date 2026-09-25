@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 function CounsellorDashboard({ counsellorId }) {
   const [data, setData] = useState(null);
@@ -29,7 +29,7 @@ function CounsellorDashboard({ counsellorId }) {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <h1 className="text-2xl font-bold mb-6">District Counsellor Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-6">Counsellor Dashboard</h1>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-4 gap-4 mb-6">

@@ -3,15 +3,12 @@ import moodImage from "../assets/mood.jpeg";
 import supportImage from "../assets/support.jpeg";
 import {
   ArrowRight,
-  Brain,
-  HeartHandshake,
-  Sparkles,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
 import "./Landing.css";
 
-function Landing({ onLogin, onCounsellorDemo}) {
+function Landing({ onLogin }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const touchStartX = useRef(null);
@@ -191,13 +188,6 @@ function Landing({ onLogin, onCounsellorDemo}) {
           </span>
 
           <ArrowRight size={19} />
-        </button>
-        <button
-          className="counsellor-demo-button"
-          onClick={onCounsellorDemo}
-        >
-          <HeartHandshake size={17} />
-          <span>District Counsellor Demo</span>
         </button>
       </footer>
     </main>

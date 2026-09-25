@@ -16,6 +16,11 @@ The API starts on `http://localhost:4000`. The main frontend endpoint is:
 
 `GET /api/v1/dashboard/V1001`
 
+Run the backend before signing in. From the repository root, use
+`npm run dev:backend`; the Vite development server proxies `/api` requests to
+`http://localhost:4000`. For a separate frontend API host, set
+`VITE_API_URL` before starting Vite.
+
 Chat uses Google's Gemini model. Set `GEMINI_API_KEY` in `backend/.env` (and
 optionally `GEMINI_MODEL`) before using the Chat with AI screen. The key stays
 on the backend and is never exposed to the browser. The value must be an active

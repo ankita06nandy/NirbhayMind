@@ -1,10 +1,17 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...options.headers },
-    ...options
-  });
+  let response;
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      headers: { "Content-Type": "application/json", ...options.headers },
+      ...options
+    });
+  } catch {
+    throw new Error(
+      "Unable to connect to the NirbhayMind backend. Start the backend on port 4000 or configure VITE_API_URL."
+    );
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
@@ -23,6 +30,17 @@ export function login(victimId, caseId) {
     method: "POST",
     body: JSON.stringify({ victimId, caseId })
   });
+}
+
+export function loginCounsellor(counsellorId) {
+  return request("/api/auth/counsellor-login", {
+    method: "POST",
+    body: JSON.stringify({ counsellorId })
+  });
+}
+
+export function getCounsellorDashboard(counsellorId) {
+  return request(`/api/v1/counsellors/${encodeURIComponent(counsellorId)}/dashboard`);
 }
 
 export function createCheckin(victimId, answers) {

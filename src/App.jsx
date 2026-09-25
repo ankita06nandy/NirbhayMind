@@ -13,8 +13,13 @@ import Profile from "./pages/Profile";
 import SMS from "./pages/SMS";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
-import { createCheckin, getDashboard } from "./api";
-import { login } from "./api";
+import {
+  createCheckin,
+  getCounsellorDashboard,
+  getDashboard,
+  login,
+  loginCounsellor,
+} from "./api";
 import CounsellorDashboard from "./pages/CounsellorDashboard";
 
 
@@ -57,6 +62,8 @@ function App() {
   const [authenticatedVictimId, setAuthenticatedVictimId] = useState(null);
   const [authPage, setAuthPage] = useState("landing");
   const [portal, setPortal] = useState("victim");
+  const [authenticatedCounsellorId, setAuthenticatedCounsellorId] = useState(null);
+  const [counsellorDashboard, setCounsellorDashboard] = useState(null);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [currentPage, setCurrentPage] = useState("home");
@@ -71,7 +78,7 @@ function App() {
 
   useEffect(() => {
     if (!authenticatedVictimId) return;
-    getDashboard(authenticatedVictimId)
+    const loadDashboard = () => getDashboard(authenticatedVictimId)
       .then((data) => {
         setDashboard(data);
         if (!localStorage.getItem("nirbhaymind_language")) {
@@ -79,14 +86,38 @@ function App() {
         }
       })
       .catch((error) => setLoadError(error.message));
+    loadDashboard();
+    const refreshTimer = window.setInterval(loadDashboard, 60_000);
+    return () => window.clearInterval(refreshTimer);
   }, [authenticatedVictimId, setLanguage]);
+
+  useEffect(() => {
+    if (!authenticatedCounsellorId) return;
+    const loadDashboard = () => getCounsellorDashboard(authenticatedCounsellorId)
+      .then(setCounsellorDashboard)
+      .catch((error) => setLoadError(error.message));
+    loadDashboard();
+    const refreshTimer = window.setInterval(loadDashboard, 60_000);
+    return () => window.clearInterval(refreshTimer);
+  }, [authenticatedCounsellorId]);
  
-  const handleLogin = async (victimId, caseId) => {
+  const handleLogin = async (role, identifier, secret) => {
     setAuthLoading(true);
     setAuthError("");
+    setLoadError("");
     try {
-      const result = await login(victimId, caseId);
-      setAuthenticatedVictimId(result.victimId);
+      if (role === "counsellor") {
+        const result = await loginCounsellor(identifier);
+        setAuthenticatedVictimId(null);
+        setAuthenticatedCounsellorId(result.counsellorId);
+        setPortal("counsellor");
+      } else {
+        const result = await login(identifier, secret);
+        setAuthenticatedCounsellorId(null);
+        setCounsellorDashboard(null);
+        setAuthenticatedVictimId(result.victimId);
+        setPortal("victim");
+      }
       setAuthPage("landing");
     } catch (error) {
       setAuthError(error.message);
@@ -98,6 +129,9 @@ function App() {
   const handleLogout = () => {
     if (!window.confirm(t("Are you sure you want to log out?"))) return;
     setAuthenticatedVictimId(null);
+    setAuthenticatedCounsellorId(null);
+    setCounsellorDashboard(null);
+    setPortal("victim");
     setDashboard(null);
     setCurrentPage("home");
   };
@@ -109,12 +143,19 @@ function App() {
     );
   }
   if (portal === "counsellor") {
+  if (loadError) {
+    return <main className="app"><p role="alert">Unable to load counsellor data: {loadError}</p></main>;
+  }
+  if (!counsellorDashboard) {
+    return <main className="app"><p>Loading counsellor dashboard...</p></main>;
+  }
   return (
-    <CounsellorDashboard
-      onLogout={() => {
-        setPortal("victim");
-      }}
-    />
+  <CounsellorDashboard
+    data={counsellorDashboard.data}
+    profile={counsellorDashboard.profile}
+    searchItems={counsellorDashboard.searchItems}
+    onLogout={handleLogout}
+  />
   );
 }
   if (!authenticatedVictimId) {
@@ -134,7 +175,6 @@ function App() {
   return (
   <Landing
     onLogin={() => setAuthPage("login")}
-    onCounsellorDemo={() => setPortal("counsellor")}
   />
   );
   }

@@ -14,12 +14,27 @@ const port = Number(process.env.PORT || 4000);
 const datasetUrl =
   process.env.DATASET_URL ||
   "https://docs.google.com/spreadsheets/d/1qWwxA1IpWQfhUJialshiwMeJ2kFtTto6DvHlSyCoDlA/gviz/tq?tqx=out:csv&gid=0";
+const counsellorDatasetUrl =
+  process.env.COUNSELLOR_DATASET_URL ||
+  "https://docs.google.com/spreadsheets/d/1qWwxA1IpWQfhUJialshiwMeJ2kFtTto6DvHlSyCoDlA/gviz/tq?tqx=out:csv&gid=746552781";
 const defaultVictimId = process.env.DEFAULT_VICTIM_ID || "V1001";
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
+const configuredClientOrigin = process.env.CLIENT_ORIGIN;
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || !configuredClientOrigin) {
+      callback(null, true);
+      return;
+    }
+    const allowedOrigins = configuredClientOrigin
+      .split(",")
+      .map((value) => value.trim());
+    callback(null, allowedOrigins.includes(origin));
+  }
+}));
 app.use(express.json({ limit: "32kb" }));
 
 app.get("/", (_request, response) => {
@@ -31,8 +46,11 @@ app.get("/", (_request, response) => {
 });
 
 let dataset = [];
+let counsellorDataset = [];
 let datasetLastSyncedAt = null;
 let datasetError = null;
+let counsellorDatasetLastSyncedAt = null;
+let counsellorDatasetError = null;
 
 const scoreMaps = {
   mood: { "Very Low": 20, Low: 40, Okay: 60, Good: 80, "Very Good": 100 },
@@ -65,7 +83,24 @@ function parseCsvLine(line) {
   return values;
 }
 
-function parseCsv(csv) {
+function parseCsv(csv, preserveHeaders = false) {
+  const rows = parseCsvRows(csv);
+  const headers = (rows.shift() || []).map((header) => {
+    if (preserveHeaders) return header.trim();
+    const normalizedHeader = header.toLowerCase().trim();
+    if (/victim.*id|identification.*id/.test(normalizedHeader)) return "Victim_id";
+    if (/case\s*id/.test(normalizedHeader)) return "Case_id";
+    const parts = header.split(/\s+/);
+    return parts.at(-1) || header;
+  });
+  return rows
+    .filter((values) => values.some(Boolean))
+    .map((values) =>
+      Object.fromEntries(headers.map((header, index) => [header, values[index] || ""]))
+    );
+}
+
+function parseCsvRows(csv) {
   const rows = [];
   let row = "";
   let quoted = false;
@@ -78,18 +113,52 @@ function parseCsv(csv) {
     } else {
       row += character;
     }
+
   }
   if (row.trim()) rows.push(parseCsvLine(row.replace(/\r$/, "")));
+  return rows.filter((values) => values.some(Boolean));
+}
 
-  const headers = (rows.shift() || []).map((header) => {
-    const parts = header.split(/\s+/);
-    return parts.at(-1) || header;
-  });
-  return rows
-    .filter((values) => values.some(Boolean))
-    .map((values) =>
-      Object.fromEntries(headers.map((header, index) => [header, values[index] || ""]))
-    );
+function parseCounsellorCsv(csv) {
+  const rawRows = parseCsvRows(csv);
+  const expectedHeaders = [
+    "Counsellor id", "district", "state", "total_registered_victims",
+    "active_victims", "closed_cases", "high_risk_victims",
+    "moderate_risk_victims", "low_risk_victims", "crisis_cases",
+    "average_distress_score", "average_mood_score", "average_stress_score",
+    "average_anxiety_score", "average_sleep_score", "improving_wellbeing",
+    "declining_wellbeing", "stable_wellbeing", "new_registrations",
+    "new_high_risk_cases", "resolved_cases", "counselling_required",
+    "counselling_completed", "pending_counselling", "pending_followups",
+    "overdue_followups", "legal_aid_required", "medical_support_required",
+    "relocation_required", "protection_required", "high_threat_cases",
+    "average_case_delay_days", "delayed_cases", "upcoming_hearings",
+    "total_interventions", "pending_interventions", "completed_interventions",
+    "last_updated", "total_alerts", "critical_alerts", "high_risk_alerts",
+    "unresolved_alerts", "resolved_alerts", "new_alerts_today",
+    "new_alerts_this_week"
+  ];
+  const firstCell = rawRows[0]?.[0]?.trim().toLowerCase() || "";
+  const hasNormalHeader = firstCell === "counsellor id";
+  const hasEmbeddedHeader = firstCell.startsWith("counsellor id ");
+  const headers = hasNormalHeader
+    ? rawRows.shift()
+    : hasEmbeddedHeader || rawRows[0]?.length === 1
+      ? expectedHeaders
+      : rawRows.shift();
+  const dataRows = hasNormalHeader
+    ? rawRows
+    : hasEmbeddedHeader || rawRows[0]?.length === 1
+      ? rawRows.slice(1)
+      : rawRows;
+  return dataRows.map((row) =>
+    Object.fromEntries(
+      headers.map((header, index) => [
+        header.toLowerCase().replace(/\s+/g, "_"),
+        row[index] || ""
+      ])
+    )
+  );
 }
 
 function number(value) {
@@ -125,16 +194,16 @@ function riskForScore(score) {
 
 function normalizeRow(row) {
   return {
-    victimId: text(row, "Victim_id", "victim_id", "Victim ID", "victimId"),
-    caseId: row.Case_id,
+    victimId: text(row, "Victim_id", "victim_id", "Victim ID", "victimId", "Id"),
+    caseId: text(row, "Case_id", "case_id", "Case ID", "caseId"),
     name: text(row, "Name", "name", "Victims", "Victim_name", "victim_name", "Full_name", "full_name"),
     registrationDate: row.Registration_Date,
     category: row.Victim_category,
     incidentType: row.incident_type,
     ageGroup: row.age_group,
     gender: text(row, "Gender", "gender"),
-    district: row.district,
-    state: row.state,
+    district: text(row, "district", "District"),
+    state: text(row, "state", "State"),
     urbanRural: row.urban_rural,
     vulnerabilityLevel: row.Vulnerability_level,
     caseStage: row.Case_stage,
@@ -213,6 +282,41 @@ async function syncDataset() {
   return dataset;
 }
 
+const syncIntervalMs = 60 * 1000;
+let lastSyncAttemptAt = 0;
+let lastCounsellorSyncAttemptAt = 0;
+
+async function refreshDatasetIfStale() {
+  if (Date.now() - lastSyncAttemptAt < syncIntervalMs) return;
+  lastSyncAttemptAt = Date.now();
+  await syncDataset();
+}
+
+async function syncCounsellorDataset() {
+  const response = await fetch(counsellorDatasetUrl);
+  if (!response.ok) throw new Error(`Counsellor dataset request failed with ${response.status}`);
+  counsellorDataset = parseCounsellorCsv(await response.text()).map((row) => ({
+    counsellor_id: text(row, "counsellor_id"),
+    counsellor_name: text(row, "counsellor_name", "name"),
+    district: text(row, "district"),
+    state: text(row, "state"),
+    ...Object.fromEntries(
+      Object.entries(row)
+        .filter(([key]) => !["counsellor_id", "district", "state"].includes(key))
+        .map(([key, value]) => [key, number(value) ?? value])
+    )
+  }));
+  counsellorDatasetLastSyncedAt = new Date().toISOString();
+  counsellorDatasetError = null;
+  return counsellorDataset;
+}
+
+async function refreshCounsellorDatasetIfStale() {
+  if (Date.now() - lastCounsellorSyncAttemptAt < syncIntervalMs) return;
+  lastCounsellorSyncAttemptAt = Date.now();
+  await syncCounsellorDataset();
+}
+
 function getVictim(victimId) {
   return dataset.find((row) => row.victimId === victimId);
 }
@@ -270,10 +374,13 @@ function calculateCheckin(body) {
 
 app.get("/api/health", (_request, response) => {
   response.json({
-    status: dataset.length ? "ok" : "degraded",
+    status: dataset.length && counsellorDataset.length ? "ok" : "degraded",
     datasetRows: dataset.length,
     datasetLastSyncedAt,
-    datasetError
+    datasetError,
+    counsellorDatasetRows: counsellorDataset.length,
+    counsellorDatasetLastSyncedAt,
+    counsellorDatasetError
   });
 
 });
@@ -332,7 +439,9 @@ app.post("/api/v1/chat", async (request, response, next) => {
   }
 });
 
-app.post("/api/auth/login", (request, response) => {
+app.post("/api/auth/login", async (request, response, next) => {
+  try {
+    await refreshDatasetIfStale();
   const victimId = String(request.body.victimId || "").trim();
   const caseId = String(request.body.caseId || "").trim();
   const victim = getVictim(victimId);
@@ -342,6 +451,57 @@ app.post("/api/auth/login", (request, response) => {
   }
 
   response.json({ victimId: victim.victimId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/auth/counsellor-login", async (request, response, next) => {
+  try {
+    await refreshCounsellorDatasetIfStale();
+  const counsellorId = String(request.body.counsellorId || "").trim();
+  const counsellor = counsellorDataset.find(
+    (row) => row.counsellor_id.toLowerCase() === counsellorId.toLowerCase()
+  );
+
+  if (!counsellor) {
+    return response.status(401).json({ error: "Invalid counsellor ID" });
+  }
+
+  response.json({ counsellorId: counsellor.counsellor_id });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/v1/counsellors/:counsellorId/dashboard", async (request, response, next) => {
+  try {
+    await refreshCounsellorDatasetIfStale();
+  const counsellor = counsellorDataset.find(
+    (row) => row.counsellor_id.toLowerCase() === request.params.counsellorId.toLowerCase()
+  );
+  if (!counsellor) return response.status(404).json({ error: "Counsellor not found" });
+
+  response.json({
+    profile: {
+      counsellorId: counsellor.counsellor_id,
+      name: counsellor.counsellor_name || counsellor.counsellor_id,
+      district: counsellor.district,
+      state: counsellor.state
+    },
+    data: counsellor,
+    searchItems: counsellorDataset.map((row) => ({
+      id: row.counsellor_id,
+      type: "District",
+      title: `${row.district} counsellor summary`,
+      subtitle: `${row.total_registered_victims} registered victims`,
+      section: "dashboard",
+      risk: row.high_risk_victims > row.moderate_risk_victims ? "High Risk" : "Moderate"
+    }))
+  });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post("/api/dataset/sync", async (_request, response, next) => {
@@ -356,6 +516,7 @@ app.post("/api/dataset/sync", async (_request, response, next) => {
 
 app.get("/api/v1/dashboard/:victimId", async (request, response, next) => {
   try {
+    await refreshDatasetIfStale();
     const victim = getVictim(request.params.victimId);
     if (!victim) return response.status(404).json({ error: "Victim not found" });
     const stored = await loadStoredCheckins();
@@ -441,6 +602,12 @@ async function start() {
   } catch (error) {
     datasetError = error.message;
     console.error(`Dataset sync failed: ${error.message}`);
+  }
+  try {
+    await syncCounsellorDataset();
+  } catch (error) {
+    counsellorDatasetError = error.message;
+    console.error(`Counsellor dataset sync failed: ${error.message}`);
   }
 
   app.listen(port, "0.0.0.0", () => {
