@@ -694,9 +694,15 @@ button {
   padding: 13px;
   border: 1px solid #dfd0c8;
   border-radius: 10px;
-  background: white;
+   background: #ffffff;
+  color: #000000;
+  -webkit-text-fill-color: #000000;
+  caret-color: #000000;
+  font: inherit;
+  outline: none;
   font: inherit;
 }
+
 
 .login-role-options {
   display: grid;
@@ -730,9 +736,16 @@ button {
   font-size: 13px;
 }
 
-.login-submit {
+
+.login-card input::placeholder {
+  color: #777777;
+  -webkit-text-fill-color: #777777;
+  opacity: 1;
   margin-top: 24px;
 }
+
+  
+
 
 .login-submit:disabled {
   cursor: wait;
