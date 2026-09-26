@@ -4,27 +4,27 @@
 <h3>AI-Powered Dynamic Mental Health Monitoring &amp; Distress Prediction System for Victims of Atrocities</h3>
 
 <p>
-  <b>“Detect Early. Understand Better. Support Continuously.”</b>
+  <b>“For all the battles you've won that nobody knows about.”</b>
 </p>
 
 </div>
 
 <div align="center">
-
+  
 ![AI](https://img.shields.io/badge/AI-Dynamic_Distress_Prediction-FFDB58?style=flat-square)
-![ML](https://img.shields.io/badge/ML-Risk_Classification-FFDB58?style=flat-square)
-![NLP](https://img.shields.io/badge/NLP-Sentiment_%26_Emotion-FFDB58?style=flat-square)
-![XAI](https://img.shields.io/badge/XAI-Explainable_Risk-FFDB58?style=flat-square)
-![Chatbot](https://img.shields.io/badge/AI-Multilingual_Chatbot-FFDB58?style=flat-square)
-![IVRS](https://img.shields.io/badge/IVRS-Voice_Support-FFDB58?style=flat-square)
-![Security](https://img.shields.io/badge/Security-Privacy_by_Design-FFDB58?style=flat-square)
+![ML](https://img.shields.io/badge/ML-Google_Gemini_API-FFDB58?style=flat-square)
+![Frontend](https://img.shields.io/badge/Frontend-React-FFDB58?style=flat-square)
+![Backend](https://img.shields.io/badge/Backend-Node.js-FFDB58?style=flat-square)
+![Database](https://img.shields.io/badge/Database-Google_Sheets_%2B_CSV-FFDB58?style=flat-square)
+![Security](https://img.shields.io/badge/Security-CORS-FFDB58?style=flat-square)
+![Deployment](https://img.shields.io/badge/Deployment-Vercel-FFDB58?style=flat-square)
 
 <br>
 
 ![SIH](https://img.shields.io/badge/SIH-2026-1976D2?style=flat-square)
 ![Problem Statement](https://img.shields.io/badge/PS-SIH26094-DE3163?style=flat-square)
 ![Category](https://img.shields.io/badge/Category-Software-2E7D32?style=flat-square)
-![Team](https://img.shields.io/badge/Team-Main_Characters-6A1B9A?style=flat-square)
+![Organization](https://img.shields.io/badge/Organization-Ministry_of_Social_Justice_and_Empowerment_(MoSJE)-6A1B9A?style=flat-square)
 ![Theme](https://img.shields.io/badge/Theme-MedTech_|_BioTech_|_HealthTech-EF6C00?style=flat-square)
 
 </div>
@@ -564,22 +564,18 @@ The proposed architecture explicitly includes authentication, authorisation, enc
 
 # Technology Stack
 
-The submitted NirbhayMind PPT identifies the implementation categories but does **not specify exact framework/library names** for the frontend, backend, database, or ML model. Therefore, the README keeps the stack at the level actually documented in the proposal.
 
-| Layer                | Proposed Component                 |
+| Layer                | Technology / Tool                 |
 | -------------------- | ---------------------------------- |
-| **Frontend**         | Web Application / User Interface   |
-| **Backend**          | Application & API Layer            |
-| **AI / ML**          | Dynamic Distress Prediction        |
-| **NLP**              | Sentiment & Emotion Analysis       |
-| **Voice Processing** | IVRS / Voice Feature Extraction    |
-| **Database**         | Secure Longitudinal Data Storage   |
-| **Security**         | Authentication, Encryption & RBAC  |
-| **Dashboard**        | Victim & Authority Interfaces      |
-| **Deployment**       | Secure / Government Infrastructure |
+| **Frontend**         | React + Vite                       |
+| **Backend**          | Node.js + Express                  |
+| **AI / ML**          | Google Gemini API                  |
+| **Database**         | Google Sheets(CSV) + JSON          |
+| **Security**         | CORS Configuration, Environment Variables, Server-side API Key Protection     |
+| **Authentication**   | Backend Credential Validation      |
+| **Deployment**       | Vercel & Render                    |
 | **Version Control**  | GitHub                             |
 
-The PPT specifically lists **Frontend, Database, AI/ML, GitHub, Deployment and Security** as technology-stack categories, without naming exact frameworks.
 
 ---
 
@@ -695,12 +691,7 @@ The overall approach can be summarised as:
 
 ###  NIRBHAYMIND
 
-<b>Detect Early. Understand Better. Support Continuously.</b>
-
 <br><br>
-
-**SMART INDIA HACKATHON 2026**
-**Problem Statement: SIH26094**
 **Team: Main Characters**
 
 </div>
