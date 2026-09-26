@@ -383,9 +383,7 @@ NirbhayMind categorises detected distress into understandable risk levels.
 | **High**     | Significant distress or rising-risk pattern | Priority intervention                |
 | **Crisis**   | Critical pattern requiring escalation       | Crisis alert and escalation protocol |
 
-The PPT explicitly identifies **Low, Moderate and High** risk categories and describes risk trend, severity, explainable factors, counsellor assignment and follow-up as part of the intervention layer.
 
-> **Important:** The risk score is a decision-support indicator and should be interpreted by authorised human personnel in context.
 
 ---
 
