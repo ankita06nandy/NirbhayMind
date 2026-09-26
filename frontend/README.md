@@ -1,6 +1,5 @@
 # React + Vite
 
-
 ## Backend
 
 The backend is in [`backend/`](./backend). It reads the public Google Sheet dataset,
