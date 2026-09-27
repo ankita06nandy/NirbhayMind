@@ -568,7 +568,7 @@ The proposed architecture explicitly includes authentication, authorisation, enc
 | **Frontend**         | React + Vite                       |
 | **Backend**          | Node.js + Express                  |
 | **AI / ML**          | Google Gemini-3.5-flash-lite                  |
-| **Database**         | Google Sheets(CSV) + JSON          |
+| **Dataset**         | Google Sheets(CSV) + JSON          |
 | **Security**         | CORS Configuration, Environment Variables, Server-side API Key Protection     |
 | **Authentication**   | Backend Credential Validation      |
 | **Deployment**       | Vercel & Render                    |
