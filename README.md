@@ -11,12 +11,13 @@
 
 <div align="center">
 
-![Frontend](https://img.shields.io/badge/Frontend-React-FFDB58?style=flat-square)
-![Backend](https://img.shields.io/badge/Backend-Node.js-FFDB58?style=flat-square)
+[![Frontend](https://img.shields.io/badge/Frontend-React-FFDB58?style=flat-square)](https://react.dev/)
+[![Backend](https://img.shields.io/badge/Backend-Node.js-FFDB58?style=flat-square)](https://nodejs.org/)
 [![AI](https://img.shields.io/badge/AI-Gemini%203.5%20Flash%20Lite-FFDB58?style=flat-square)](https://ai.google.dev/)
-![Database](https://img.shields.io/badge/Database-Google_Sheets_%2B_CSV-FFDB58?style=flat-square)
-![Security](https://img.shields.io/badge/Security-CORS-FFDB58?style=flat-square)
-![Deployment](https://img.shields.io/badge/Deployment-Vercel-FFDB58?style=flat-square)
+[![Database](https://img.shields.io/badge/Database-Google_Sheets_%2B_CSV-FFDB58?style=flat-square)](https://developers.google.com/sheets)
+[![Security](https://img.shields.io/badge/Security-CORS-FFDB58?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
+[![Deployment](https://img.shields.io/badge/Deployment-Vercel-FFDB58?style=flat-square)](https://vercel.com/)
+
 
 <br>
 
@@ -566,7 +567,7 @@ The proposed architecture explicitly includes authentication, authorisation, enc
 | -------------------- | ---------------------------------- |
 | **Frontend**         | React + Vite                       |
 | **Backend**          | Node.js + Express                  |
-| **AI / ML**          | Google Gemini API                  |
+| **AI / ML**          | Google Gemini-3.5-flash-lite                  |
 | **Database**         | Google Sheets(CSV) + JSON          |
 | **Security**         | CORS Configuration, Environment Variables, Server-side API Key Protection     |
 | **Authentication**   | Backend Credential Validation      |
