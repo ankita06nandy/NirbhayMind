@@ -1,5 +1,5 @@
 <div align="center">
-<img src="./frontend/public/nirbhaymind_logo.png"
+<img src="./frontend/public/github_logo.png"
      alt="NirbhayMind Logo"
      width="150">
 <h1>NIRBHAYMIND</h1>
