@@ -4565,6 +4565,91 @@
   }
 
 }
+
+/* Nationwide state risk fills */
+.india-risk-map .state-risk-high-risk {
+  fill: #7a2638 !important;
+}
+
+.india-risk-map .state-risk-moderate-risk {
+  fill: #d9825b !important;
+}
+
+.india-risk-map .state-risk-low-risk {
+  fill: #c9a6a0 !important;
+}
+
+.india-risk-map .state-risk-no-data {
+  fill: #f1e7e3 !important;
+}
+
+.india-risk-map .state-risk-high-risk:hover {
+  fill: #7a2638 !important;
+}
+
+.india-risk-map .state-risk-moderate-risk:hover {
+  fill: #d9825b !important;
+}
+
+.india-risk-map .state-risk-low-risk:hover {
+  fill: #c9a6a0 !important;
+}
+
+.india-risk-map .state-risk-no-data:hover {
+  fill: #f1e7e3 !important;
+}
+
+.map-selected-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.map-selected-breakdown > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 8px;
+  border: 1px solid rgba(79, 23, 35, 0.08);
+  border-radius: 10px;
+  background: #fffaf6;
+}
+
+.map-selected-breakdown > div:nth-child(1) {
+  background: rgba(122, 38, 56, 0.08);
+}
+
+.map-selected-breakdown > div:nth-child(2) {
+  background: rgba(217, 130, 91, 0.12);
+}
+
+.map-selected-breakdown > div:nth-child(3) {
+  background: rgba(201, 166, 160, 0.18);
+}
+
+.map-selected-breakdown span {
+  color: #756669;
+  font-size: 9px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.map-selected-breakdown strong {
+  color: #4f1723;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.map-selected-breakdown > div:nth-child(2) strong {
+  color: #a95d3d;
+}
+
+.map-selected-breakdown > div:nth-child(3) strong {
+  color: #8c6966;
+}
+
 .district-wellbeing-trend-card {
   min-width: 0;
   overflow: hidden;
@@ -4914,7 +4999,7 @@
   margin: 0 22px 22px;
   padding: 0;
   border-radius: 18px;
-  background: #f9f0eb;
+  background: #f7eee8;
   overflow: hidden;
 }
 
@@ -4931,6 +5016,13 @@
   align-items: center;
   justify-content: center;
   padding: 22px 15px 48px;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(255, 250, 246, 0.96),
+      rgba(249, 240, 235, 0.58) 62%,
+      transparent 100%
+    );
 }
 
 
@@ -4939,6 +5031,62 @@
   max-width: 700px;
   height: auto;
   display: block;
+  overflow: visible;
+}
+
+.district-risk-map .district-map-shape {
+  stroke: #fffaf6 !important;
+  stroke-width: 1px !important;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  transition:
+    filter 0.18s ease,
+    stroke 0.18s ease,
+    stroke-width 0.18s ease;
+}
+
+.district-risk-map .district-map-shape.district-risk-high-risk {
+  fill: #7a2638 !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-moderate-risk {
+  fill: #d9825b !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-low-risk {
+  fill: #c9a6a0 !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-stable {
+  fill: #9daa96 !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-high-risk:hover {
+  fill: #7a2638 !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-moderate-risk:hover {
+  fill: #d9825b !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-low-risk:hover {
+  fill: #c9a6a0 !important;
+}
+
+.district-risk-map .district-map-shape.district-risk-stable:hover {
+  fill: #9daa96 !important;
+}
+
+.district-risk-map .district-map-shape:hover {
+  filter: brightness(1.08) saturate(1.08);
+  stroke: #7a2638 !important;
+  stroke-width: 1.8px !important;
+}
+
+.district-risk-map .district-map-shape.assigned {
+  stroke: #4f1723 !important;
+  stroke-width: 2.4px !important;
+  filter: drop-shadow(0 2px 3px rgba(79, 23, 35, 0.24));
 }
 
 
@@ -4956,8 +5104,8 @@
 
   border-radius: 999px;
 
-  background: rgba(255, 250, 246, 0.9);
-  border: 1px solid rgba(122, 38, 56, 0.08);
+  background: rgba(255, 250, 246, 0.94);
+  border: 1px solid rgba(122, 38, 56, 0.14);
 
   color: #806f73;
 
@@ -4987,9 +5135,9 @@
 
   border-radius: 50%;
 
-  background: rgba(255, 250, 246, 0.82);
+  background: rgba(255, 250, 246, 0.94);
 
-  border: 1px solid rgba(122, 38, 56, 0.1);
+  border: 1px solid rgba(122, 38, 56, 0.14);
 
   box-shadow: 0 3px 10px rgba(95, 50, 45, 0.05);
 
@@ -5043,8 +5191,13 @@
   align-items: center;
   gap: 6px;
 
-  color: #88787b;
+  padding: 7px 10px;
+  border: 1px solid rgba(122, 38, 56, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 250, 246, 0.94);
+  color: #756669;
   font-size: 11px;
+  box-shadow: 0 3px 10px rgba(79, 23, 35, 0.06);
 }
 
 
@@ -5080,10 +5233,11 @@
 
   border-radius: 10px;
 
-  background: rgba(79, 65, 68, 0.94);
-  color: white;
+  border: 1px solid rgba(255, 250, 246, 0.18);
+  background: rgba(79, 23, 35, 0.96);
+  color: #fffaf6;
 
-  box-shadow: 0 8px 24px rgba(60, 40, 40, 0.16);
+  box-shadow: 0 8px 24px rgba(79, 23, 35, 0.2);
 
   pointer-events: none;
   z-index: 5;
@@ -5100,6 +5254,13 @@
   opacity: 0.8;
 }
 
+.district-map-tooltip small {
+  max-width: 260px;
+  color: rgba(255, 250, 246, 0.82);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
 
 /* -----------------------------------------------------
    DIVIDER
@@ -5107,7 +5268,7 @@
 
 .district-risk-divider {
   width: 1px;
-  background: #eadcd6;
+  background: #e8d9d3;
   margin: 30px 0;
 }
 
@@ -5189,6 +5350,13 @@
   font-weight: 800;
 }
 
+.district-risk-data-notice {
+  margin: 12px 0 0;
+  color: #806f73;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
 
 /* -----------------------------------------------------
    LEGEND DIVIDER
@@ -5241,6 +5409,12 @@
 
   color: #806f73;
   font-size: 11px;
+}
+
+.district-selected-counts {
+  color: #806f73;
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 

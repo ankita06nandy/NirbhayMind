@@ -31,6 +31,7 @@ import {
 
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -44,18 +45,8 @@ import "./CounsellorDashboard.css";
 
 const INDIA_STATES_GEO_URL =
   "https://raw.githubusercontent.com/india-in-data/india-states-2019/master/india_states.geojson";
-/* =====================================================
-   DISTRICT MAP DATA
-   Dynamic according to counsellor's assigned state
-===================================================== */
-
-const DISTRICT_GEO_URLS = {
-  "West Bengal":
-    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/west-bengal.geojson",
-
-  Assam:
-    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/assam.geojson",
-};
+const DISTRICT_GEO_URL =
+  `${import.meta.env.BASE_URL}maps/india-districts.geojson`;
 
 /* =====================================================
    DEMO DISTRICT COUNSELLOR DATA
@@ -160,139 +151,6 @@ const demoDistrictWellbeingTrend = [
   },
 ];
 
-/* =====================================================
-   DISTRICT-WISE RISK DATA
-   FRONTEND DEMO DATA ONLY
-
-   Later this will come from backend API.
-===================================================== */
-
-const demoDistrictRiskData = {
-  /* -------------------------------
-     WEST BENGAL
-  -------------------------------- */
-
-  "Alipurduar": "Low Risk",
-
-  "Bankura": "Moderate Risk",
-
-  "Birbhum": "Moderate Risk",
-
-  "Cooch Behar": "Low Risk",
-
-  "Dakshin Dinajpur": "Low Risk",
-
-  "Darjeeling": "Stable",
-
-  "Hooghly": "Low Risk",
-
-  "Howrah": "High Risk",
-
-  "Jalpaiguri": "Moderate Risk",
-
-  "Jhargram": "Stable",
-
-  "Kalimpong": "Low Risk",
-
-  "Kolkata": "High Risk",
-
-  "Malda": "Moderate Risk",
-
-  "Murshidabad": "High Risk",
-
-  "Nadia": "Moderate Risk",
-
-  "North 24 Parganas": "Moderate Risk",
-
-  "South 24 Parganas": "Moderate Risk",
-
-  "Paschim Bardhaman": "Low Risk",
-
-  "Paschim Medinipur": "Low Risk",
-
-  "Purba Bardhaman": "Low Risk",
-
-  "Purba Medinipur": "Low Risk",
-
-  "Purulia": "Stable",
-
-  "Uttar Dinajpur": "Stable",
-
-
-  /* -------------------------------
-     ASSAM
-  -------------------------------- */
-
-  "Baksa": "Low Risk",
-
-  "Bajali": "Stable",
-
-  "Barpeta": "Moderate Risk",
-
-  "Biswanath": "Low Risk",
-
-  "Bongaigaon": "Moderate Risk",
-
-  "Cachar": "High Risk",
-
-  "Charaideo": "Low Risk",
-
-  "Chirang": "Stable",
-
-  "Darrang": "Low Risk",
-
-  "Dhemaji": "Stable",
-
-  "Dhubri": "Moderate Risk",
-
-  "Dibrugarh": "Moderate Risk",
-
-  "Dima Hasao": "High Risk",
-
-  "Goalpara": "Moderate Risk",
-
-  "Golaghat": "Low Risk",
-
-  "Hailakandi": "Moderate Risk",
-
-  "Hojai": "Low Risk",
-
-  "Jorhat": "Low Risk",
-
-  "Kamrup": "Moderate Risk",
-
-  "Kamrup Metropolitan": "High Risk",
-
-  "Karbi Anglong": "Low Risk",
-
-  "Karimganj": "Moderate Risk",
-
-  "Kokrajhar": "Low Risk",
-
-  "Lakhimpur": "Low Risk",
-
-  "Majuli": "Stable",
-
-  "Morigaon": "Moderate Risk",
-
-  "Nagaon": "Moderate Risk",
-
-  "Nalbari": "Low Risk",
-
-  "Sivasagar": "Low Risk",
-
-  "Sonitpur": "Moderate Risk",
-
-  "South Salmara-Mankachar": "Stable",
-
-  "Tinsukia": "Moderate Risk",
-
-  "Udalguri": "Low Risk",
-
-  "West Karbi Anglong": "Stable",
-
-  "Tamulpur": "Stable",
-};
 /* =====================================================
    INDIA STATE RISK DATA
    FRONTEND DEMO DATA ONLY
@@ -569,9 +427,36 @@ function getStateData(stateName) {
    STATE RISK CALCULATION
 ===================================================== */
 
-function getStateRisk(stateName) {
-  const stateData =
-    getStateData(stateName);
+function getStateRisk(stateName, districtRiskData) {
+  const normalizedStateName =
+    normalizeStateName(stateName);
+  const stateDistrictData =
+    Array.isArray(districtRiskData)
+      ? districtRiskData.filter(
+          (entry) =>
+            normalizeStateName(entry.state) ===
+            normalizedStateName
+        )
+      : null;
+  const stateData = stateDistrictData
+    ? stateDistrictData.reduce(
+        (totals, entry) => ({
+          high:
+            totals.high +
+            (Number(entry.highRiskVictims) || 0),
+          moderate:
+            totals.moderate +
+            (Number(entry.moderateRiskVictims) || 0),
+          low:
+            totals.low +
+            (Number(entry.lowRiskVictims) || 0),
+          stable:
+            totals.stable +
+            (Number(entry.stableVictims) || 0),
+        }),
+        { high: 0, moderate: 0, low: 0, stable: 0 }
+      )
+    : getStateData(stateName);
 
   if (!stateData) {
     return {
@@ -587,7 +472,8 @@ function getStateRisk(stateName) {
   const total =
     stateData.high +
     stateData.moderate +
-    stateData.low;
+    stateData.low +
+    (stateData.stable || 0);
 
   if (total === 0) {
     return {
@@ -638,6 +524,9 @@ function getStateRisk(stateName) {
 
     low:
       stateData.low,
+
+    stable:
+      stateData.stable || 0,
   };
 }
 
@@ -683,22 +572,132 @@ function normalizeDistrictName(name) {
    DISTRICT RISK LOOKUP
 ===================================================== */
 
-function getDistrictRisk(districtName) {
-  const normalizedName =
-    normalizeDistrictName(districtName);
+function getDistrictRiskStats(
+  districtName,
+  state,
+  districtRiskData
+) {
+  const matchingDistrict =
+    Array.isArray(districtRiskData)
+      ? districtRiskData.find(
+          (entry) =>
+            normalizeMapName(entry.district) ===
+              normalizeMapName(districtName) &&
+            normalizeMapName(entry.state) ===
+              normalizeMapName(state)
+        )
+      : null;
 
-  const matchingEntry =
-    Object.entries(
-      demoDistrictRiskData
-    ).find(
-      ([name]) =>
-        normalizeDistrictName(name) ===
-        normalizedName
+  if (!matchingDistrict && Array.isArray(districtRiskData)) {
+    const stateRiskTotals =
+      districtRiskData
+        .filter(
+          (entry) =>
+            normalizeMapName(entry.state) ===
+            normalizeMapName(state)
+        )
+        .reduce(
+          (totals, entry) => ({
+            highRisk:
+              totals.highRisk +
+              (Number(entry.highRiskVictims) || 0),
+            moderateRisk:
+              totals.moderateRisk +
+              (Number(entry.moderateRiskVictims) || 0),
+            lowRisk:
+              totals.lowRisk +
+              (Number(entry.lowRiskVictims) || 0),
+            stable:
+              totals.stable +
+              (Number(entry.stableVictims) || 0),
+          }),
+          {
+            highRisk: 0,
+            moderateRisk: 0,
+            lowRisk: 0,
+            stable: 0,
+          }
+        );
+    const highestStateRisk = Math.max(
+      stateRiskTotals.highRisk,
+      stateRiskTotals.moderateRisk,
+      stateRiskTotals.lowRisk,
+      stateRiskTotals.stable
     );
+    const stateRiskLevel =
+      highestStateRisk === 0
+        ? getStateRisk(state, districtRiskData).level
+        : [
+            ["High Risk", stateRiskTotals.highRisk],
+            ["Moderate Risk", stateRiskTotals.moderateRisk],
+            ["Low Risk", stateRiskTotals.lowRisk],
+            ["Stable", stateRiskTotals.stable],
+          ].find(([, count]) => count === highestStateRisk)[0];
 
-  return matchingEntry
-    ? matchingEntry[1]
-    : "Stable";
+    return {
+      riskLevel:
+        stateRiskLevel === "No Data"
+          ? "Low Risk"
+          : stateRiskLevel,
+      highRisk: 0,
+      moderateRisk: 0,
+      lowRisk: 0,
+      stable: 0,
+    };
+  }
+
+  if (!matchingDistrict) {
+    return {
+      riskLevel: "No Data",
+      highRisk: 0,
+      moderateRisk: 0,
+      lowRisk: 0,
+      stable: 0,
+    };
+  }
+
+  const highRisk =
+    Number(matchingDistrict.highRiskVictims) || 0;
+  const moderateRisk =
+    Number(matchingDistrict.moderateRiskVictims) || 0;
+  const lowRisk =
+    Number(matchingDistrict.lowRiskVictims) || 0;
+  const stable =
+    Number(matchingDistrict.stableVictims) || 0;
+  const riskCounts = [
+    ["High Risk", highRisk],
+    ["Moderate Risk", moderateRisk],
+    ["Low Risk", lowRisk],
+    ["Stable", stable],
+  ];
+  const highestCount = Math.max(
+    highRisk,
+    moderateRisk,
+    lowRisk,
+    stable
+  );
+
+  return {
+    riskLevel: highestCount > 0
+      ? riskCounts.find(([, count]) => count === highestCount)[0]
+      : "No Data",
+    highRisk,
+    moderateRisk,
+    lowRisk,
+    stable,
+  };
+}
+
+function getDistrictRisk(
+  districtName,
+  state,
+  districtRiskData
+) {
+  return getDistrictRiskStats(
+    districtName,
+    state,
+    districtRiskData
+  ).riskLevel;
 }
 
 
@@ -720,9 +719,101 @@ function getDistrictRiskColor(riskLevel) {
     case "Stable":
       return "#9DAA96";
 
+    case "No Data":
+      return "#EDE4DF";
+
     default:
       return "#EDE4DF";
   }
+}
+
+function normalizeMapName(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function getDistrictMapProjection(features) {
+  const bounds = {
+    west: Infinity,
+    east: -Infinity,
+    south: Infinity,
+    north: -Infinity,
+  };
+
+  const visitCoordinates = (coordinates) => {
+    if (!Array.isArray(coordinates)) {
+      return;
+    }
+
+    if (
+      typeof coordinates[0] === "number" &&
+      typeof coordinates[1] === "number"
+    ) {
+      const [longitude, latitude] = coordinates;
+      bounds.west = Math.min(bounds.west, longitude);
+      bounds.east = Math.max(bounds.east, longitude);
+      bounds.south = Math.min(bounds.south, latitude);
+      bounds.north = Math.max(bounds.north, latitude);
+      return;
+    }
+
+    coordinates.forEach(visitCoordinates);
+  };
+
+  features.forEach((feature) => {
+    visitCoordinates(feature.geometry?.coordinates);
+  });
+
+  if (
+    !Number.isFinite(bounds.west) ||
+    !Number.isFinite(bounds.east) ||
+    !Number.isFinite(bounds.south) ||
+    !Number.isFinite(bounds.north)
+  ) {
+    return null;
+  }
+
+  const radians = Math.PI / 180;
+  const mercatorY = (latitude) => {
+    const clampedLatitude = Math.max(
+      -85.05112878,
+      Math.min(85.05112878, latitude)
+    );
+    const latitudeRadians = clampedLatitude * radians;
+
+    return Math.log(
+      Math.tan(Math.PI / 4 + latitudeRadians / 2)
+    );
+  };
+
+  const west = bounds.west * radians;
+  const east = bounds.east * radians;
+  const south = mercatorY(bounds.south);
+  const north = mercatorY(bounds.north);
+  const longitudeSpan = Math.max(east - west, 0.0001);
+  const latitudeSpan = Math.max(north - south, 0.0001);
+  const width = 650;
+  const height = 390;
+
+  return {
+    center: [
+      (bounds.west + bounds.east) / 2,
+      (
+        2 *
+        Math.atan(
+          Math.exp((south + north) / 2)
+        ) -
+        Math.PI / 2
+      ) / radians,
+    ],
+    scale:
+      Math.min(
+        (width - 70) / longitudeSpan,
+        (height - 70) / latitudeSpan
+      ) * 0.9,
+  };
 }
 
 /* =====================================================
@@ -1121,57 +1212,143 @@ function WellbeingTrendChart({
 function DistrictRiskOverview({
   district,
   state,
+  districtRiskData,
+  districtRiskError,
   onViewAll,
 }) {
-  const geoUrl =
-    DISTRICT_GEO_URLS[state];
-
   const [hoveredDistrict, setHoveredDistrict] =
     useState(null);
 
+  const [districtGeoData, setDistrictGeoData] =
+    useState(null);
+  const [districtMapError, setDistrictMapError] =
+    useState(false);
 
-  if (!geoUrl) {
-    return (
-      <section className="dashboard-card district-risk-card">
+  useEffect(() => {
+    let isMounted = true;
 
-        <div className="district-risk-header">
+    fetch(DISTRICT_GEO_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `District map request failed with status ${response.status}`
+          );
+        }
 
-          <div>
-            <span className="district-risk-eyebrow">
-              RISK OVERVIEW
-            </span>
+        return response.json();
+      })
+      .then((geoJson) => {
+        if (!Array.isArray(geoJson.features)) {
+          throw new Error(
+            "District map data is not a valid GeoJSON FeatureCollection"
+          );
+        }
 
-            <h3>
-              District-wise Risk Overview
-            </h3>
+        if (isMounted) {
+          setDistrictGeoData(geoJson);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load district map data:", error);
 
-            <p>
-              District risk distribution for{" "}
-              {state}.
-            </p>
-          </div>
+        if (isMounted) {
+          setDistrictMapError(true);
+        }
+      });
 
-        </div>
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
+  const stateMap = useMemo(() => {
+    if (!districtGeoData) {
+      return null;
+    }
 
-        <div className="district-map-unavailable">
+    const features = districtGeoData.features.filter((feature) => {
+      const properties = feature.properties || {};
+      const districtName =
+        properties.district ||
+        properties.DISTRICT ||
+        properties.District ||
+        properties.dtname ||
+        properties.DT_NAME ||
+        properties.district_name ||
+        properties.NAME_2 ||
+        properties.NAME ||
+        properties.name ||
+        "";
 
-          <MapPin size={22} />
+      return (
+        Boolean(String(districtName).trim()) &&
+        normalizeMapName(properties.st_nm) ===
+          normalizeMapName(state)
+      );
+    });
 
-          <strong>
-            District map unavailable
-          </strong>
+    if (features.length === 0) {
+      return null;
+    }
 
-          <span>
-            Map data for {state} will be
-            connected when available.
-          </span>
+    const projection = getDistrictMapProjection(features);
 
-        </div>
+    return projection
+      ? {
+          geography: {
+            ...districtGeoData,
+            features,
+          },
+          projection,
+        }
+      : null;
+  }, [districtGeoData, state]);
 
-      </section>
-    );
-  }
+  const riskCounts = useMemo(() => {
+    const counts = {
+      "High Risk": 0,
+      "Moderate Risk": 0,
+      "Low Risk": 0,
+      Stable: 0,
+      available: Array.isArray(districtRiskData),
+    };
+
+    if (Array.isArray(districtRiskData)) {
+      districtRiskData
+        .filter(
+          (entry) =>
+            normalizeMapName(entry.state) ===
+            normalizeMapName(state)
+        )
+        .forEach((entry) => {
+          const stats = getDistrictRiskStats(
+            entry.district,
+            state,
+            districtRiskData
+          );
+
+          counts["High Risk"] += stats.highRisk;
+          counts["Moderate Risk"] += stats.moderateRisk;
+          counts["Low Risk"] += stats.lowRisk;
+          counts.Stable += stats.stable;
+        });
+    }
+
+    return counts;
+  }, [districtRiskData, state]);
+
+  const hoveredDistrictStats = hoveredDistrict
+    ? getDistrictRiskStats(
+        hoveredDistrict,
+        state,
+        districtRiskData
+      )
+    : null;
+  const assignedDistrictStats = getDistrictRiskStats(
+    district,
+    state,
+    districtRiskData
+  );
 
 
   return (
@@ -1243,46 +1420,19 @@ function DistrictRiskOverview({
           </div>
 
 
-          <ComposableMap
-            projection="geoMercator"
-            projectionConfig={{
-              scale:
-                state === "West Bengal"
-                  ? 4700
-                  : 4300,
-
-              center:
-                state === "West Bengal"
-                  ? [
-                      87.8,
-                      24.1,
-                    ]
-                  : [
-                      92.7,
-                      26.1,
-                    ],
-            }}
-            width={650}
-            height={390}
-            className="district-risk-map"
-            aria-label={`${state} district risk map`}
-          >
-
-            <Geographies
-              geography={geoUrl}
+          {stateMap ? (
+            <ComposableMap
+              projection="geoMercator"
+              projectionConfig={stateMap.projection}
+              width={650}
+              height={390}
+              className="district-risk-map"
+              aria-label={`${state} district risk map`}
             >
-
-              {({
-                geographies,
-              }) =>
-                geographies.map(
-                  (geo) => {
-
-                    const properties =
-                      geo.properties ||
-                      {};
-
-
+              <Geographies geography={stateMap.geography}>
+                {({ geographies }) =>
+                  geographies.map((geo) => {
+                    const properties = geo.properties || {};
                     const districtName =
                       properties.district ||
                       properties.DISTRICT ||
@@ -1294,141 +1444,68 @@ function DistrictRiskOverview({
                       properties.NAME ||
                       properties.name ||
                       "";
-
-
                     const riskLevel =
                       getDistrictRisk(
-                        districtName
+                        districtName,
+                        state,
+                        districtRiskData
                       );
-
-
                     const fillColor =
-                      getDistrictRiskColor(
-                        riskLevel
-                      );
-
-
+                      getDistrictRiskColor(riskLevel);
                     const isAssignedDistrict =
-                      normalizeDistrictName(
-                        districtName
-                      ) ===
-                      normalizeDistrictName(
-                        district
-                      );
-
-
-                    const isHovered =
-                      hoveredDistrict ===
-                      districtName;
-
+                      normalizeDistrictName(districtName) ===
+                      normalizeDistrictName(district);
 
                     return (
                       <Geography
-                        key={
-                          geo.rsmKey
-                        }
-
-                        geography={
-                          geo
-                        }
-
+                        key={geo.rsmKey}
+                        geography={geo}
                         className={
-                          isAssignedDistrict
-                            ? "district-map-shape assigned"
-                            : "district-map-shape"
+                          [
+                            "district-map-shape",
+                            `district-risk-${riskLevel
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`,
+                            isAssignedDistrict ? "assigned" : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")
                         }
-
+                        fill={fillColor}
+                        stroke="#FFF9F5"
+                        strokeWidth={isAssignedDistrict ? 1.8 : 1}
                         onMouseEnter={() =>
-                          setHoveredDistrict(
-                            districtName
-                          )
+                          setHoveredDistrict(districtName)
                         }
-
                         onMouseLeave={() =>
-                          setHoveredDistrict(
-                            null
-                          )
+                          setHoveredDistrict(null)
                         }
-
-                        style={{
-
-                          default: {
-
-                            fill:
-                              fillColor,
-
-                            stroke:
-                              "#FFF9F5",
-
-                            strokeWidth:
-                              isAssignedDistrict
-                                ? 1.8
-                                : 1,
-
-                            outline:
-                              "none",
-
-                          },
-
-
-                          hover: {
-
-                            fill:
-                              fillColor,
-
-                            stroke:
-                              isAssignedDistrict
-                                ? "#672333"
-                                : "#FFFFFF",
-
-                            strokeWidth:
-                              isAssignedDistrict
-                                ? 2.6
-                                : 1.8,
-
-                            outline:
-                              "none",
-
-                            cursor:
-                              "pointer",
-
-                            filter:
-                              "brightness(1.04)",
-
-                          },
-
-
-                          pressed: {
-
-                            fill:
-                              fillColor,
-
-                            stroke:
-                              "#672333",
-
-                            strokeWidth:
-                              2,
-
-                            outline:
-                              "none",
-
-                          },
-
-                        }}
-
-                        tabIndex={
-                          -1
-                        }
-
+                        tabIndex={-1}
                       />
                     );
-                  }
-                )
-              }
-
-            </Geographies>
-
-          </ComposableMap>
+                  })
+                }
+              </Geographies>
+            </ComposableMap>
+          ) : (
+            <div className="district-map-unavailable">
+              <MapPin size={22} />
+              <strong>
+                {districtMapError
+                  ? "District map could not be loaded"
+                  : districtGeoData
+                  ? "District map unavailable"
+                  : "Loading district map"}
+              </strong>
+              <span>
+                {districtMapError
+                  ? "Please refresh the page and try again."
+                  : districtGeoData
+                  ? `No district map data was found for ${state}.`
+                  : `Loading district boundaries for ${state}.`}
+              </span>
+            </div>
+          )}
 
 
           {/* HOVER LABEL */}
@@ -1442,12 +1519,21 @@ function DistrictRiskOverview({
               </strong>
 
               <span>
-                {
-                  getDistrictRisk(
-                    hoveredDistrict
-                  )
-                }
+                {hoveredDistrictStats.riskLevel}
               </span>
+
+              {hoveredDistrictStats.riskLevel !== "No Data" && (
+                  <small>
+                    High{" "}
+                    {hoveredDistrictStats.highRisk.toLocaleString()}{" "}
+                    · Medium{" "}
+                    {hoveredDistrictStats.moderateRisk.toLocaleString()}{" "}
+                    · Low{" "}
+                    {hoveredDistrictStats.lowRisk.toLocaleString()}{" "}
+                    · Stable{" "}
+                    {hoveredDistrictStats.stable.toLocaleString()}
+                  </small>
+              )}
 
             </div>
 
@@ -1498,41 +1584,52 @@ function DistrictRiskOverview({
           <DistrictRiskLegendItem
             label="High Risk"
             color="#7A2638"
-            count={getDistrictRiskCount(
-              state,
-              "High Risk"
-            )}
+            count={
+              riskCounts.available
+                ? riskCounts["High Risk"].toLocaleString()
+                : "—"
+            }
           />
 
 
           <DistrictRiskLegendItem
             label="Medium Risk"
             color="#D99A73"
-            count={getDistrictRiskCount(
-              state,
-              "Moderate Risk"
-            )}
+            count={
+              riskCounts.available
+                ? riskCounts["Moderate Risk"].toLocaleString()
+                : "—"
+            }
           />
 
 
           <DistrictRiskLegendItem
             label="Low Risk"
             color="#C9A0A7"
-            count={getDistrictRiskCount(
-              state,
-              "Low Risk"
-            )}
+            count={
+              riskCounts.available
+                ? riskCounts["Low Risk"].toLocaleString()
+                : "—"
+            }
           />
 
 
           <DistrictRiskLegendItem
             label="Stable"
             color="#9DAA96"
-            count={getDistrictRiskCount(
-              state,
-              "Stable"
-            )}
+            count={
+              riskCounts.available
+                ? riskCounts.Stable.toLocaleString()
+                : "—"
+            }
           />
+
+          {!riskCounts.available && (
+            <p className="district-risk-data-notice" role="status">
+              {districtRiskError ||
+                "Risk data is unavailable. Please refresh the dashboard."}
+            </p>
+          )}
 
 
           <div className="district-risk-legend-divider" />
@@ -1556,7 +1653,9 @@ function DistrictRiskOverview({
                   background:
                     getDistrictRiskColor(
                       getDistrictRisk(
-                        district
+                        district,
+                        state,
+                        districtRiskData
                       )
                     ),
                 }}
@@ -1564,11 +1663,24 @@ function DistrictRiskOverview({
 
               {
                 getDistrictRisk(
-                  district
+                  district,
+                  state,
+                  districtRiskData
                 )
               }
 
             </div>
+
+            {Array.isArray(districtRiskData) && (
+              <small className="district-selected-counts">
+                High {assignedDistrictStats.highRisk.toLocaleString()}
+                {" · "}Medium{" "}
+                {assignedDistrictStats.moderateRisk.toLocaleString()}
+                {" · "}Low {assignedDistrictStats.lowRisk.toLocaleString()}
+                {" · "}Stable{" "}
+                {assignedDistrictStats.stable.toLocaleString()}
+              </small>
+            )}
 
           </div>
 
@@ -1620,120 +1732,6 @@ function DistrictRiskLegendItem({
 
 
 /* =====================================================
-   DISTRICT RISK COUNT
-===================================================== */
-
-function getDistrictRiskCount(
-  state,
-  riskLevel
-) {
-
-  const stateDistricts =
-    Object.entries(
-      demoDistrictRiskData
-    ).filter(
-      ([name]) => {
-
-        /*
-         * For the current frontend demo,
-         * district names are shared across
-         * the supported state datasets.
-         *
-         * The GeoJSON itself determines
-         * which districts are rendered.
-         */
-
-        return Boolean(name);
-      }
-    );
-
-
-  /*
-   * West Bengal and Assam currently have
-   * separate demo blocks above.
-   */
-
-  const westBengalDistricts = [
-    "Alipurduar",
-    "Bankura",
-    "Birbhum",
-    "Cooch Behar",
-    "Dakshin Dinajpur",
-    "Darjeeling",
-    "Hooghly",
-    "Howrah",
-    "Jalpaiguri",
-    "Jhargram",
-    "Kalimpong",
-    "Kolkata",
-    "Malda",
-    "Murshidabad",
-    "Nadia",
-    "North 24 Parganas",
-    "South 24 Parganas",
-    "Paschim Bardhaman",
-    "Paschim Medinipur",
-    "Purba Bardhaman",
-    "Purba Medinipur",
-    "Purulia",
-    "Uttar Dinajpur",
-  ];
-
-
-  const assamDistricts = [
-    "Baksa",
-    "Bajali",
-    "Barpeta",
-    "Biswanath",
-    "Bongaigaon",
-    "Cachar",
-    "Charaideo",
-    "Chirang",
-    "Darrang",
-    "Dhemaji",
-    "Dhubri",
-    "Dibrugarh",
-    "Dima Hasao",
-    "Goalpara",
-    "Golaghat",
-    "Hailakandi",
-    "Hojai",
-    "Jorhat",
-    "Kamrup",
-    "Kamrup Metropolitan",
-    "Karbi Anglong",
-    "Karimganj",
-    "Kokrajhar",
-    "Lakhimpur",
-    "Majuli",
-    "Morigaon",
-    "Nagaon",
-    "Nalbari",
-    "Sivasagar",
-    "Sonitpur",
-    "South Salmara-Mankachar",
-    "Tinsukia",
-    "Udalguri",
-    "West Karbi Anglong",
-    "Tamulpur",
-  ];
-
-
-  const districtList =
-    state === "Assam"
-      ? assamDistricts
-      : westBengalDistricts;
-
-
-  return districtList.filter(
-    (districtName) =>
-      getDistrictRisk(
-        districtName
-      ) === riskLevel
-  ).length;
-}
-
-/* =====================================================
    MAIN DASHBOARD
 ===================================================== */
 
@@ -1742,6 +1740,8 @@ function CounsellorDashboard({
   data: dashboardData,
   profile,
   searchItems,
+  districtRiskData,
+  districtRiskError,
 }) {
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
@@ -1780,6 +1780,9 @@ function CounsellorDashboard({
     profile?.state ||
     data.state ||
     "West Bengal";
+
+  const assignedStateRisk =
+    getStateRisk(assignedState, districtRiskData);
 
 
   const counsellorName =
@@ -3481,7 +3484,8 @@ function CounsellorDashboard({
 
                             const risk =
                               getStateRisk(
-                                stateName
+                                stateName,
+                                districtRiskData
                               );
 
 
@@ -3512,74 +3516,21 @@ function CounsellorDashboard({
                                 }
 
                                 className={
-                                  isSelected
-                                    ? "india-state selected-state"
-                                    : "india-state"
+                                  [
+                                    "india-state",
+                                    `state-risk-${risk.level
+                                      .toLowerCase()
+                                      .replace(/\s+/g, "-")}`,
+                                    isSelected
+                                      ? "selected-state"
+                                      : "",
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" ")
                                 }
-
-                                style={{
-
-                                  default: {
-
-                                    fill:
-                                      stateColor,
-
-                                    stroke:
-                                      "#FAF7EF",
-
-                                    strokeWidth:
-                                      isSelected
-                                        ? 1.8
-                                        : 0.8,
-
-                                    outline:
-                                      "none",
-
-                                  },
-
-
-                                  hover: {
-
-                                    fill:
-                                      stateColor,
-
-                                    stroke:
-                                      "#672333",
-
-                                    strokeWidth:
-                                      isSelected
-                                        ? 2
-                                        : 1.5,
-
-                                    outline:
-                                      "none",
-
-                                    cursor:
-                                      "pointer",
-
-                                  },
-
-
-                                  pressed: {
-
-                                    fill:
-                                      stateColor,
-
-                                    stroke:
-                                      "#672333",
-
-                                    strokeWidth:
-                                      isSelected
-                                        ? 2
-                                        : 1.5,
-
-                                    outline:
-                                      "none",
-
-                                  },
-
-                                }}
-
+                                fill={stateColor}
+                                stroke="#FAF7EF"
+                                strokeWidth={isSelected ? 1.8 : 0.8}
                                 tabIndex={
                                   -1
                                 }
@@ -3692,9 +3643,7 @@ function CounsellorDashboard({
 
                     <small>
                       {
-                        getStateRisk(
-                          assignedState
-                        ).level
+                        assignedStateRisk.level
                       }
                     </small>
 
@@ -3726,9 +3675,7 @@ function CounsellorDashboard({
 
                       <strong>
                         {
-                          getStateRisk(
-                            assignedState
-                          ).high
+                          assignedStateRisk.high
                         }
                       </strong>
 
@@ -3743,9 +3690,7 @@ function CounsellorDashboard({
 
                       <strong>
                         {
-                          getStateRisk(
-                            assignedState
-                          ).moderate
+                          assignedStateRisk.moderate
                         }
                       </strong>
 
@@ -3760,9 +3705,7 @@ function CounsellorDashboard({
 
                       <strong>
                         {
-                          getStateRisk(
-                            assignedState
-                          ).low
+                          assignedStateRisk.low
                         }
                       </strong>
 
@@ -3782,6 +3725,8 @@ function CounsellorDashboard({
           <DistrictRiskOverview
             district={assignedDistrict}
             state={assignedState}
+            districtRiskData={districtRiskData}
+            districtRiskError={districtRiskError}
             onViewAll={() =>
               handleNavigation("cases")
             }

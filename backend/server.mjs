@@ -87,11 +87,43 @@ function parseCsv(csv, preserveHeaders = false) {
   const rows = parseCsvRows(csv);
   const headers = (rows.shift() || []).map((header) => {
     if (preserveHeaders) return header.trim();
-    const normalizedHeader = header.toLowerCase().trim();
-    if (/victim.*id|identification.*id/.test(normalizedHeader)) return "Victim_id";
-    if (/case\s*id/.test(normalizedHeader)) return "Case_id";
-    const parts = header.split(/\s+/);
-    return parts.at(-1) || header;
+    const normalizedHeader = header
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+
+    if (normalizedHeader.endsWith("name_of_victims")) return "name";
+    if (/victims?_id$/.test(normalizedHeader)) return "victim_id";
+    if (/case_id$/.test(normalizedHeader)) return "case_id";
+
+    const datasetFields = [
+      "registration_date", "victim_category", "incident_type", "age_group",
+      "urban_rural", "vulnerability_level", "case_stage", "court_appearances",
+      "investigation_delay_days", "trial_delay_days", "next_hearing_days",
+      "case_update_frequency", "case_delay_flag", "threat_count",
+      "threat_severity", "threat_frequency", "physical_harm_risk",
+      "protection_requested", "protection_status", "protection_required",
+      "authority_notified", "checkin_id", "checkin_date",
+      "interaction_channel", "mood_score", "stress_score", "anxiety_score",
+      "sleep_score", "sentiment_score", "dominant_score", "engagement_score",
+      "voice_stress_score", "previous_distress_score",
+      "current_distress_score", "distress_change", "risk_level",
+      "counselling_received", "counselling_sessions", "medical_support",
+      "legal_aid", "helpline_used", "relocation_support",
+      "support_response_days", "followup_required", "compensation_eligible",
+      "compensation_status", "amount_sanctioned", "amount_disbursed",
+      "rehabilitation_required", "rehabilitation_type",
+      "rehabilitation_status", "rehabilitation_delay_days",
+      "future_risk_level", "intervention_required", "crisis_flag"
+    ];
+    const matchingField = datasetFields.find(
+      (field) =>
+        normalizedHeader === field ||
+        normalizedHeader.endsWith(`_${field}`)
+    );
+
+    return matchingField || normalizedHeader;
   });
   return rows
     .filter((values) => values.some(Boolean))
@@ -162,8 +194,22 @@ function parseCounsellorCsv(csv) {
 }
 
 function number(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    String(value).trim() === ""
+  ) {
+    return null;
+  }
+
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function scoreValue(value, labels) {
+  const numericValue = number(value);
+  if (numericValue !== null) return numericValue;
+  return labels[String(value || "").trim()] ?? null;
 }
 
 function text(row, ...keys) {
@@ -176,9 +222,6 @@ function text(row, ...keys) {
 
 function scoreAsPercent(value, direction = "positive") {
   if (value === null) return null;
-  if (value >= 0 && value <= 5) {
-    return direction === "inverse" ? (5 - value) * 20 : value * 20;
-  }
   if (value >= 0 && value <= 10) {
     return direction === "inverse" ? (10 - value) * 10 : value * 10;
   }
@@ -194,41 +237,41 @@ function riskForScore(score) {
 
 function normalizeRow(row) {
   return {
-    victimId: text(row, "Victim_id", "victim_id", "Victim ID", "victimId", "Id"),
-    caseId: text(row, "Case_id", "case_id", "Case ID", "caseId"),
-    name: text(row, "Name", "name", "Victims", "Victim_name", "victim_name", "Full_name", "full_name"),
-    registrationDate: row.Registration_Date,
-    category: row.Victim_category,
+    victimId: text(row, "victim_id", "victimId", "id"),
+    caseId: text(row, "case_id", "caseId"),
+    name: text(row, "name", "victims", "victim_name", "full_name"),
+    registrationDate: row.registration_date,
+    category: row.victim_category,
     incidentType: row.incident_type,
     ageGroup: row.age_group,
     gender: text(row, "Gender", "gender"),
     district: text(row, "district", "District"),
     state: text(row, "state", "State"),
     urbanRural: row.urban_rural,
-    vulnerabilityLevel: row.Vulnerability_level,
-    caseStage: row.Case_stage,
-    courtAppearances: number(row.Court_appearances),
-    investigationDelayDays: number(row.Investigation_delay_days),
-    trialDelayDays: number(row.Trial_delay_days),
-    nextHearingDays: number(row.Next_hearing_days),
+    vulnerabilityLevel: row.vulnerability_level,
+    caseStage: row.case_stage,
+    courtAppearances: number(row.court_appearances),
+    investigationDelayDays: number(row.investigation_delay_days),
+    trialDelayDays: number(row.trial_delay_days),
+    nextHearingDays: number(row.next_hearing_days),
     caseUpdateFrequency: row.Case_update_frequency,
     caseDelayFlag: row.Case_delay_flag === "1",
-    threatCount: number(row.Threat_count),
-    threatSeverity: row.Threat_severity,
-    threatFrequency: row.Threat_frequency,
+    threatCount: number(row.threat_count),
+    threatSeverity: row.threat_severity,
+    threatFrequency: row.threat_frequency,
     physicalHarmRisk: row.physical_harm_risk,
     protectionRequested: row.protection_requested === "Yes",
-    protectionStatus: row.Protection_status,
+    protectionStatus: row.protection_status,
     protectionRequired: row.Protection_required === "Yes",
-    authorityNotified: row.Authority_notified === "Yes",
-    checkinId: row.Checkin_id,
-    checkinDate: row.Checkin_date,
+    authorityNotified: row.authority_notified === "Yes",
+    checkinId: row.checkin_id,
+    checkinDate: row.checkin_date,
     interactionChannel: row.interaction_channel,
-    language: row.Language,
-    moodScore: number(row.Mood_score),
-    stressScore: number(row.stress_score),
-    anxietyScore: number(row.anxiety_score),
-    sleepScore: number(row.sleep_score),
+    language: row.language,
+    moodScore: scoreValue(row.mood_score, scoreMaps.mood),
+    stressScore: scoreValue(row.stress_score, scoreMaps.stress),
+    anxietyScore: scoreValue(row.anxiety_score, scoreMaps.anxiety),
+    sleepScore: scoreValue(row.sleep_score, scoreMaps.sleep),
     sentimentScore: number(row.sentiment_score),
     dominantEmotion: row.dominant_score,
     engagementScore: number(row.engagement_score),
@@ -476,11 +519,70 @@ app.post("/api/auth/counsellor-login", async (request, response, next) => {
 
 app.get("/api/v1/counsellors/:counsellorId/dashboard", async (request, response, next) => {
   try {
+    await refreshDatasetIfStale();
     await refreshCounsellorDatasetIfStale();
   const counsellor = counsellorDataset.find(
     (row) => row.counsellor_id.toLowerCase() === request.params.counsellorId.toLowerCase()
   );
   if (!counsellor) return response.status(404).json({ error: "Counsellor not found" });
+
+  const districtRiskByLocation = new Map();
+  dataset.forEach((row, index) => {
+    if (!row.state || !row.district) return;
+
+    const locationKey = [
+      row.state,
+      row.district
+    ]
+      .map((value) => String(value || "").trim().toLowerCase())
+      .join("|");
+    const districtRisk = districtRiskByLocation.get(locationKey) || {
+      district: row.district,
+      state: row.state,
+      victims: new Map()
+    };
+
+    const victimId = row.victimId || `dataset-row-${index}`;
+    const sourceRisk = String(
+      row.riskLevel || toCheckin(row).risk || ""
+    )
+      .trim()
+      .toLowerCase();
+    const riskLevel =
+      /high|critical|severe/.test(sourceRisk)
+        ? "high"
+        : /moderate|medium/.test(sourceRisk)
+          ? "moderate"
+          : /low|minimal/.test(sourceRisk)
+            ? "low"
+            : /stable|none|normal/.test(sourceRisk)
+              ? "stable"
+              : null;
+
+    districtRisk.victims.set(victimId, riskLevel);
+
+    districtRiskByLocation.set(locationKey, districtRisk);
+  });
+  const districtRiskData = [...districtRiskByLocation.values()].map(
+    ({ district, state, victims }) => {
+      const counts = {
+        totalRegisteredVictims: victims.size,
+        highRiskVictims: 0,
+        moderateRiskVictims: 0,
+        lowRiskVictims: 0,
+        stableVictims: 0
+      };
+
+      victims.forEach((riskLevel) => {
+        if (riskLevel === "high") counts.highRiskVictims += 1;
+        if (riskLevel === "moderate") counts.moderateRiskVictims += 1;
+        if (riskLevel === "low") counts.lowRiskVictims += 1;
+        if (riskLevel === "stable") counts.stableVictims += 1;
+      });
+
+      return { district, state, ...counts };
+    }
+  );
 
   response.json({
     profile: {
@@ -490,6 +592,7 @@ app.get("/api/v1/counsellors/:counsellorId/dashboard", async (request, response,
       state: counsellor.state
     },
     data: counsellor,
+    districtRiskData,
     searchItems: counsellorDataset.map((row) => ({
       id: row.counsellor_id,
       type: "District",

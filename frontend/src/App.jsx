@@ -64,6 +64,7 @@ function App() {
   const [portal, setPortal] = useState("victim");
   const [authenticatedCounsellorId, setAuthenticatedCounsellorId] = useState(null);
   const [counsellorDashboard, setCounsellorDashboard] = useState(null);
+  const [counsellorDashboardRetry, setCounsellorDashboardRetry] = useState(0);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [currentPage, setCurrentPage] = useState("home");
@@ -81,6 +82,7 @@ function App() {
     const loadDashboard = () => getDashboard(authenticatedVictimId)
       .then((data) => {
         setDashboard(data);
+        setLoadError("");
         if (!localStorage.getItem("nirbhaymind_language")) {
           setLanguage(data.profile.language || "English");
         }
@@ -94,12 +96,15 @@ function App() {
   useEffect(() => {
     if (!authenticatedCounsellorId) return;
     const loadDashboard = () => getCounsellorDashboard(authenticatedCounsellorId)
-      .then(setCounsellorDashboard)
+      .then((data) => {
+        setCounsellorDashboard(data);
+        setLoadError("");
+      })
       .catch((error) => setLoadError(error.message));
     loadDashboard();
     const refreshTimer = window.setInterval(loadDashboard, 60_000);
     return () => window.clearInterval(refreshTimer);
-  }, [authenticatedCounsellorId]);
+  }, [authenticatedCounsellorId, counsellorDashboardRetry]);
  
   const handleLogin = async (role, identifier, secret) => {
     setAuthLoading(true);
@@ -144,7 +149,22 @@ function App() {
   }
   if (portal === "counsellor") {
   if (loadError) {
-    return <main className="app"><p role="alert">Unable to load counsellor data: {loadError}</p></main>;
+    return (
+      <main className="app">
+        <p role="alert">
+          Unable to load counsellor data: {loadError}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setLoadError("");
+            setCounsellorDashboardRetry((retry) => retry + 1);
+          }}
+        >
+          Retry
+        </button>
+      </main>
+    );
   }
   if (!counsellorDashboard) {
     return <main className="app"><p>Loading counsellor dashboard...</p></main>;
@@ -154,6 +174,8 @@ function App() {
     data={counsellorDashboard.data}
     profile={counsellorDashboard.profile}
     searchItems={counsellorDashboard.searchItems}
+    districtRiskData={counsellorDashboard.districtRiskData}
+    districtRiskError={counsellorDashboard.districtRiskError}
     onLogout={handleLogout}
   />
   );
