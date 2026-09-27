@@ -1,5 +1,7 @@
 <div align="center">
-<img src="./frontend/public/nirbhaymind_logo.jpeg" alt="NirbhayMind Logo" width="150">
+<img src="./frontend/public/nirbhaymind_logo.png"
+     alt="NirbhayMind Logo"
+     width="150">
 <h1>NIRBHAYMIND</h1>
 <h3>AI-Powered Dynamic Mental Health Monitoring &amp; Distress Prediction System for Victims of Atrocities</h3>
 
