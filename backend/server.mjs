@@ -4,6 +4,10 @@ import express from "express";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  aggregateDistrictRiskData,
+  aggregateStateRiskData,
+} from "./riskOverview.mjs";
 
 dotenv.config();
 
@@ -490,6 +494,8 @@ app.get("/api/v1/counsellors/:counsellorId/dashboard", async (request, response,
       state: counsellor.state
     },
     data: counsellor,
+    stateRiskData: aggregateStateRiskData(counsellorDataset),
+    districtRiskData: aggregateDistrictRiskData(counsellorDataset),
     searchItems: counsellorDataset.map((row) => ({
       id: row.counsellor_id,
       type: "District",

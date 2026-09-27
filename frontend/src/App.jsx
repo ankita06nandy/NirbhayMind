@@ -154,6 +154,8 @@ function App() {
     data={counsellorDashboard.data}
     profile={counsellorDashboard.profile}
     searchItems={counsellorDashboard.searchItems}
+    stateRiskData={counsellorDashboard.stateRiskData}
+    districtRiskData={counsellorDashboard.districtRiskData}
     onLogout={handleLogout}
   />
   );

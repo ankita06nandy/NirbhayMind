@@ -3457,19 +3457,9 @@
 }
 
 .india-risk-map .rsm-geography:hover {
-  fill: #d9aeb7;
   stroke: #7a2638;
   stroke-width: 1.4;
 }
-
-.india-risk-map .west-bengal-state {
-  filter:
-    drop-shadow(
-      0 3px 5px rgba(122, 38, 56, 0.28)
-    );
-}
-
-
 
 .map-location-label {
   position: absolute;
@@ -3774,27 +3764,7 @@
 /* Hover */
 
 .india-risk-map .rsm-geography:hover {
-  fill: #d9aeb7 !important;
   cursor: pointer;
-}
-
-/* =====================================================
-   WEST BENGAL HIGHLIGHT
-===================================================== */
-
-.india-risk-map .west-bengal-state {
-  fill: #7a2638 !important;
-
-  filter:
-    drop-shadow(
-      0 3px 6px rgba(122, 38, 56, 0.38)
-    );
-}
-
-/* Keep West Bengal burgundy even on hover */
-
-.india-risk-map .west-bengal-state:hover {
-  fill: #681f31 !important;
 }
 
 /* =====================================================
@@ -4117,18 +4087,7 @@
   overflow: visible;
 }
 
-/* =====================================================
-   ALL STATES
-   SOFT GREEN
-===================================================== */
-
 .india-risk-map .rsm-geography {
-  fill: #dce8d7 !important;
-  stroke: #faf7ef !important;
-  stroke-width: 0.9px !important;
-  opacity: 1 !important;
-  outline: none !important;
-
   transition:
     fill 0.18s ease,
     stroke 0.18s ease,
@@ -4137,37 +4096,8 @@
   cursor: pointer;
 }
 
-/* Other states remain green when hovered */
-
 .india-risk-map .rsm-geography:hover {
-  fill: #dce8d7 !important;
-  stroke: #7a2638 !important;
-  stroke-width: 1px !important;
-}
-
-/* =====================================================
-   WEST BENGAL ONLY
-   FULL WEST BENGAL = BURGUNDY
-===================================================== */
-
-.india-risk-map .west-bengal-state {
-  fill: #7a2638 !important;
-  background: #7a2638 !important;
-  stroke: #faf7ef !important;
-  stroke-width: 1px !important;
-  opacity: 1 !important;
-
-  filter:
-    drop-shadow(
-      0 3px 6px rgba(122, 38, 56, 0.28)
-    );
-}
-
-.india-risk-map .west-bengal-state:hover {
-  fill: #7a2638 !important;
-  background: #7a2638 !important;
-  stroke: #faf7ef !important;
-  stroke-width: 1.2px !important;
+  cursor: pointer;
 }
 
 /* =====================================================
@@ -4830,6 +4760,40 @@
 .district-chart-point {
   fill: #fffaf7 !important;
   stroke: #7a2638 !important;
+}
+
+.state-map-risk-legend .map-selected-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 4px;
+  padding: 9px;
+  border: 1px solid rgba(122, 38, 56, 0.12);
+  border-radius: 12px;
+  background: #faf7ef;
+}
+
+.map-selected-breakdown > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 3px;
+  border-radius: 8px;
+  background: #fffdf9;
+}
+
+.map-selected-breakdown span {
+  color: #7b746e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.map-selected-breakdown strong {
+  color: #2f2a26;
+  font-size: 15px;
+  font-weight: 800;
 }
 /* =====================================================
    DISTRICT-WISE RISK OVERVIEW
