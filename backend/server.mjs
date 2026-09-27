@@ -19,7 +19,7 @@ const counsellorDatasetUrl =
   "https://docs.google.com/spreadsheets/d/1qWwxA1IpWQfhUJialshiwMeJ2kFtTto6DvHlSyCoDlA/gviz/tq?tqx=out:csv&gid=746552781";
 const defaultVictimId = process.env.DEFAULT_VICTIM_ID || "V1001";
 const geminiApiKey = process.env.GEMINI_API_KEY;
-const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+const geminiModel = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 
 const app = express();
 const configuredClientOrigin = process.env.CLIENT_ORIGIN;
