@@ -1,7 +1,7 @@
 import { ArrowLeft, HeartHandshake, LogIn, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "../i18n";
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
 
 function Login({ onBack, onLogin, loading, error }) {
   const { t } = useI18n();

@@ -8,7 +8,7 @@ import {
   PhoneOff,
 } from "lucide-react";
 
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
 import { SUPPORT_NUMBERS } from "../support";
 
 function VoiceSupport({ onBack, language, onLanguageChange }) {

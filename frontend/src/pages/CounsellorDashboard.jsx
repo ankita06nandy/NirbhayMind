@@ -1,4 +1,4 @@
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
 
 import {
   Bell,
@@ -49,13 +49,8 @@ const INDIA_STATES_GEO_URL =
    Dynamic according to counsellor's assigned state
 ===================================================== */
 
-const DISTRICT_GEO_URLS = {
-  "West Bengal":
-    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/west-bengal.geojson",
-
-  Assam:
-    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/assam.geojson",
-};
+const DISTRICT_GEO_URLS = "/maps/india-districts.json";
+ 
 
 /* =====================================================
    DEMO DISTRICT COUNSELLOR DATA
@@ -3782,10 +3777,81 @@ function CounsellorDashboard({
           <DistrictRiskOverview
             district={assignedDistrict}
             state={assignedState}
-            onViewAll={() =>
-              handleNavigation("cases")
-            }
-          />
+            onViewAll={() => handleNavigation("cases")}
+          >
+            <Geographies geography={DISTRICT_GEO_URL}>
+              {({ geographies }) => {
+                // Filter features matching the active state
+                const stateGeographies = geographies.filter((geo) => {
+                  const props = geo.properties || {};
+                  const stName =
+                    props.stname ||
+                    props.state ||
+                    props.STATE ||
+                    props.State ||
+                    props.NAME_1 ||
+                    props.st_name ||
+                    "";
+                  return stName ? stName.toLowerCase() === state.toLowerCase() : true;
+                });
+
+                return stateGeographies.map((geo) => {
+                  const props = geo.properties || {};
+                  const districtName =
+                    props.district ||
+                    props.DISTRICT ||
+                    props.District ||
+                    props.dtname ||
+                    props.DT_NAME ||
+                    props.district_name ||
+                    props.district_n ||
+                    props.NAME_2 ||
+                    props.NAME_1 ||
+                    props.NAME ||
+                    props.name ||
+                    "District";
+
+                  const riskLevel = getDistrictRisk(districtName);
+                  const fillColor = getDistrictRiskColor(riskLevel);
+                  const isAssignedDistrict =
+                    normalizeDistrictName(districtName) === normalizeDistrictName(district);
+
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      className={isAssignedDistrict ? "district-map-shape assigned" : "district-map-shape"}
+                      onMouseEnter={() => setHoveredDistrict(districtName)}
+                      onMouseLeave={() => setHoveredDistrict(null)}
+                      style={{
+                        default: {
+                          fill: fillColor,
+                          stroke: "#FFF9F5",
+                          strokeWidth: isAssignedDistrict ? 1.8 : 1,
+                          outline: "none",
+                        },
+                        hover: {
+                          fill: fillColor,
+                          stroke: isAssignedDistrict ? "#672333" : "#FFFFFF",
+                          strokeWidth: isAssignedDistrict ? 2.6 : 1.8,
+                          outline: "none",
+                          cursor: "pointer",
+                          filter: "brightness(1.08)",
+                        },
+                        pressed: {
+                          fill: fillColor,
+                          stroke: "#672333",
+                          strokeWidth: 2,
+                          outline: "none",
+                        },
+                      }}
+                    />
+                  );
+                });
+              }}
+            </Geographies>
+          </DistrictRiskOverview>
+          
 
             {/* LOWER GRID */}
 

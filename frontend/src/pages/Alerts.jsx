@@ -9,7 +9,7 @@ import {
   CheckCheck,
 } from "lucide-react";
 
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpeg";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
 import { useI18n } from "../i18n";
 
 function Alerts({ onBack, alerts: initialAlerts }) {
