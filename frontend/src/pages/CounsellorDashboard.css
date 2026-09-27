@@ -4430,3 +4430,932 @@
     font-size: 10px;
   }
 }
+/* =====================================================
+   INDIA RISK MAP
+===================================================== */
+
+.india-map-wrapper {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.india-risk-map {
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  display: block;
+}
+
+
+/* =====================================================
+   MAP LEGEND
+===================================================== */
+
+.map-risk-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 14px 0 20px;
+}
+
+.map-risk-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: #5e5053;
+}
+
+.map-risk-legend-item
+.state-map-risk-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+
+/* =====================================================
+   SELECTED STATE
+===================================================== */
+
+.india-state {
+  transition:
+    fill 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.selected-state {
+  filter:
+    drop-shadow(
+      0 2px 4px
+      rgba(103, 35, 51, 0.25)
+    );
+}
+
+
+/* =====================================================
+   MAP CONTENT
+===================================================== */
+
+.state-map-content {
+  min-width: 0;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .state-map-content {
+    grid-template-columns: 1fr;
+  }
+
+  .india-map-wrapper {
+    order: 1;
+  }
+
+  .state-map-risk-legend {
+    order: 2;
+  }
+
+  .india-risk-map {
+    max-width: 560px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .state-map-card {
+    overflow: hidden;
+  }
+
+  .state-map-content {
+    gap: 20px;
+  }
+
+  .india-map-wrapper {
+    width: 100%;
+  }
+
+  .india-risk-map {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .state-map-risk-legend {
+    width: 100%;
+  }
+
+  .map-risk-legend {
+    gap: 10px;
+  }
+
+}
+.district-wellbeing-trend-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.district-wellbeing-chart {
+  width: 100%;
+}
+
+/* HEADER */
+
+.district-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.district-chart-header h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  color: #4f4144;
+}
+
+.district-chart-header p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #8a797d;
+}
+
+.district-chart-header p strong {
+  color: #6f2637;
+  font-weight: 600;
+}
+
+/* CURRENT SCORE */
+
+.district-chart-current {
+  min-width: 92px;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: #f8eee4;
+  border: 1px solid #f0ded2;
+  text-align: center;
+}
+
+.district-chart-current span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 10px;
+  color: #927f82;
+  letter-spacing: 0.2px;
+}
+
+.district-chart-current strong {
+  display: block;
+  font-size: 21px;
+  line-height: 1.2;
+  color: #7a2638;
+}
+
+/* GRAPH */
+
+.district-chart-container {
+  width: 100%;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.district-wellbeing-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* GRID */
+
+.district-chart-grid-line {
+  stroke: #eee4df;
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+
+.district-chart-axis-label {
+  fill: #a29295;
+  font-size: 10px;
+}
+
+/* AREA */
+
+.district-chart-area {
+  fill: rgba(122, 38, 56, 0.07);
+}
+
+/* LINE */
+
+.district-chart-line {
+  stroke: #7a2638;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* POINTS */
+
+.district-chart-point {
+  fill: #fffaf7;
+  stroke: #7a2638;
+  stroke-width: 3;
+}
+
+/* MONTHS */
+
+.district-chart-month {
+  fill: #827276;
+  font-size: 11px;
+}
+
+/* SUMMARY */
+
+.district-trend-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 15px;
+  border-top: 1px solid #eee4df;
+}
+
+.trend-stat {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #faf5f1;
+}
+
+.trend-stat span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: #98888b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trend-stat strong {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4f4144;
+}
+
+.trend-stat.change {
+  background: #f7eee7;
+}
+
+.trend-stat.change strong {
+  color: #7a2638;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .district-chart-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .district-chart-current {
+    align-self: flex-start;
+  }
+
+ .district-trend-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #eee4df;
+}
+
+.trend-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 62px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  background: #faf6f2;
+  border: 1px solid #eee3dd;
+  text-align: center;
+}
+
+.trend-stat strong {
+  order: 1;
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 650;
+  color: #5b3d43;
+  margin-bottom: 6px;
+}
+
+.trend-stat span {
+  order: 2;
+  display: block;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #968589;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+.trend-stat.change {
+  background: #f8eee8;
+  border-color: #ead8d0;
+}
+
+.trend-stat.change strong {
+  color: #7a2638;
+}
+
+@media (max-width: 600px) {
+  .district-trend-summary {
+    gap: 8px;
+  }
+
+  .trend-stat {
+    min-height: 58px;
+    padding: 8px 5px;
+  }
+
+  .trend-stat strong {
+    font-size: 19px;
+  }
+
+  .trend-stat span {
+    font-size: 9px;
+  }
+}
+
+  .trend-stat {
+    padding: 9px;
+  }
+
+  .trend-stat strong {
+    font-size: 16px;
+  }
+}
+.district-chart-area {
+  fill: rgba(122, 38, 56, 0.07) !important;
+}
+
+.district-chart-line {
+  fill: none !important;
+  stroke: #7a2638 !important;
+}
+
+.district-chart-point {
+  fill: #fffaf7 !important;
+  stroke: #7a2638 !important;
+}
+/* =====================================================
+   DISTRICT-WISE RISK OVERVIEW
+===================================================== */
+
+.district-risk-card {
+  margin-top: 22px;
+  overflow: hidden;
+  background: #fffaf6;
+  border: 1px solid #eee1db;
+}
+
+
+/* -----------------------------------------------------
+   HEADER
+----------------------------------------------------- */
+
+.district-risk-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 26px 18px;
+}
+
+
+.district-risk-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: #9c6b72;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+
+.district-risk-header h3 {
+  margin: 0;
+  color: #4f4144;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+
+.district-risk-header p {
+  margin: 7px 0 0;
+  color: #897a7d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+.district-risk-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #7a2638;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 5px 2px;
+  white-space: nowrap;
+}
+
+
+.district-risk-view-all:hover {
+  color: #5f1c2b;
+}
+
+
+/* -----------------------------------------------------
+   BODY
+----------------------------------------------------- */
+
+.district-risk-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px 245px;
+  min-height: 390px;
+  margin: 0 22px 22px;
+  padding: 0;
+  border-radius: 18px;
+  background: #f9f0eb;
+  overflow: hidden;
+}
+
+
+/* -----------------------------------------------------
+   MAP PANEL
+----------------------------------------------------- */
+
+.district-map-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 390px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 15px 48px;
+}
+
+
+.district-risk-map {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  display: block;
+}
+
+
+.district-map-location {
+  position: absolute;
+  top: 15px;
+  left: 18px;
+  z-index: 3;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 250, 246, 0.9);
+  border: 1px solid rgba(122, 38, 56, 0.08);
+
+  color: #806f73;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  box-shadow: 0 4px 15px rgba(95, 50, 45, 0.05);
+}
+
+
+.district-map-location svg {
+  color: #7a2638;
+}
+
+
+/* -----------------------------------------------------
+   COMPASS / MAP MARKER
+----------------------------------------------------- */
+
+.district-map-compass {
+  position: absolute;
+  top: 17px;
+  right: 19px;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 250, 246, 0.82);
+
+  border: 1px solid rgba(122, 38, 56, 0.1);
+
+  box-shadow: 0 3px 10px rgba(95, 50, 45, 0.05);
+
+  z-index: 3;
+}
+
+
+.compass-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: #9c7a80;
+  transform: translate(-50%, -50%);
+}
+
+
+.compass-line.vertical {
+  width: 1px;
+  height: 16px;
+}
+
+
+.compass-line.horizontal {
+  width: 16px;
+  height: 1px;
+}
+
+
+.compass-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #7a2638;
+}
+
+
+/* -----------------------------------------------------
+   ASSIGNED DISTRICT LABEL
+----------------------------------------------------- */
+
+.district-map-assigned {
+  position: absolute;
+  left: 18px;
+  bottom: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #88787b;
+  font-size: 11px;
+}
+
+
+.district-map-assigned strong {
+  color: #672333;
+  font-weight: 800;
+}
+
+
+.assigned-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7a2638;
+  box-shadow: 0 0 0 4px rgba(122, 38, 56, 0.1);
+}
+
+
+/* -----------------------------------------------------
+   MAP TOOLTIP
+----------------------------------------------------- */
+
+.district-map-tooltip {
+  position: absolute;
+  right: 20px;
+  bottom: 43px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  padding: 9px 12px;
+
+  border-radius: 10px;
+
+  background: rgba(79, 65, 68, 0.94);
+  color: white;
+
+  box-shadow: 0 8px 24px rgba(60, 40, 40, 0.16);
+
+  pointer-events: none;
+  z-index: 5;
+}
+
+
+.district-map-tooltip strong {
+  font-size: 12px;
+}
+
+
+.district-map-tooltip span {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+
+/* -----------------------------------------------------
+   DIVIDER
+----------------------------------------------------- */
+
+.district-risk-divider {
+  width: 1px;
+  background: #eadcd6;
+  margin: 30px 0;
+}
+
+
+/* -----------------------------------------------------
+   LEGEND
+----------------------------------------------------- */
+
+.district-risk-legend {
+  padding: 35px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.district-risk-legend-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+
+
+.district-risk-legend-title span {
+  color: #4f4144;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.district-risk-legend-title small {
+  color: #98888b;
+  font-size: 11px;
+}
+
+
+/* -----------------------------------------------------
+   LEGEND ITEM
+----------------------------------------------------- */
+
+.district-risk-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 39px;
+
+  border-bottom: 1px solid #eaded9;
+}
+
+
+.district-risk-legend-item:last-of-type {
+  border-bottom: 0;
+}
+
+
+.district-risk-legend-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #756669;
+  font-size: 12px;
+}
+
+
+.district-risk-color-dot {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+
+.district-risk-legend-item strong {
+  color: #4f4144;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+/* -----------------------------------------------------
+   LEGEND DIVIDER
+----------------------------------------------------- */
+
+.district-risk-legend-divider {
+  height: 1px;
+  width: 100%;
+  background: #e8d9d3;
+  margin: 20px 0;
+}
+
+
+/* -----------------------------------------------------
+   SELECTED DISTRICT
+----------------------------------------------------- */
+
+.district-risk-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  padding: 13px;
+
+  border-radius: 13px;
+
+  background: #f3e5df;
+}
+
+
+.district-risk-selected > span {
+  color: #9b898c;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+
+.district-risk-selected strong {
+  color: #672333;
+  font-size: 14px;
+}
+
+
+.district-risk-selected > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #806f73;
+  font-size: 11px;
+}
+
+
+.district-selected-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+
+/* -----------------------------------------------------
+   UNAVAILABLE MAP
+----------------------------------------------------- */
+
+.district-map-unavailable {
+  min-height: 260px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin: 0 22px 22px;
+
+  border-radius: 18px;
+
+  background: #f9f0eb;
+
+  color: #88787b;
+
+  text-align: center;
+}
+
+
+.district-map-unavailable svg {
+  color: #7a2638;
+}
+
+
+.district-map-unavailable strong {
+  color: #5f5053;
+  font-size: 14px;
+}
+
+
+.district-map-unavailable span {
+  max-width: 300px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* -----------------------------------------------------
+   RESPONSIVE
+----------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+  .district-risk-body {
+    grid-template-columns: 1fr;
+  }
+
+
+  .district-risk-divider {
+    width: auto;
+    height: 1px;
+    margin: 0 25px;
+  }
+
+
+  .district-risk-legend {
+    padding: 25px;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .district-risk-header {
+    padding: 20px;
+  }
+
+
+  .district-risk-header h3 {
+    font-size: 17px;
+  }
+
+
+  .district-risk-header p {
+    font-size: 12px;
+  }
+
+
+  .district-risk-body {
+    margin: 0 14px 14px;
+    border-radius: 14px;
+  }
+
+
+  .district-map-panel {
+    min-height: 310px;
+    padding-bottom: 45px;
+  }
+
+
+  .district-risk-map {
+    width: 110%;
+  }
+
+
+  .district-risk-legend {
+    padding: 22px 18px;
+  }
+
+}
