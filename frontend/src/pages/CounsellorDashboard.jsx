@@ -44,13 +44,25 @@ import "./CounsellorDashboard.css";
 
 const INDIA_STATES_GEO_URL =
   "https://raw.githubusercontent.com/india-in-data/india-states-2019/master/india_states.geojson";
+/* =====================================================
+   DISTRICT MAP DATA
+   Dynamic according to counsellor's assigned state
+===================================================== */
 
+const DISTRICT_GEO_URLS = {
+  "West Bengal":
+    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/west-bengal.geojson",
+
+  Assam:
+    "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/geojson/states/assam.geojson",
+};
 
 /* =====================================================
-   DEMO DATA
+   DEMO DISTRICT COUNSELLOR DATA
 ===================================================== */
 
 const demoCounsellorData = {
+  district: "Kolkata",
   state: "West Bengal",
 
   total_registered_victims: 142,
@@ -110,6 +122,610 @@ const demoCounsellorData = {
 
 
 /* =====================================================
+   DISTRICT MENTAL WELL-BEING TREND
+   FRONTEND DEMO DATA ONLY
+
+   Later this can come from backend API.
+===================================================== */
+
+const demoDistrictWellbeingTrend = [
+  {
+    month: "Apr",
+    wellbeing: 61,
+  },
+
+  {
+    month: "May",
+    wellbeing: 64,
+  },
+
+  {
+    month: "Jun",
+    wellbeing: 60,
+  },
+
+  {
+    month: "Jul",
+    wellbeing: 67,
+  },
+
+  {
+    month: "Aug",
+    wellbeing: 71,
+  },
+
+  {
+    month: "Sep",
+    wellbeing: 74,
+  },
+];
+
+/* =====================================================
+   DISTRICT-WISE RISK DATA
+   FRONTEND DEMO DATA ONLY
+
+   Later this will come from backend API.
+===================================================== */
+
+const demoDistrictRiskData = {
+  /* -------------------------------
+     WEST BENGAL
+  -------------------------------- */
+
+  "Alipurduar": "Low Risk",
+
+  "Bankura": "Moderate Risk",
+
+  "Birbhum": "Moderate Risk",
+
+  "Cooch Behar": "Low Risk",
+
+  "Dakshin Dinajpur": "Low Risk",
+
+  "Darjeeling": "Stable",
+
+  "Hooghly": "Low Risk",
+
+  "Howrah": "High Risk",
+
+  "Jalpaiguri": "Moderate Risk",
+
+  "Jhargram": "Stable",
+
+  "Kalimpong": "Low Risk",
+
+  "Kolkata": "High Risk",
+
+  "Malda": "Moderate Risk",
+
+  "Murshidabad": "High Risk",
+
+  "Nadia": "Moderate Risk",
+
+  "North 24 Parganas": "Moderate Risk",
+
+  "South 24 Parganas": "Moderate Risk",
+
+  "Paschim Bardhaman": "Low Risk",
+
+  "Paschim Medinipur": "Low Risk",
+
+  "Purba Bardhaman": "Low Risk",
+
+  "Purba Medinipur": "Low Risk",
+
+  "Purulia": "Stable",
+
+  "Uttar Dinajpur": "Stable",
+
+
+  /* -------------------------------
+     ASSAM
+  -------------------------------- */
+
+  "Baksa": "Low Risk",
+
+  "Bajali": "Stable",
+
+  "Barpeta": "Moderate Risk",
+
+  "Biswanath": "Low Risk",
+
+  "Bongaigaon": "Moderate Risk",
+
+  "Cachar": "High Risk",
+
+  "Charaideo": "Low Risk",
+
+  "Chirang": "Stable",
+
+  "Darrang": "Low Risk",
+
+  "Dhemaji": "Stable",
+
+  "Dhubri": "Moderate Risk",
+
+  "Dibrugarh": "Moderate Risk",
+
+  "Dima Hasao": "High Risk",
+
+  "Goalpara": "Moderate Risk",
+
+  "Golaghat": "Low Risk",
+
+  "Hailakandi": "Moderate Risk",
+
+  "Hojai": "Low Risk",
+
+  "Jorhat": "Low Risk",
+
+  "Kamrup": "Moderate Risk",
+
+  "Kamrup Metropolitan": "High Risk",
+
+  "Karbi Anglong": "Low Risk",
+
+  "Karimganj": "Moderate Risk",
+
+  "Kokrajhar": "Low Risk",
+
+  "Lakhimpur": "Low Risk",
+
+  "Majuli": "Stable",
+
+  "Morigaon": "Moderate Risk",
+
+  "Nagaon": "Moderate Risk",
+
+  "Nalbari": "Low Risk",
+
+  "Sivasagar": "Low Risk",
+
+  "Sonitpur": "Moderate Risk",
+
+  "South Salmara-Mankachar": "Stable",
+
+  "Tinsukia": "Moderate Risk",
+
+  "Udalguri": "Low Risk",
+
+  "West Karbi Anglong": "Stable",
+
+  "Tamulpur": "Stable",
+};
+/* =====================================================
+   INDIA STATE RISK DATA
+   FRONTEND DEMO DATA ONLY
+
+   NOTE:
+   The map is intentionally nationwide and remains
+   STATE-wise even though the logged-in counsellor
+   is assigned to one DISTRICT.
+===================================================== */
+
+const demoStateRiskData = {
+  "Andhra Pradesh": {
+    high: 18,
+    moderate: 32,
+    low: 95,
+  },
+
+  "Arunachal Pradesh": {
+    high: 5,
+    moderate: 10,
+    low: 35,
+  },
+
+  Assam: {
+    high: 21,
+    moderate: 38,
+    low: 82,
+  },
+
+  Bihar: {
+    high: 31,
+    moderate: 52,
+    low: 108,
+  },
+
+  Chhattisgarh: {
+    high: 15,
+    moderate: 29,
+    low: 71,
+  },
+
+  Goa: {
+    high: 4,
+    moderate: 9,
+    low: 28,
+  },
+
+  Gujarat: {
+    high: 17,
+    moderate: 35,
+    low: 110,
+  },
+
+  Haryana: {
+    high: 19,
+    moderate: 31,
+    low: 76,
+  },
+
+  "Himachal Pradesh": {
+    high: 7,
+    moderate: 15,
+    low: 42,
+  },
+
+  Jharkhand: {
+    high: 23,
+    moderate: 41,
+    low: 69,
+  },
+
+  Karnataka: {
+    high: 20,
+    moderate: 44,
+    low: 126,
+  },
+
+  Kerala: {
+    high: 11,
+    moderate: 29,
+    low: 118,
+  },
+
+  "Madhya Pradesh": {
+    high: 27,
+    moderate: 48,
+    low: 102,
+  },
+
+  Maharashtra: {
+    high: 34,
+    moderate: 61,
+    low: 165,
+  },
+
+  Manipur: {
+    high: 8,
+    moderate: 13,
+    low: 31,
+  },
+
+  Meghalaya: {
+    high: 6,
+    moderate: 12,
+    low: 29,
+  },
+
+  Mizoram: {
+    high: 4,
+    moderate: 8,
+    low: 24,
+  },
+
+  Nagaland: {
+    high: 5,
+    moderate: 9,
+    low: 27,
+  },
+
+  Odisha: {
+    high: 25,
+    moderate: 43,
+    low: 97,
+  },
+
+  Punjab: {
+    high: 16,
+    moderate: 29,
+    low: 72,
+  },
+
+  Rajasthan: {
+    high: 29,
+    moderate: 51,
+    low: 115,
+  },
+
+  Sikkim: {
+    high: 3,
+    moderate: 7,
+    low: 20,
+  },
+
+  "Tamil Nadu": {
+    high: 24,
+    moderate: 47,
+    low: 132,
+  },
+
+  Telangana: {
+    high: 18,
+    moderate: 36,
+    low: 94,
+  },
+
+  Tripura: {
+    high: 9,
+    moderate: 15,
+    low: 37,
+  },
+
+  "Uttar Pradesh": {
+    high: 42,
+    moderate: 75,
+    low: 180,
+  },
+
+  Uttarakhand: {
+    high: 8,
+    moderate: 17,
+    low: 49,
+  },
+
+  "West Bengal": {
+    high: 12,
+    moderate: 18,
+    low: 112,
+  },
+
+  /* -------------------------------
+     UNION TERRITORIES
+  -------------------------------- */
+
+  Delhi: {
+    high: 12,
+    moderate: 24,
+    low: 64,
+  },
+
+  "Jammu and Kashmir": {
+    high: 14,
+    moderate: 25,
+    low: 58,
+  },
+
+  Ladakh: {
+    high: 3,
+    moderate: 6,
+    low: 18,
+  },
+
+  Puducherry: {
+    high: 4,
+    moderate: 8,
+    low: 25,
+  },
+
+  Chandigarh: {
+    high: 3,
+    moderate: 7,
+    low: 21,
+  },
+
+  "Dadra and Nagar Haveli and Daman and Diu": {
+    high: 2,
+    moderate: 5,
+    low: 18,
+  },
+
+  "Andaman and Nicobar Islands": {
+    high: 2,
+    moderate: 4,
+    low: 15,
+  },
+
+  Lakshadweep: {
+    high: 1,
+    moderate: 3,
+    low: 10,
+  },
+};
+
+
+/* =====================================================
+   STATE NAME NORMALIZATION
+===================================================== */
+
+function normalizeStateName(stateName) {
+  if (!stateName) {
+    return "";
+  }
+
+  return stateName
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+
+/* =====================================================
+   STATE DATA LOOKUP
+===================================================== */
+
+function getStateData(stateName) {
+  const normalizedName =
+    normalizeStateName(stateName);
+
+  const matchingEntry =
+    Object.entries(
+      demoStateRiskData
+    ).find(
+      ([name]) =>
+        normalizeStateName(name) ===
+        normalizedName
+    );
+
+  return matchingEntry
+    ? matchingEntry[1]
+    : null;
+}
+
+
+/* =====================================================
+   STATE RISK CALCULATION
+===================================================== */
+
+function getStateRisk(stateName) {
+  const stateData =
+    getStateData(stateName);
+
+  if (!stateData) {
+    return {
+      level: "No Data",
+      percentage: 0,
+      total: 0,
+      high: 0,
+      moderate: 0,
+      low: 0,
+    };
+  }
+
+  const total =
+    stateData.high +
+    stateData.moderate +
+    stateData.low;
+
+  if (total === 0) {
+    return {
+      level: "No Data",
+      percentage: 0,
+      total: 0,
+      high: 0,
+      moderate: 0,
+      low: 0,
+    };
+  }
+
+  const riskPercentage =
+    (
+      (
+        stateData.high +
+        stateData.moderate
+      ) /
+      total
+    ) *
+    100;
+
+  let level;
+
+  if (riskPercentage >= 45) {
+    level = "High Risk";
+  } else if (riskPercentage >= 25) {
+    level = "Moderate Risk";
+  } else {
+    level = "Low Risk";
+  }
+
+  return {
+    level,
+
+    percentage:
+      Math.round(
+        riskPercentage
+      ),
+
+    total,
+
+    high:
+      stateData.high,
+
+    moderate:
+      stateData.moderate,
+
+    low:
+      stateData.low,
+  };
+}
+
+
+/* =====================================================
+   STATE RISK COLOUR
+===================================================== */
+
+function getStateRiskColor(riskLevel) {
+  switch (riskLevel) {
+    case "High Risk":
+      return "#7A2638";
+
+    case "Moderate Risk":
+      return "#D9825B";
+
+    case "Low Risk":
+      return "#C9A6A0";
+
+    default:
+      return "#F1E7E3";
+  }
+}
+
+/* =====================================================
+   DISTRICT NAME NORMALIZATION
+===================================================== */
+
+function normalizeDistrictName(name) {
+  if (!name) {
+    return "";
+  }
+
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[–—]/g, "-")
+    .replace(/\s+/g, " ");
+}
+
+
+/* =====================================================
+   DISTRICT RISK LOOKUP
+===================================================== */
+
+function getDistrictRisk(districtName) {
+  const normalizedName =
+    normalizeDistrictName(districtName);
+
+  const matchingEntry =
+    Object.entries(
+      demoDistrictRiskData
+    ).find(
+      ([name]) =>
+        normalizeDistrictName(name) ===
+        normalizedName
+    );
+
+  return matchingEntry
+    ? matchingEntry[1]
+    : "Stable";
+}
+
+
+/* =====================================================
+   DISTRICT RISK COLOURS
+===================================================== */
+
+function getDistrictRiskColor(riskLevel) {
+  switch (riskLevel) {
+    case "High Risk":
+      return "#7A2638";
+
+    case "Moderate Risk":
+      return "#D99A73";
+
+    case "Low Risk":
+      return "#C9A0A7";
+
+    case "Stable":
+      return "#9DAA96";
+
+    default:
+      return "#EDE4DF";
+  }
+}
+
+/* =====================================================
    DEMO SEARCH DATA
 ===================================================== */
 
@@ -118,7 +734,8 @@ const demoSearchItems = [
     id: "V1001",
     type: "Victim",
     title: "Critical distress alert",
-    subtitle: "Significant increase in distress indicators",
+    subtitle:
+      "Significant increase in distress indicators",
     section: "alerts",
     risk: "Critical",
   },
@@ -127,7 +744,8 @@ const demoSearchItems = [
     id: "C1001",
     type: "Case",
     title: "High-risk case detected",
-    subtitle: "Requires counsellor review",
+    subtitle:
+      "Requires counsellor review",
     section: "alerts",
     risk: "High Risk",
   },
@@ -136,7 +754,8 @@ const demoSearchItems = [
     id: "V1002",
     type: "Victim",
     title: "Follow-up pending",
-    subtitle: "No response for 3 consecutive days",
+    subtitle:
+      "No response for 3 consecutive days",
     section: "interventions",
     risk: "Moderate",
   },
@@ -145,7 +764,8 @@ const demoSearchItems = [
     id: "C1002",
     type: "Case",
     title: "Rapid wellbeing decline",
-    subtitle: "Intervention review required",
+    subtitle:
+      "Intervention review required",
     section: "interventions",
     risk: "Critical",
   },
@@ -154,7 +774,8 @@ const demoSearchItems = [
     id: "V1003",
     type: "Victim",
     title: "Counselling session pending",
-    subtitle: "Follow-up counselling required",
+    subtitle:
+      "Follow-up counselling required",
     section: "interventions",
     risk: "Moderate",
   },
@@ -163,7 +784,8 @@ const demoSearchItems = [
     id: "C1003",
     type: "Case",
     title: "Legal aid requirement",
-    subtitle: "Legal support identified for case",
+    subtitle:
+      "Legal support identified for case",
     section: "cases",
     risk: "Support",
   },
@@ -172,15 +794,955 @@ const demoSearchItems = [
     id: "V1004",
     type: "Victim",
     title: "Protection requirement",
-    subtitle: "Protection support required",
+    subtitle:
+      "Protection support required",
     section: "cases",
     risk: "High Risk",
   },
 ];
 
 
-function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchItems }) {
+/* =====================================================
+   DISTRICT WELL-BEING TREND CHART
+===================================================== */
 
+function WellbeingTrendChart({
+  district,
+  trend,
+}) {
+  const width = 620;
+  const height = 250;
+
+  const paddingLeft = 42;
+  const paddingRight = 20;
+  const paddingTop = 25;
+  const paddingBottom = 40;
+
+  const chartWidth =
+    width -
+    paddingLeft -
+    paddingRight;
+
+  const chartHeight =
+    height -
+    paddingTop -
+    paddingBottom;
+
+  const minScore = 0;
+  const maxScore = 100;
+
+  const safeTrend =
+    Array.isArray(trend) &&
+    trend.length > 0
+      ? trend
+      : [
+          {
+            month: "Current",
+            wellbeing: 0,
+          },
+        ];
+
+  const points =
+    safeTrend.map(
+      (item, index) => {
+        const x =
+          paddingLeft +
+          (
+            index /
+            Math.max(
+              safeTrend.length - 1,
+              1
+            )
+          ) *
+            chartWidth;
+
+        const numericScore =
+          Number(
+            item.wellbeing
+          ) || 0;
+
+        const y =
+          paddingTop +
+          (
+            (
+              maxScore -
+              numericScore
+            ) /
+            (
+              maxScore -
+              minScore
+            )
+          ) *
+            chartHeight;
+
+        return {
+          ...item,
+          wellbeing:
+            numericScore,
+          x,
+          y,
+        };
+      }
+    );
+
+  const linePoints =
+    points
+      .map(
+        (point) =>
+          `${point.x},${point.y}`
+      )
+      .join(" ");
+
+  const areaPoints = [
+    `${paddingLeft},${
+      paddingTop +
+      chartHeight
+    }`,
+
+    ...points.map(
+      (point) =>
+        `${point.x},${point.y}`
+    ),
+
+    `${
+      paddingLeft +
+      chartWidth
+    },${
+      paddingTop +
+      chartHeight
+    }`,
+  ].join(" ");
+
+  const startingScore =
+    points[0]?.wellbeing ?? 0;
+
+  const latestScore =
+    points[
+      points.length - 1
+    ]?.wellbeing ?? 0;
+
+  const overallChange =
+    latestScore -
+    startingScore;
+
+  return (
+    <div className="district-wellbeing-chart">
+
+      <div className="district-chart-header">
+
+        <div>
+
+          <h3>
+            Mental Well-being Trend
+          </h3>
+
+          <p>
+            District-level wellbeing trend for{" "}
+            {district}
+          </p>
+
+        </div>
+
+        <div className="district-chart-current">
+
+          <span>
+            Current
+          </span>
+
+          <strong>
+            {latestScore}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div className="district-chart-container">
+
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="district-wellbeing-svg"
+          role="img"
+          aria-label={`Mental well-being trend for ${district}`}
+        >
+
+          {[0, 25, 50, 75, 100].map(
+            (score) => {
+
+              const y =
+                paddingTop +
+                (
+                  (
+                    maxScore -
+                    score
+                  ) /
+                  (
+                    maxScore -
+                    minScore
+                  )
+                ) *
+                  chartHeight;
+
+              return (
+                <g
+                  key={score}
+                >
+
+                  <line
+                    x1={paddingLeft}
+                    y1={y}
+                    x2={
+                      paddingLeft +
+                      chartWidth
+                    }
+                    y2={y}
+                    className="district-chart-grid-line"
+                  />
+
+                  <text
+                    x={
+                      paddingLeft -
+                      10
+                    }
+                    y={y + 4}
+                    textAnchor="end"
+                    className="district-chart-axis-label"
+                  >
+                    {score}
+                  </text>
+
+                </g>
+              );
+            }
+          )}
+
+
+          <polygon
+            points={areaPoints}
+            className="district-chart-area"
+          />
+
+
+          <polyline
+            points={linePoints}
+            fill="none"
+            className="district-chart-line"
+          />
+
+
+          {points.map(
+            (point) => (
+
+              <g
+                key={point.month}
+              >
+
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="5"
+                  className="district-chart-point"
+                />
+
+                <text
+                  x={point.x}
+                  y={
+                    height -
+                    12
+                  }
+                  textAnchor="middle"
+                  className="district-chart-month"
+                >
+                  {point.month}
+                </text>
+
+              </g>
+
+            )
+          )}
+
+        </svg>
+
+      </div>
+
+
+      <div className="district-trend-summary">
+
+        <div className="trend-stat">
+
+          <strong>
+            {startingScore}
+          </strong>
+
+          <span>
+          Starting score
+          </span>
+
+        </div>
+
+
+        <div className="trend-stat">
+
+          <strong>
+            {latestScore}
+          </strong>
+
+          <span>
+            Latest score
+          </span>
+
+        </div>
+
+
+        <div className="trend-stat change">
+
+          <strong>
+            {overallChange > 0 ? "+" : ""}
+            {overallChange}
+            
+          </strong>
+
+          <span>
+            Overall change
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+/* =====================================================
+   DISTRICT-WISE RISK OVERVIEW MAP
+===================================================== */
+
+function DistrictRiskOverview({
+  district,
+  state,
+  onViewAll,
+}) {
+  const geoUrl =
+    DISTRICT_GEO_URLS[state];
+
+  const [hoveredDistrict, setHoveredDistrict] =
+    useState(null);
+
+
+  if (!geoUrl) {
+    return (
+      <section className="dashboard-card district-risk-card">
+
+        <div className="district-risk-header">
+
+          <div>
+            <span className="district-risk-eyebrow">
+              RISK OVERVIEW
+            </span>
+
+            <h3>
+              District-wise Risk Overview
+            </h3>
+
+            <p>
+              District risk distribution for{" "}
+              {state}.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div className="district-map-unavailable">
+
+          <MapPin size={22} />
+
+          <strong>
+            District map unavailable
+          </strong>
+
+          <span>
+            Map data for {state} will be
+            connected when available.
+          </span>
+
+        </div>
+
+      </section>
+    );
+  }
+
+
+  return (
+    <section className="dashboard-card district-risk-card">
+
+
+      {/* HEADER */}
+
+      <div className="district-risk-header">
+
+        <div>
+
+          <span className="district-risk-eyebrow">
+            DISTRICT RISK MONITORING
+          </span>
+
+          <h3>
+            District-wise Risk Overview
+          </h3>
+
+          <p>
+            Current wellbeing risk distribution
+            across districts in {state}.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          className="district-risk-view-all"
+          onClick={onViewAll}
+        >
+          View all
+          <ChevronRight size={15} />
+        </button>
+
+      </div>
+
+
+      {/* MAP + LEGEND */}
+
+      <div className="district-risk-body">
+
+
+        {/* MAP */}
+
+        <div className="district-map-panel">
+
+          <div className="district-map-location">
+
+            <MapPin size={14} />
+
+            <span>
+              {state}
+            </span>
+
+          </div>
+
+
+          <div className="district-map-compass">
+
+            <span className="compass-line vertical" />
+
+            <span className="compass-line horizontal" />
+
+            <span className="compass-dot" />
+
+          </div>
+
+
+          <ComposableMap
+            projection="geoMercator"
+            projectionConfig={{
+              scale:
+                state === "West Bengal"
+                  ? 4700
+                  : 4300,
+
+              center:
+                state === "West Bengal"
+                  ? [
+                      87.8,
+                      24.1,
+                    ]
+                  : [
+                      92.7,
+                      26.1,
+                    ],
+            }}
+            width={650}
+            height={390}
+            className="district-risk-map"
+            aria-label={`${state} district risk map`}
+          >
+
+            <Geographies
+              geography={geoUrl}
+            >
+
+              {({
+                geographies,
+              }) =>
+                geographies.map(
+                  (geo) => {
+
+                    const properties =
+                      geo.properties ||
+                      {};
+
+
+                    const districtName =
+                      properties.district ||
+                      properties.DISTRICT ||
+                      properties.District ||
+                      properties.dtname ||
+                      properties.DT_NAME ||
+                      properties.district_name ||
+                      properties.NAME_2 ||
+                      properties.NAME ||
+                      properties.name ||
+                      "";
+
+
+                    const riskLevel =
+                      getDistrictRisk(
+                        districtName
+                      );
+
+
+                    const fillColor =
+                      getDistrictRiskColor(
+                        riskLevel
+                      );
+
+
+                    const isAssignedDistrict =
+                      normalizeDistrictName(
+                        districtName
+                      ) ===
+                      normalizeDistrictName(
+                        district
+                      );
+
+
+                    const isHovered =
+                      hoveredDistrict ===
+                      districtName;
+
+
+                    return (
+                      <Geography
+                        key={
+                          geo.rsmKey
+                        }
+
+                        geography={
+                          geo
+                        }
+
+                        className={
+                          isAssignedDistrict
+                            ? "district-map-shape assigned"
+                            : "district-map-shape"
+                        }
+
+                        onMouseEnter={() =>
+                          setHoveredDistrict(
+                            districtName
+                          )
+                        }
+
+                        onMouseLeave={() =>
+                          setHoveredDistrict(
+                            null
+                          )
+                        }
+
+                        style={{
+
+                          default: {
+
+                            fill:
+                              fillColor,
+
+                            stroke:
+                              "#FFF9F5",
+
+                            strokeWidth:
+                              isAssignedDistrict
+                                ? 1.8
+                                : 1,
+
+                            outline:
+                              "none",
+
+                          },
+
+
+                          hover: {
+
+                            fill:
+                              fillColor,
+
+                            stroke:
+                              isAssignedDistrict
+                                ? "#672333"
+                                : "#FFFFFF",
+
+                            strokeWidth:
+                              isAssignedDistrict
+                                ? 2.6
+                                : 1.8,
+
+                            outline:
+                              "none",
+
+                            cursor:
+                              "pointer",
+
+                            filter:
+                              "brightness(1.04)",
+
+                          },
+
+
+                          pressed: {
+
+                            fill:
+                              fillColor,
+
+                            stroke:
+                              "#672333",
+
+                            strokeWidth:
+                              2,
+
+                            outline:
+                              "none",
+
+                          },
+
+                        }}
+
+                        tabIndex={
+                          -1
+                        }
+
+                      />
+                    );
+                  }
+                )
+              }
+
+            </Geographies>
+
+          </ComposableMap>
+
+
+          {/* HOVER LABEL */}
+
+          {hoveredDistrict && (
+
+            <div className="district-map-tooltip">
+
+              <strong>
+                {hoveredDistrict}
+              </strong>
+
+              <span>
+                {
+                  getDistrictRisk(
+                    hoveredDistrict
+                  )
+                }
+              </span>
+
+            </div>
+
+          )}
+
+
+          {/* ASSIGNED DISTRICT */}
+
+          <div className="district-map-assigned">
+
+            <span className="assigned-dot" />
+
+            <span>
+              Assigned district:
+            </span>
+
+            <strong>
+              {district}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        {/* DIVIDER */}
+
+        <div className="district-risk-divider" />
+
+
+        {/* LEGEND */}
+
+        <div className="district-risk-legend">
+
+          <div className="district-risk-legend-title">
+
+            <span>
+              Risk level
+            </span>
+
+            <small>
+              {state}
+            </small>
+
+          </div>
+
+
+          <DistrictRiskLegendItem
+            label="High Risk"
+            color="#7A2638"
+            count={getDistrictRiskCount(
+              state,
+              "High Risk"
+            )}
+          />
+
+
+          <DistrictRiskLegendItem
+            label="Medium Risk"
+            color="#D99A73"
+            count={getDistrictRiskCount(
+              state,
+              "Moderate Risk"
+            )}
+          />
+
+
+          <DistrictRiskLegendItem
+            label="Low Risk"
+            color="#C9A0A7"
+            count={getDistrictRiskCount(
+              state,
+              "Low Risk"
+            )}
+          />
+
+
+          <DistrictRiskLegendItem
+            label="Stable"
+            color="#9DAA96"
+            count={getDistrictRiskCount(
+              state,
+              "Stable"
+            )}
+          />
+
+
+          <div className="district-risk-legend-divider" />
+
+
+          <div className="district-risk-selected">
+
+            <span>
+              Your district
+            </span>
+
+            <strong>
+              {district}
+            </strong>
+
+            <div>
+
+              <span
+                className="district-selected-dot"
+                style={{
+                  background:
+                    getDistrictRiskColor(
+                      getDistrictRisk(
+                        district
+                      )
+                    ),
+                }}
+              />
+
+              {
+                getDistrictRisk(
+                  district
+                )
+              }
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+}
+
+
+/* =====================================================
+   DISTRICT RISK LEGEND ITEM
+===================================================== */
+
+function DistrictRiskLegendItem({
+  label,
+  color,
+  count,
+}) {
+
+  return (
+    <div className="district-risk-legend-item">
+
+      <div className="district-risk-legend-label">
+
+        <span
+          className="district-risk-color-dot"
+          style={{
+            background: color,
+          }}
+        />
+
+        <span>
+          {label}
+        </span>
+
+      </div>
+
+
+      <strong>
+        {count}
+      </strong>
+
+    </div>
+  );
+}
+
+
+/* =====================================================
+   DISTRICT RISK COUNT
+===================================================== */
+
+function getDistrictRiskCount(
+  state,
+  riskLevel
+) {
+
+  const stateDistricts =
+    Object.entries(
+      demoDistrictRiskData
+    ).filter(
+      ([name]) => {
+
+        /*
+         * For the current frontend demo,
+         * district names are shared across
+         * the supported state datasets.
+         *
+         * The GeoJSON itself determines
+         * which districts are rendered.
+         */
+
+        return Boolean(name);
+      }
+    );
+
+
+  /*
+   * West Bengal and Assam currently have
+   * separate demo blocks above.
+   */
+
+  const westBengalDistricts = [
+    "Alipurduar",
+    "Bankura",
+    "Birbhum",
+    "Cooch Behar",
+    "Dakshin Dinajpur",
+    "Darjeeling",
+    "Hooghly",
+    "Howrah",
+    "Jalpaiguri",
+    "Jhargram",
+    "Kalimpong",
+    "Kolkata",
+    "Malda",
+    "Murshidabad",
+    "Nadia",
+    "North 24 Parganas",
+    "South 24 Parganas",
+    "Paschim Bardhaman",
+    "Paschim Medinipur",
+    "Purba Bardhaman",
+    "Purba Medinipur",
+    "Purulia",
+    "Uttar Dinajpur",
+  ];
+
+
+  const assamDistricts = [
+    "Baksa",
+    "Bajali",
+    "Barpeta",
+    "Biswanath",
+    "Bongaigaon",
+    "Cachar",
+    "Charaideo",
+    "Chirang",
+    "Darrang",
+    "Dhemaji",
+    "Dhubri",
+    "Dibrugarh",
+    "Dima Hasao",
+    "Goalpara",
+    "Golaghat",
+    "Hailakandi",
+    "Hojai",
+    "Jorhat",
+    "Kamrup",
+    "Kamrup Metropolitan",
+    "Karbi Anglong",
+    "Karimganj",
+    "Kokrajhar",
+    "Lakhimpur",
+    "Majuli",
+    "Morigaon",
+    "Nagaon",
+    "Nalbari",
+    "Sivasagar",
+    "Sonitpur",
+    "South Salmara-Mankachar",
+    "Tinsukia",
+    "Udalguri",
+    "West Karbi Anglong",
+    "Tamulpur",
+  ];
+
+
+  const districtList =
+    state === "Assam"
+      ? assamDistricts
+      : westBengalDistricts;
+
+
+  return districtList.filter(
+    (districtName) =>
+      getDistrictRisk(
+        districtName
+      ) === riskLevel
+  ).length;
+}
+
+/* =====================================================
+   MAIN DASHBOARD
+===================================================== */
+
+function CounsellorDashboard({
+  onLogout,
+  data: dashboardData,
+  profile,
+  searchItems,
+}) {
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
 
@@ -196,18 +1758,54 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   const [searchQuery, setSearchQuery] =
     useState("");
 
-  const data = dashboardData || demoCounsellorData;
-  const counsellorName = profile?.name || data.counsellor_name || data.counsellor_id || "Counsellor";
-  const searchableItems = searchItems || demoSearchItems;
+
+  const data =
+    dashboardData ||
+    demoCounsellorData;
+
+
+  /* =====================================================
+     DISTRICT + STATE ASSIGNMENT
+
+     Counsellor scope = DISTRICT
+     Nationwide map scope = STATE
+  ===================================================== */
+
+  const assignedDistrict =
+    profile?.district ||
+    data.district ||
+    "Kolkata";
+
+  const assignedState =
+    profile?.state ||
+    data.state ||
+    "West Bengal";
+
+
+  const counsellorName =
+    profile?.name ||
+    data.counsellor_name ||
+    data.counsellor_id ||
+    "Counsellor";
+
+
+  const searchableItems =
+    searchItems ||
+    demoSearchItems;
 
 
   /* =====================================================
      REFS
   ===================================================== */
 
-  const profileRef = useRef(null);
-  const notificationRef = useRef(null);
-  const searchRef = useRef(null);
+  const profileRef =
+    useRef(null);
+
+  const notificationRef =
+    useRef(null);
+
+  const searchRef =
+    useRef(null);
 
 
   /* =====================================================
@@ -215,43 +1813,49 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   ===================================================== */
 
   useEffect(() => {
+    const handleOutsideClick =
+      (event) => {
 
-    const handleOutsideClick = (event) => {
+        if (
+          profileRef.current &&
+          !profileRef.current.contains(
+            event.target
+          )
+        ) {
+          setProfileOpen(false);
+        }
 
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target)
-      ) {
-        setProfileOpen(false);
-      }
+        if (
+          notificationRef.current &&
+          !notificationRef.current.contains(
+            event.target
+          )
+        ) {
+          setNotificationsOpen(false);
+        }
 
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
-      ) {
-        setNotificationsOpen(false);
-      }
-
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target)
-      ) {
-        setSearchQuery("");
-      }
-    };
+        if (
+          searchRef.current &&
+          !searchRef.current.contains(
+            event.target
+          )
+        ) {
+          setSearchQuery("");
+        }
+      };
 
 
-    const handleEscape = (event) => {
+    const handleEscape =
+      (event) => {
 
-      if (event.key === "Escape") {
-
-        setProfileOpen(false);
-        setNotificationsOpen(false);
-        setSearchQuery("");
-
-      }
-
-    };
+        if (
+          event.key === "Escape"
+        ) {
+          setProfileOpen(false);
+          setNotificationsOpen(false);
+          setSearchQuery("");
+        }
+      };
 
 
     document.addEventListener(
@@ -291,10 +1895,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
     data.moderate_risk_victims +
     data.low_risk_victims;
 
+
   const highRiskPercentage =
     riskTotal > 0
       ? Math.round(
-          (data.high_risk_victims / riskTotal) * 100
+          (
+            data.high_risk_victims /
+            riskTotal
+          ) *
+            100
         )
       : 0;
 
@@ -306,24 +1915,32 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   const filteredSearchResults =
     searchQuery.trim().length === 0
       ? []
-      : searchableItems.filter((item) =>
-          `${item.id} ${item.type} ${item.title} ${item.subtitle}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
+      : searchableItems.filter(
+          (item) =>
+            `${item.id} ${item.type} ${item.title} ${item.subtitle}`
+              .toLowerCase()
+              .includes(
+                searchQuery.toLowerCase()
+              )
         );
 
 
-  const handleSearchResultClick = (item) => {
+  const handleSearchResultClick =
+    (item) => {
 
-    setActiveSection(item.section);
+      setActiveSection(
+        item.section
+      );
 
-    setSearchQuery("");
+      setSearchQuery("");
 
-    setSidebarOpen(false);
-    setNotificationsOpen(false);
-    setProfileOpen(false);
+      setSidebarOpen(false);
 
-  };
+      setNotificationsOpen(false);
+
+      setProfileOpen(false);
+
+    };
 
 
   const clearSearch = () => {
@@ -335,17 +1952,20 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
      NAVIGATION
   ===================================================== */
 
-  const handleNavigation = (section) => {
+  const handleNavigation =
+    (section) => {
 
-    setActiveSection(section);
+      setActiveSection(section);
 
-    setSidebarOpen(false);
-    setNotificationsOpen(false);
-    setProfileOpen(false);
+      setSidebarOpen(false);
 
-    setSearchQuery("");
+      setNotificationsOpen(false);
 
-  };
+      setProfileOpen(false);
+
+      setSearchQuery("");
+
+    };
 
 
   /* =====================================================
@@ -355,9 +1975,13 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   const handleLogout = () => {
 
     setProfileOpen(false);
+
     setNotificationsOpen(false);
+
     setSidebarOpen(false);
+
     setSearchQuery("");
+
 
     if (onLogout) {
       onLogout();
@@ -373,7 +1997,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   const toggleProfile = () => {
 
     setProfileOpen(
-      (previous) => !previous
+      (previous) =>
+        !previous
     );
 
     setNotificationsOpen(false);
@@ -388,7 +2013,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
   const toggleNotifications = () => {
 
     setNotificationsOpen(
-      (previous) => !previous
+      (previous) =>
+        !previous
     );
 
     setProfileOpen(false);
@@ -397,7 +2023,6 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
 
   return (
-
     <div className="counsellor-dashboard">
 
 
@@ -407,7 +2032,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
       <aside
         className={`counsellor-sidebar ${
-          sidebarOpen ? "open" : ""
+          sidebarOpen
+            ? "open"
+            : ""
         }`}
       >
 
@@ -437,19 +2064,20 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
         </div>
 
 
-        {/* SIDEBAR NAVIGATION */}
-
         <nav className="counsellor-nav">
 
           <button
             type="button"
             className={
-              activeSection === "dashboard"
+              activeSection ===
+              "dashboard"
                 ? "active"
                 : ""
             }
             onClick={() =>
-              handleNavigation("dashboard")
+              handleNavigation(
+                "dashboard"
+              )
             }
           >
 
@@ -465,12 +2093,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
           <button
             type="button"
             className={
-              activeSection === "cases"
+              activeSection ===
+              "cases"
                 ? "active"
                 : ""
             }
             onClick={() =>
-              handleNavigation("cases")
+              handleNavigation(
+                "cases"
+              )
             }
           >
 
@@ -486,22 +2117,28 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
           <button
             type="button"
             className={
-              activeSection === "alerts"
+              activeSection ===
+              "alerts"
                 ? "active"
                 : ""
             }
             onClick={() =>
-              handleNavigation("alerts")
+              handleNavigation(
+                "alerts"
+              )
             }
           >
 
-            <ShieldAlert size={19} />
+            <ShieldAlert
+              size={19}
+            />
 
             <span>
               Risk Alerts
             </span>
 
-            {data.unresolved_alerts > 0 && (
+            {data.unresolved_alerts >
+              0 && (
 
               <span className="nav-badge">
                 {data.unresolved_alerts}
@@ -515,16 +2152,21 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
           <button
             type="button"
             className={
-              activeSection === "interventions"
+              activeSection ===
+              "interventions"
                 ? "active"
                 : ""
             }
             onClick={() =>
-              handleNavigation("interventions")
+              handleNavigation(
+                "interventions"
+              )
             }
           >
 
-            <ClipboardCheck size={19} />
+            <ClipboardCheck
+              size={19}
+            />
 
             <span>
               Interventions
@@ -536,12 +2178,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
           <button
             type="button"
             className={
-              activeSection === "reports"
+              activeSection ===
+              "reports"
                 ? "active"
                 : ""
             }
             onClick={() =>
-              handleNavigation("reports")
+              handleNavigation(
+                "reports"
+              )
             }
           >
 
@@ -556,21 +2201,20 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
         </nav>
 
 
-        {/* SIDEBAR BOTTOM */}
-
         <div className="sidebar-bottom">
 
           <div className="state-info">
 
             <span>
-              Assigned State            </span>
+              Assigned District
+            </span>
 
             <strong>
-              {data.state}
+              {assignedDistrict}
             </strong>
 
             <small>
-              {data.state}
+              {assignedState}
             </small>
 
           </div>
@@ -579,7 +2223,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
           <button
             type="button"
             className="sidebar-logout"
-            onClick={handleLogout}
+            onClick={
+              handleLogout
+            }
           >
 
             <LogOut size={17} />
@@ -609,19 +2255,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
         <header className="counsellor-header">
 
 
-          {/* MOBILE MENU */}
-
           <button
             type="button"
             className="mobile-menu"
             onClick={() => {
 
               setSidebarOpen(
-                (previous) => !previous
+                (previous) =>
+                  !previous
               );
 
-              setNotificationsOpen(false);
-              setProfileOpen(false);
+              setNotificationsOpen(
+                false
+              );
+
+              setProfileOpen(
+                false
+              );
 
             }}
             aria-label="Toggle menu"
@@ -668,7 +2318,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <button
                 type="button"
                 className="search-clear-button"
-                onClick={clearSearch}
+                onClick={
+                  clearSearch
+                }
                 aria-label="Clear search"
               >
 
@@ -679,13 +2331,12 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             )}
 
 
-            {/* SEARCH RESULTS */}
-
             {searchQuery.trim() && (
 
               <div className="search-results-panel">
 
-                {filteredSearchResults.length > 0 ? (
+                {filteredSearchResults.length >
+                0 ? (
 
                   <>
 
@@ -696,7 +2347,10 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                       </span>
 
                       <small>
-                        {filteredSearchResults.length} found
+                        {
+                          filteredSearchResults.length
+                        }{" "}
+                        found
                       </small>
 
                     </div>
@@ -710,31 +2364,43 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                           key={item.id}
                           className="search-result-item"
                           onClick={() =>
-                            handleSearchResultClick(item)
+                            handleSearchResultClick(
+                              item
+                            )
                           }
                         >
 
                           <div
                             className={`search-result-icon ${
-                              item.risk === "Critical"
+                              item.risk ===
+                              "Critical"
                                 ? "critical"
-                                : item.risk === "High Risk"
+                                : item.risk ===
+                                  "High Risk"
                                 ? "high"
                                 : "normal"
                             }`}
                           >
 
-                            {item.section === "alerts" ? (
+                            {item.section ===
+                            "alerts" ? (
 
-                              <ShieldAlert size={17} />
+                              <ShieldAlert
+                                size={17}
+                              />
 
-                            ) : item.section === "interventions" ? (
+                            ) : item.section ===
+                              "interventions" ? (
 
-                              <ClipboardCheck size={17} />
+                              <ClipboardCheck
+                                size={17}
+                              />
 
                             ) : (
 
-                              <Users size={17} />
+                              <Users
+                                size={17}
+                              />
 
                             )}
 
@@ -846,15 +2512,20 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     ? "notification-active"
                     : ""
                 }`}
-                onClick={toggleNotifications}
+                onClick={
+                  toggleNotifications
+                }
                 aria-label={`Open notifications. ${data.new_alerts_today} new today`}
-                aria-expanded={notificationsOpen}
+                aria-expanded={
+                  notificationsOpen
+                }
                 aria-haspopup="dialog"
               >
 
                 <Bell size={20} />
 
-                {data.new_alerts_today > 0 && (
+                {data.new_alerts_today >
+                  0 && (
 
                   <span className="notification-dot">
                     {data.new_alerts_today}
@@ -891,7 +2562,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     <button
                       type="button"
                       onClick={() =>
-                        setNotificationsOpen(false)
+                        setNotificationsOpen(
+                          false
+                        )
                       }
                       aria-label="Close notifications"
                     >
@@ -906,8 +2579,6 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div className="notification-list">
 
 
-                    {/* CRITICAL */}
-
                     <button
                       type="button"
                       className="notification-item critical"
@@ -920,7 +2591,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                       <div className="notification-item-icon">
 
-                        <ShieldAlert size={17} />
+                        <ShieldAlert
+                          size={17}
+                        />
 
                       </div>
 
@@ -945,8 +2618,6 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </button>
 
 
-                    {/* HIGH RISK */}
-
                     <button
                       type="button"
                       className="notification-item warning"
@@ -959,7 +2630,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                       <div className="notification-item-icon">
 
-                        <CircleAlert size={17} />
+                        <CircleAlert
+                          size={17}
+                        />
 
                       </div>
 
@@ -983,8 +2656,6 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </button>
 
 
-                    {/* FOLLOW UP */}
-
                     <button
                       type="button"
                       className="notification-item reminder"
@@ -997,7 +2668,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                       <div className="notification-item-icon">
 
-                        <CalendarDays size={17} />
+                        <CalendarDays
+                          size={17}
+                        />
 
                       </div>
 
@@ -1008,8 +2681,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                         </strong>
 
                         <p>
-                          {data.overdue_followups} follow-ups
-                          require attention.
+                          {data.overdue_followups}{" "}
+                          follow-ups require attention.
                         </p>
 
                         <small>
@@ -1027,13 +2700,17 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     type="button"
                     className="notification-view-all"
                     onClick={() =>
-                      handleNavigation("alerts")
+                      handleNavigation(
+                        "alerts"
+                      )
                     }
                   >
 
                     View all alerts
 
-                    <ChevronRight size={16} />
+                    <ChevronRight
+                      size={16}
+                    />
 
                   </button>
 
@@ -1058,17 +2735,19 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     ? "profile-active"
                     : ""
                 }`}
-                onClick={toggleProfile}
+                onClick={
+                  toggleProfile
+                }
                 aria-label="Open counsellor profile menu"
-                aria-expanded={profileOpen}
+                aria-expanded={
+                  profileOpen
+                }
                 aria-haspopup="menu"
               >
 
                 <div className="profile-avatar">
 
-                   <UserRound size={20} />
-
-                  
+                  <UserRound size={20} />
 
                 </div>
 
@@ -1076,11 +2755,11 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 <div className="profile-main-info">
 
                   <strong>
-                    Counsellor
+                    {counsellorName}
                   </strong>
 
                   <small>
-                    {data.state} 
+                    {assignedDistrict}
                   </small>
 
                 </div>
@@ -1103,8 +2782,6 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               </button>
 
 
-              {/* PROFILE DROPDOWN */}
-
               {profileOpen && (
 
                 <div
@@ -1117,7 +2794,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                     <div className="profile-dropdown-avatar">
 
-                       <UserRound size={20} />
+                      <UserRound size={20} />
 
                       <span className="profile-dropdown-online" />
 
@@ -1127,7 +2804,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     <div className="profile-dropdown-identity">
 
                       <strong>
-                        Counsellor
+                        {counsellorName}
                       </strong>
 
                       <span>
@@ -1155,10 +2832,11 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     <div>
 
                       <span>
-                        Assigned State                      </span>
+                        Assigned District
+                      </span>
 
                       <strong>
-                        {data.state}
+                        {assignedDistrict}
                       </strong>
 
                     </div>
@@ -1188,7 +2866,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                       </span>
 
                       <strong>
-                        {data.total_registered_victims}
+                        {
+                          data.total_registered_victims
+                        }
                       </strong>
 
                     </div>
@@ -1226,7 +2906,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     <CalendarDays size={14} />
 
                     <span>
-                      State data updated
+                      District data updated
                     </span>
 
                     <strong>
@@ -1243,7 +2923,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     type="button"
                     className="profile-dropdown-item"
                     onClick={() =>
-                      setProfileOpen(false)
+                      setProfileOpen(
+                        false
+                      )
                     }
                     role="menuitem"
                   >
@@ -1280,7 +2962,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     type="button"
                     className="profile-dropdown-item"
                     onClick={() =>
-                      setProfileOpen(false)
+                      setProfileOpen(
+                        false
+                      )
                     }
                     role="menuitem"
                   >
@@ -1319,7 +3003,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <button
                     type="button"
                     className="profile-dropdown-item logout-item"
-                    onClick={handleLogout}
+                    onClick={
+                      handleLogout
+                    }
                     role="menuitem"
                   >
 
@@ -1359,7 +3045,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             DASHBOARD
         ===================================================== */}
 
-        {activeSection === "dashboard" && (
+        {activeSection ===
+          "dashboard" && (
 
           <div className="dashboard-content">
 
@@ -1368,7 +3055,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <div>
 
                 <p className="eyebrow">
-                  State WELFARE MONITORING
+                  DISTRICT WELFARE MONITORING
                 </p>
 
                 <h1>
@@ -1378,7 +3065,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 <p>
                   Here's the latest overview of
                   victim wellbeing, cases and
-                  welfare interventions.
+                  welfare interventions in{" "}
+                  {assignedDistrict}.
                 </p>
 
               </div>
@@ -1392,7 +3080,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               </div>
 
             </section>
-
+           
 
             {/* SUMMARY CARDS */}
 
@@ -1401,7 +3089,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<Users />}
                 title="Registered Victims"
-                value={data.total_registered_victims}
+                value={
+                  data.total_registered_victims
+                }
                 subtitle={`${data.new_registrations} new registrations`}
                 type="green"
               />
@@ -1420,7 +3110,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<HeartPulse />}
                 title="Under Intervention"
-                value={data.total_interventions}
+                value={
+                  data.total_interventions
+                }
                 subtitle={`${data.pending_interventions} pending`}
                 type="yellow"
               />
@@ -1428,7 +3120,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<TrendingUp />}
                 title="Stable Wellbeing"
-                value={data.stable_wellbeing}
+                value={
+                  data.stable_wellbeing
+                }
                 subtitle={`${data.improving_wellbeing} improving`}
                 type="olive"
               />
@@ -1441,7 +3135,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             <section className="analytics-grid">
 
 
-              {/* WELLBEING */}
+              {/* CURRENT WELLBEING */}
 
               <div className="dashboard-card wellbeing-trend">
 
@@ -1454,7 +3148,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      State-level wellbeing
+                      District-level wellbeing
                       indicators
                     </p>
 
@@ -1479,27 +3173,37 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Distress"
-                    value={data.average_distress_score}
+                    value={
+                      data.average_distress_score
+                    }
                   />
 
                   <Metric
                     label="Mood"
-                    value={data.average_mood_score}
+                    value={
+                      data.average_mood_score
+                    }
                   />
 
                   <Metric
                     label="Stress"
-                    value={data.average_stress_score}
+                    value={
+                      data.average_stress_score
+                    }
                   />
 
                   <Metric
                     label="Anxiety"
-                    value={data.average_anxiety_score}
+                    value={
+                      data.average_anxiety_score
+                    }
                   />
 
                   <Metric
                     label="Sleep"
-                    value={data.average_sleep_score}
+                    value={
+                      data.average_sleep_score
+                    }
                   />
 
                 </div>
@@ -1509,23 +3213,45 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <StatusItem
                     label="Improving"
-                    value={data.improving_wellbeing}
+                    value={
+                      data.improving_wellbeing
+                    }
                     type="improving"
                   />
 
                   <StatusItem
                     label="Stable"
-                    value={data.stable_wellbeing}
+                    value={
+                      data.stable_wellbeing
+                    }
                     type="stable"
                   />
 
                   <StatusItem
                     label="Declining"
-                    value={data.declining_wellbeing}
+                    value={
+                      data.declining_wellbeing
+                    }
                     type="declining"
                   />
 
                 </div>
+
+              </div>
+
+
+              {/* DISTRICT WELLBEING TREND */}
+
+              <div className="dashboard-card district-wellbeing-trend-card">
+
+                <WellbeingTrendChart
+                  district={
+                    assignedDistrict
+                  }
+                  trend={
+                    demoDistrictWellbeingTrend
+                  }
+                />
 
               </div>
 
@@ -1543,7 +3269,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Current State-level
+                      Current district-level
                       risk profile
                     </p>
 
@@ -1561,24 +3287,36 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                         riskTotal > 0
                           ? `conic-gradient(
                               #7A2638 0 ${
-                                (data.high_risk_victims /
-                                  riskTotal) *
+                                (
+                                  data.high_risk_victims /
+                                  riskTotal
+                                ) *
                                 100
                               }%,
                               #E58A4E ${
-                                (data.high_risk_victims /
-                                  riskTotal) *
+                                (
+                                  data.high_risk_victims /
+                                  riskTotal
+                                ) *
                                 100
                               }% ${
-                                ((data.high_risk_victims +
-                                  data.moderate_risk_victims) /
-                                  riskTotal) *
+                                (
+                                  (
+                                    data.high_risk_victims +
+                                    data.moderate_risk_victims
+                                  ) /
+                                  riskTotal
+                                ) *
                                 100
                               }%,
                               #A8B86B ${
-                                ((data.high_risk_victims +
-                                  data.moderate_risk_victims) /
-                                  riskTotal) *
+                                (
+                                  (
+                                    data.high_risk_victims +
+                                    data.moderate_risk_victims
+                                  ) /
+                                  riskTotal
+                                ) *
                                 100
                               }% 100%
                             )`
@@ -1605,19 +3343,25 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                     <RiskLegend
                       label="High Risk"
-                      value={data.high_risk_victims}
+                      value={
+                        data.high_risk_victims
+                      }
                       type="high"
                     />
 
                     <RiskLegend
                       label="Moderate Risk"
-                      value={data.moderate_risk_victims}
+                      value={
+                        data.moderate_risk_victims
+                      }
                       type="moderate"
                     />
 
                     <RiskLegend
                       label="Low Risk"
-                      value={data.low_risk_victims}
+                      value={
+                        data.low_risk_victims
+                      }
                       type="low"
                     />
 
@@ -1649,7 +3393,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
 
             {/* =================================================
-                State OVERVIEW — INDIA MAP
+                NATIONWIDE INDIA STATE RISK OVERVIEW
             ================================================= */}
 
             <section className="dashboard-card state-map-card">
@@ -1659,12 +3403,12 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 <div>
 
                   <h3>
-                    State Overview
+                    Nationwide Overview
                   </h3>
 
                   <p>
-                    India-wide risk context with
-                    the selected State highlighted
+                    India-wide risk context
+                    by state
                   </p>
 
                 </div>
@@ -1674,7 +3418,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <MapPin size={14} />
 
-                   {data.state}
+                  {assignedDistrict}
 
                 </div>
 
@@ -1684,100 +3428,168 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <div className="state-map-content">
 
 
-                {/* =================================================
-                    INDIA MAP
-                ================================================= */}
+                {/* INDIA MAP */}
 
                 <div className="india-map-wrapper">
 
                   <ComposableMap
                     projection="geoMercator"
                     projectionConfig={{
-                      center: [82.5, 24.5],
+                      center: [
+                        82.5,
+                        24.5,
+                      ],
                       scale: 760,
                     }}
                     width={620}
                     height={420}
                     className="india-risk-map"
-                    aria-label="India state map showing West Bengal"
+                    aria-label="India state risk map"
                   >
 
                     <Geographies
-                      geography={INDIA_STATES_GEO_URL}
+                      geography={
+                        INDIA_STATES_GEO_URL
+                      }
                     >
 
-                      {({ geographies }) =>
-                        geographies.map((geo) => {
+                      {({
+                        geographies,
+                      }) =>
+                        geographies.map(
+                          (geo) => {
 
-                          const stateId =
-                            geo.properties?.ST_ID || "";
+                            const stateName =
+                              geo.properties
+                                ?.ST_NM
+                                ?.trim() ||
 
-                          const stateName =
-                            geo.properties?.ST_NM || "";
+                              geo.properties
+                                ?.NAME_1
+                                ?.trim() ||
 
-                          /*
-                           * IMPORTANT:
-                           * This is a NATIONAL-LEVEL state map.
-                           
-                           *
-                           * West Bengal is highlighted as the
-                           * COMPLETE STATE using its state ID/name.
-                           */
+                              geo.properties
+                                ?.NAME
+                                ?.trim() ||
 
-                          const isWestBengal =
-                            stateId === "IN-WB" ||
-                            stateName
-                              .trim()
-                              .toLowerCase() ===
-                              "west bengal";
+                              geo.properties
+                                ?.name
+                                ?.trim() ||
 
-                          return (
+                              "";
 
-                            <Geography
-                              key={geo.rsmKey}
-                              geography={geo}
 
-                              className={
-                                isWestBengal
-                                  ? "india-state west-bengal-state"
-                                  : "india-state"
-                              }
+                            const risk =
+                              getStateRisk(
+                                stateName
+                              );
 
-                              style={{
-                                default: {
-                                  fill: isWestBengal
-                                    ? "#7A2638"
-                                    : "#E8C9CF",
-                                  stroke: "#FAF7EF",
-                                  strokeWidth: 0.9,
-                                  outline: "none",
-                                },
 
-                                hover: {
-                                  fill: isWestBengal
-                                    ? "#7A2638"
-                                    : "#E8C9CF",
-                                  stroke: "#FAF7EF",
-                                  strokeWidth: 0.9,
-                                  outline: "none",
-                                },
+                            const stateColor =
+                              getStateRiskColor(
+                                risk.level
+                              );
 
-                                pressed: {
-                                  fill: isWestBengal
-                                    ? "#7A2638"
-                                    : "#E8C9CF",
-                                  stroke: "#FAF7EF",
-                                  strokeWidth: 0.9,
-                                  outline: "none",
-                                },
-                              }}
 
-                              tabIndex={-1}
-                            />
+                            const isSelected =
+                              normalizeStateName(
+                                stateName
+                              ) ===
+                              normalizeStateName(
+                                assignedState
+                              );
 
-                          );
 
-                        })
+                            return (
+
+                              <Geography
+                                key={
+                                  geo.rsmKey
+                                }
+
+                                geography={
+                                  geo
+                                }
+
+                                className={
+                                  isSelected
+                                    ? "india-state selected-state"
+                                    : "india-state"
+                                }
+
+                                style={{
+
+                                  default: {
+
+                                    fill:
+                                      stateColor,
+
+                                    stroke:
+                                      "#FAF7EF",
+
+                                    strokeWidth:
+                                      isSelected
+                                        ? 1.8
+                                        : 0.8,
+
+                                    outline:
+                                      "none",
+
+                                  },
+
+
+                                  hover: {
+
+                                    fill:
+                                      stateColor,
+
+                                    stroke:
+                                      "#672333",
+
+                                    strokeWidth:
+                                      isSelected
+                                        ? 2
+                                        : 1.5,
+
+                                    outline:
+                                      "none",
+
+                                    cursor:
+                                      "pointer",
+
+                                  },
+
+
+                                  pressed: {
+
+                                    fill:
+                                      stateColor,
+
+                                    stroke:
+                                      "#672333",
+
+                                    strokeWidth:
+                                      isSelected
+                                        ? 2
+                                        : 1.5,
+
+                                    outline:
+                                      "none",
+
+                                  },
+
+                                }}
+
+                                tabIndex={
+                                  -1
+                                }
+
+                              />
+
+                            );
+
+                          }
+                        )
                       }
 
                     </Geographies>
@@ -1787,73 +3599,83 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 </div>
 
 
-                {/* =================================================
-                    State RISK LEGEND
-                ================================================= */}
+                {/* STATE RISK LEGEND */}
 
                 <div className="state-map-risk-legend">
 
                   <div className="state-map-risk-title">
-                    State Risk Profile
+                    State Risk Level
                   </div>
 
 
-                  <div className="state-map-risk-item">
+                  <div className="map-risk-legend">
 
-                    <span className="state-map-risk-dot high-risk-dot" />
+                    <div className="map-risk-legend-item">
 
-                    <span>
-                      High Risk
-                    </span>
+                      <span
+                        className="state-map-risk-dot"
+                        style={{
+                          background:
+                            "#7A2638",
+                        }}
+                      />
 
-                    <strong>
-                      {data.high_risk_victims}
-                    </strong>
+                      <span>
+                        High Risk
+                      </span>
 
-                  </div>
-
-
-                  <div className="state-map-risk-item">
-
-                    <span className="state-map-risk-dot moderate-risk-dot" />
-
-                    <span>
-                      Moderate Risk
-                    </span>
-
-                    <strong>
-                      {data.moderate_risk_victims}
-                    </strong>
-
-                  </div>
+                    </div>
 
 
-                  <div className="state-map-risk-item">
+                    <div className="map-risk-legend-item">
 
-                    <span className="state-map-risk-dot low-risk-dot" />
+                      <span
+                        className="state-map-risk-dot"
+                        style={{
+                          background:
+                            "#D9825B",
+                        }}
+                      />
 
-                    <span>
-                      Low Risk
-                    </span>
+                      <span>
+                        Moderate Risk
+                      </span>
 
-                    <strong>
-                      {data.low_risk_victims}
-                    </strong>
-
-                  </div>
+                    </div>
 
 
-                  <div className="state-map-risk-item">
+                    <div className="map-risk-legend-item">
 
-                    <span className="state-map-risk-dot stable-risk-dot" />
+                      <span
+                        className="state-map-risk-dot"
+                        style={{
+                          background:
+                            "#C9A6A0",
+                        }}
+                      />
 
-                    <span>
-                      Stable
-                    </span>
+                      <span>
+                        Low Risk
+                      </span>
 
-                    <strong>
-                      {data.stable_wellbeing}
-                    </strong>
+                    </div>
+
+
+                    <div className="map-risk-legend-item">
+
+                      <span
+                        className="state-map-risk-dot"
+                        style={{
+                          background:
+                            "#F1E7E3",
+                        }}
+                      />
+
+                      <span>
+                        No Data
+                      </span>
+
+                    </div>
 
                   </div>
 
@@ -1861,15 +3683,19 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div className="map-selected-state">
 
                     <span>
-                      Selected State
+                      Assigned State
                     </span>
 
                     <strong>
-                      {data.state}
+                      {assignedState}
                     </strong>
 
                     <small>
-                      {data.state}
+                      {
+                        getStateRisk(
+                          assignedState
+                        ).level
+                      }
                     </small>
 
                   </div>
@@ -1878,12 +3704,69 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div className="map-total-victims">
 
                     <span>
-                      Registered victims
+                      District registered victims
                     </span>
 
                     <strong>
-                      {data.total_registered_victims}
+                      {
+                        data.total_registered_victims
+                      }
                     </strong>
+
+                  </div>
+
+
+                  <div className="map-selected-breakdown">
+
+                    <div>
+
+                      <span>
+                        High
+                      </span>
+
+                      <strong>
+                        {
+                          getStateRisk(
+                            assignedState
+                          ).high
+                        }
+                      </strong>
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Moderate
+                      </span>
+
+                      <strong>
+                        {
+                          getStateRisk(
+                            assignedState
+                          ).moderate
+                        }
+                      </strong>
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Low
+                      </span>
+
+                      <strong>
+                        {
+                          getStateRisk(
+                            assignedState
+                          ).low
+                        }
+                      </strong>
+
+                    </div>
 
                   </div>
 
@@ -1892,7 +3775,17 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               </div>
 
             </section>
+        {/* =================================================
+          DISTRICT-WISE RISK OVERVIEW
+          ================================================= */}
 
+          <DistrictRiskOverview
+            district={assignedDistrict}
+            state={assignedState}
+            onViewAll={() =>
+              handleNavigation("cases")
+            }
+          />
 
             {/* LOWER GRID */}
 
@@ -1922,13 +3815,17 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     type="button"
                     className="view-all-button"
                     onClick={() =>
-                      handleNavigation("alerts")
+                      handleNavigation(
+                        "alerts"
+                      )
                     }
                   >
 
                     View all
 
-                    <ChevronRight size={15} />
+                    <ChevronRight
+                      size={15}
+                    />
 
                   </button>
 
@@ -1975,7 +3872,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   </div>
 
-                  <MessageCircle size={20} />
+                  <MessageCircle
+                    size={20}
+                  />
 
                 </div>
 
@@ -1989,8 +3888,13 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </span>
 
                     <strong>
-                      {data.counselling_completed}/
-                      {data.counselling_required}
+                      {
+                        data.counselling_completed
+                      }
+                      /
+                      {
+                        data.counselling_required
+                      }
                     </strong>
 
                   </div>
@@ -2006,7 +3910,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                             ? (
                                 data.counselling_completed /
                                 data.counselling_required
-                              ) * 100
+                              ) *
+                              100
                             : 0
                         }%`,
                       }}
@@ -2022,7 +3927,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div>
 
                     <strong>
-                      {data.pending_counselling}
+                      {
+                        data.pending_counselling
+                      }
                     </strong>
 
                     <span>
@@ -2035,7 +3942,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div>
 
                     <strong>
-                      {data.pending_followups}
+                      {
+                        data.pending_followups
+                      }
                     </strong>
 
                     <span>
@@ -2048,7 +3957,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   <div className="danger-stat">
 
                     <strong>
-                      {data.overdue_followups}
+                      {
+                        data.overdue_followups
+                      }
                     </strong>
 
                     <span>
@@ -2064,13 +3975,17 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   type="button"
                   className="primary-dashboard-button"
                   onClick={() =>
-                    handleNavigation("interventions")
+                    handleNavigation(
+                      "interventions"
+                    )
                   }
                 >
 
                   Manage Counselling
 
-                  <ChevronRight size={17} />
+                  <ChevronRight
+                    size={17}
+                  />
 
                 </button>
 
@@ -2093,7 +4008,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <p>
                     Current support needs across
-                    the                   </p>
+                    the district
+                  </p>
 
                 </div>
 
@@ -2106,27 +4022,37 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Legal Aid"
-                  value={data.legal_aid_required}
+                  value={
+                    data.legal_aid_required
+                  }
                 />
 
                 <SupportItem
                   label="Medical Support"
-                  value={data.medical_support_required}
+                  value={
+                    data.medical_support_required
+                  }
                 />
 
                 <SupportItem
                   label="Relocation"
-                  value={data.relocation_required}
+                  value={
+                    data.relocation_required
+                  }
                 />
 
                 <SupportItem
                   label="Protection"
-                  value={data.protection_required}
+                  value={
+                    data.protection_required
+                  }
                 />
 
                 <SupportItem
                   label="High Threat"
-                  value={data.high_threat_cases}
+                  value={
+                    data.high_threat_cases
+                  }
                   danger
                 />
 
@@ -2143,7 +4069,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             VICTIMS & CASES
         ===================================================== */}
 
-        {activeSection === "cases" && (
+        {activeSection ===
+          "cases" && (
 
           <div className="dashboard-content">
 
@@ -2161,8 +4088,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <p>
                   Monitor registered victims and
-                  their case status across the
-                  state.
+                  their case status across the{" "}
+                  {assignedDistrict} district.
                 </p>
 
               </div>
@@ -2183,7 +4110,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<Users />}
                 title="Total Registered"
-                value={data.total_registered_victims}
+                value={
+                  data.total_registered_victims
+                }
                 subtitle={`${data.new_registrations} new registrations`}
                 type="green"
               />
@@ -2191,7 +4120,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<HeartPulse />}
                 title="Active Cases"
-                value={data.active_victims}
+                value={
+                  data.active_victims
+                }
                 subtitle="Currently active"
                 type="olive"
               />
@@ -2199,7 +4130,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ClipboardCheck />}
                 title="Closed Cases"
-                value={data.closed_cases}
+                value={
+                  data.closed_cases
+                }
                 subtitle={`${data.resolved_cases} recently resolved`}
                 type="yellow"
               />
@@ -2207,7 +4140,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<TrendingUp />}
                 title="New Registrations"
-                value={data.new_registrations}
+                value={
+                  data.new_registrations
+                }
                 subtitle="Recent registrations"
                 type="sunset"
               />
@@ -2229,7 +4164,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                     <p>
                       Current case-management
-                      status
+                      status in the district
                     </p>
 
                   </div>
@@ -2241,22 +4176,30 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Resolved Cases"
-                    value={data.resolved_cases}
+                    value={
+                      data.resolved_cases
+                    }
                   />
 
                   <Metric
                     label="Delayed Cases"
-                    value={data.delayed_cases}
+                    value={
+                      data.delayed_cases
+                    }
                   />
 
                   <Metric
                     label="Upcoming Hearings"
-                    value={data.upcoming_hearings}
+                    value={
+                      data.upcoming_hearings
+                    }
                   />
 
                   <Metric
                     label="High Threat Cases"
-                    value={data.high_threat_cases}
+                    value={
+                      data.high_threat_cases
+                    }
                   />
 
                 </div>
@@ -2275,7 +4218,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      State-level case activity
+                      District-level case activity
                     </p>
 
                   </div>
@@ -2287,17 +4230,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Average Case Delay"
-                    value={data.average_case_delay_days}
+                    value={
+                      data.average_case_delay_days
+                    }
                   />
 
                   <Metric
                     label="Pending Follow-ups"
-                    value={data.pending_followups}
+                    value={
+                      data.pending_followups
+                    }
                   />
 
                   <Metric
                     label="Overdue Follow-ups"
-                    value={data.overdue_followups}
+                    value={
+                      data.overdue_followups
+                    }
                   />
 
                 </div>
@@ -2319,12 +4268,14 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <p>
                     Current support requirements
-                    across active cases
+                    across active district cases
                   </p>
 
                 </div>
 
-                <ShieldAlert size={20} />
+                <ShieldAlert
+                  size={20}
+                />
 
               </div>
 
@@ -2333,27 +4284,37 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Legal Aid"
-                  value={data.legal_aid_required}
+                  value={
+                    data.legal_aid_required
+                  }
                 />
 
                 <SupportItem
                   label="Medical Support"
-                  value={data.medical_support_required}
+                  value={
+                    data.medical_support_required
+                  }
                 />
 
                 <SupportItem
                   label="Relocation"
-                  value={data.relocation_required}
+                  value={
+                    data.relocation_required
+                  }
                 />
 
                 <SupportItem
                   label="Protection"
-                  value={data.protection_required}
+                  value={
+                    data.protection_required
+                  }
                 />
 
                 <SupportItem
                   label="High Threat"
-                  value={data.high_threat_cases}
+                  value={
+                    data.high_threat_cases
+                  }
                   danger
                 />
 
@@ -2370,7 +4331,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             RISK ALERTS
         ===================================================== */}
 
-        {activeSection === "alerts" && (
+        {activeSection ===
+          "alerts" && (
 
           <div className="dashboard-content">
 
@@ -2389,7 +4351,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 <p>
                   Monitor critical, high-risk and
                   unresolved alerts requiring
-                  counsellor attention.
+                  counsellor attention in{" "}
+                  {assignedDistrict}.
                 </p>
 
               </div>
@@ -2410,7 +4373,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<Bell />}
                 title="Total Alerts"
-                value={data.total_alerts}
+                value={
+                  data.total_alerts
+                }
                 subtitle={`${data.new_alerts_this_week} this week`}
                 type="green"
               />
@@ -2418,7 +4383,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<CircleAlert />}
                 title="Critical Alerts"
-                value={data.critical_alerts}
+                value={
+                  data.critical_alerts
+                }
                 subtitle={`${data.new_alerts_today} new today`}
                 type="sunset"
               />
@@ -2426,7 +4393,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ShieldAlert />}
                 title="High-Risk Alerts"
-                value={data.high_risk_alerts}
+                value={
+                  data.high_risk_alerts
+                }
                 subtitle="Require attention"
                 type="yellow"
               />
@@ -2434,7 +4403,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ClipboardCheck />}
                 title="Resolved Alerts"
-                value={data.resolved_alerts}
+                value={
+                  data.resolved_alerts
+                }
                 subtitle={`${data.unresolved_alerts} unresolved`}
                 type="olive"
               />
@@ -2455,7 +4426,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Current state-level
+                      Current district-level
                       alert distribution
                     </p>
 
@@ -2468,22 +4439,30 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Unresolved Alerts"
-                    value={data.unresolved_alerts}
+                    value={
+                      data.unresolved_alerts
+                    }
                   />
 
                   <Metric
                     label="Resolved Alerts"
-                    value={data.resolved_alerts}
+                    value={
+                      data.resolved_alerts
+                    }
                   />
 
                   <Metric
                     label="Critical Alerts"
-                    value={data.critical_alerts}
+                    value={
+                      data.critical_alerts
+                    }
                   />
 
                   <Metric
                     label="High-Risk Alerts"
-                    value={data.high_risk_alerts}
+                    value={
+                      data.high_risk_alerts
+                    }
                   />
 
                 </div>
@@ -2502,8 +4481,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Latest alert activity in
-                      the state
+                      Latest alert activity in{" "}
+                      {assignedDistrict}
                     </p>
 
                   </div>
@@ -2517,17 +4496,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="New Alerts Today"
-                    value={data.new_alerts_today}
+                    value={
+                      data.new_alerts_today
+                    }
                   />
 
                   <Metric
                     label="New Alerts This Week"
-                    value={data.new_alerts_this_week}
+                    value={
+                      data.new_alerts_this_week
+                    }
                   />
 
                   <Metric
                     label="Unresolved"
-                    value={data.unresolved_alerts}
+                    value={
+                      data.unresolved_alerts
+                    }
                   />
 
                 </div>
@@ -2555,7 +4540,12 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 </div>
 
                 <span className="nav-badge">
-                  {data.unresolved_alerts} unresolved
+
+                  {
+                    data.unresolved_alerts
+                  }{" "}
+                  unresolved
+
                 </span>
 
               </div>
@@ -2602,12 +4592,14 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <p>
                     Current distribution of
-                    unresolved alerts
+                    unresolved district alerts
                   </p>
 
                 </div>
 
-                <ShieldAlert size={20} />
+                <ShieldAlert
+                  size={20}
+                />
 
               </div>
 
@@ -2616,28 +4608,38 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Critical"
-                  value={data.critical_alerts}
+                  value={
+                    data.critical_alerts
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="High Risk"
-                  value={data.high_risk_alerts}
+                  value={
+                    data.high_risk_alerts
+                  }
                 />
 
                 <SupportItem
                   label="Unresolved"
-                  value={data.unresolved_alerts}
+                  value={
+                    data.unresolved_alerts
+                  }
                 />
 
                 <SupportItem
                   label="Resolved"
-                  value={data.resolved_alerts}
+                  value={
+                    data.resolved_alerts
+                  }
                 />
 
                 <SupportItem
                   label="New Today"
-                  value={data.new_alerts_today}
+                  value={
+                    data.new_alerts_today
+                  }
                 />
 
               </div>
@@ -2653,7 +4655,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             INTERVENTIONS
         ===================================================== */}
 
-        {activeSection === "interventions" && (
+        {activeSection ===
+          "interventions" && (
 
           <div className="dashboard-content">
 
@@ -2672,7 +4675,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 <p>
                   Monitor counselling, welfare
                   support and ongoing intervention
-                  activities across the state.
+                  activities across the district.
                 </p>
 
               </div>
@@ -2693,15 +4696,19 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ClipboardCheck />}
                 title="Total Interventions"
-                value={data.total_interventions}
-                subtitle="All state interventions"
+                value={
+                  data.total_interventions
+                }
+                subtitle="All district interventions"
                 type="green"
               />
 
               <SummaryCard
                 icon={<CircleAlert />}
                 title="Pending Interventions"
-                value={data.pending_interventions}
+                value={
+                  data.pending_interventions
+                }
                 subtitle="Require follow-up"
                 type="sunset"
               />
@@ -2709,7 +4716,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ClipboardCheck />}
                 title="Completed"
-                value={data.completed_interventions}
+                value={
+                  data.completed_interventions
+                }
                 subtitle="Successfully completed"
                 type="yellow"
               />
@@ -2717,7 +4726,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<HeartPulse />}
                 title="Counselling Required"
-                value={data.counselling_required}
+                value={
+                  data.counselling_required
+                }
                 subtitle="Cases requiring counselling"
                 type="olive"
               />
@@ -2738,12 +4749,14 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      State counselling activity
+                      District counselling activity
                     </p>
 
                   </div>
 
-                  <MessageCircle size={20} />
+                  <MessageCircle
+                    size={20}
+                  />
 
                 </div>
 
@@ -2752,17 +4765,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Counselling Required"
-                    value={data.counselling_required}
+                    value={
+                      data.counselling_required
+                    }
                   />
 
                   <Metric
                     label="Counselling Completed"
-                    value={data.counselling_completed}
+                    value={
+                      data.counselling_completed
+                    }
                   />
 
                   <Metric
                     label="Pending Counselling"
-                    value={data.pending_counselling}
+                    value={
+                      data.pending_counselling
+                    }
                   />
 
                 </div>
@@ -2787,7 +4806,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   </div>
 
-                  <CalendarDays size={20} />
+                  <CalendarDays
+                    size={20}
+                  />
 
                 </div>
 
@@ -2796,17 +4817,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Pending Follow-ups"
-                    value={data.pending_followups}
+                    value={
+                      data.pending_followups
+                    }
                   />
 
                   <Metric
                     label="Overdue Follow-ups"
-                    value={data.overdue_followups}
+                    value={
+                      data.overdue_followups
+                    }
                   />
 
                   <Metric
                     label="Completed Interventions"
-                    value={data.completed_interventions}
+                    value={
+                      data.completed_interventions
+                    }
                   />
 
                 </div>
@@ -2828,7 +4855,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <p>
                     Support categories identified
-                    across registered cases
+                    across registered district cases
                   </p>
 
                 </div>
@@ -2842,28 +4869,38 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Legal Aid"
-                  value={data.legal_aid_required}
+                  value={
+                    data.legal_aid_required
+                  }
                 />
 
                 <SupportItem
                   label="Medical Support"
-                  value={data.medical_support_required}
+                  value={
+                    data.medical_support_required
+                  }
                 />
 
                 <SupportItem
                   label="Relocation"
-                  value={data.relocation_required}
+                  value={
+                    data.relocation_required
+                  }
                 />
 
                 <SupportItem
                   label="Protection"
-                  value={data.protection_required}
+                  value={
+                    data.protection_required
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="High Threat"
-                  value={data.high_threat_cases}
+                  value={
+                    data.high_threat_cases
+                  }
                   danger
                 />
 
@@ -2883,7 +4920,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   </h3>
 
                   <p>
-                    Overall State intervention
+                    Overall district intervention
                     completion
                   </p>
 
@@ -2903,9 +4940,17 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   </span>
 
                   <strong>
-                    {data.completed_interventions}
+
+                    {
+                      data.completed_interventions
+                    }
+
                     {" / "}
-                    {data.total_interventions}
+
+                    {
+                      data.total_interventions
+                    }
+
                   </strong>
 
                 </div>
@@ -2917,10 +4962,13 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     className="progress-fill"
                     style={{
                       width: `${
-                        data.total_interventions > 0
+                        data.total_interventions >
+                        0
                           ? Math.round(
-                              (data.completed_interventions /
-                                data.total_interventions) *
+                              (
+                                data.completed_interventions /
+                                data.total_interventions
+                              ) *
                                 100
                             )
                           : 0
@@ -2943,7 +4991,8 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
             REPORTS & ANALYTICS
         ===================================================== */}
 
-        {activeSection === "reports" && (
+        {activeSection ===
+          "reports" && (
 
           <div className="dashboard-content">
 
@@ -2952,7 +5001,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <div>
 
                 <p className="eyebrow">
-                  STATE ANALYTICS
+                  DISTRICT ANALYTICS
                 </p>
 
                 <h1>
@@ -2960,7 +5009,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                 </h1>
 
                 <p>
-                  Review state-level wellbeing,
+                  Review district-level wellbeing,
                   case, risk and intervention
                   trends.
                 </p>
@@ -2983,7 +5032,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<Users />}
                 title="Registered Victims"
-                value={data.total_registered_victims}
+                value={
+                  data.total_registered_victims
+                }
                 subtitle={`${data.active_victims} active cases`}
                 type="green"
               />
@@ -2991,7 +5042,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<ShieldAlert />}
                 title="High-Risk Cases"
-                value={data.high_risk_victims}
+                value={
+                  data.high_risk_victims
+                }
                 subtitle={`${data.crisis_cases} crisis cases`}
                 type="sunset"
               />
@@ -2999,17 +5052,37 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
               <SummaryCard
                 icon={<HeartPulse />}
                 title="Average Distress"
-                value={data.average_distress_score}
-                subtitle="State average"
+                value={
+                  data.average_distress_score
+                }
+                subtitle="District average"
                 type="yellow"
               />
 
               <SummaryCard
                 icon={<ClipboardCheck />}
                 title="Interventions"
-                value={data.total_interventions}
+                value={
+                  data.total_interventions
+                }
                 subtitle={`${data.completed_interventions} completed`}
                 type="olive"
+              />
+
+            </section>
+
+
+            {/* DISTRICT WELLBEING TREND ALSO AVAILABLE IN REPORTS */}
+
+            <section className="dashboard-card district-wellbeing-trend-card">
+
+              <WellbeingTrendChart
+                district={
+                  assignedDistrict
+                }
+                trend={
+                  demoDistrictWellbeingTrend
+                }
               />
 
             </section>
@@ -3028,13 +5101,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Average state-level
+                      Average district-level
                       mental wellbeing scores
                     </p>
 
                   </div>
 
-                  <HeartPulse size={20} />
+                  <HeartPulse
+                    size={20}
+                  />
 
                 </div>
 
@@ -3043,27 +5118,37 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Distress"
-                    value={data.average_distress_score}
+                    value={
+                      data.average_distress_score
+                    }
                   />
 
                   <Metric
                     label="Mood"
-                    value={data.average_mood_score}
+                    value={
+                      data.average_mood_score
+                    }
                   />
 
                   <Metric
                     label="Stress"
-                    value={data.average_stress_score}
+                    value={
+                      data.average_stress_score
+                    }
                   />
 
                   <Metric
                     label="Anxiety"
-                    value={data.average_anxiety_score}
+                    value={
+                      data.average_anxiety_score
+                    }
                   />
 
                   <Metric
                     label="Sleep"
-                    value={data.average_sleep_score}
+                    value={
+                      data.average_sleep_score
+                    }
                   />
 
                 </div>
@@ -3082,12 +5167,14 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Current state case activity
+                      Current district case activity
                     </p>
 
                   </div>
 
-                  <FileText size={20} />
+                  <FileText
+                    size={20}
+                  />
 
                 </div>
 
@@ -3096,22 +5183,30 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <Metric
                     label="Resolved Cases"
-                    value={data.resolved_cases}
+                    value={
+                      data.resolved_cases
+                    }
                   />
 
                   <Metric
                     label="Delayed Cases"
-                    value={data.delayed_cases}
+                    value={
+                      data.delayed_cases
+                    }
                   />
 
                   <Metric
                     label="Upcoming Hearings"
-                    value={data.upcoming_hearings}
+                    value={
+                      data.upcoming_hearings
+                    }
                   />
 
                   <Metric
                     label="High Threat Cases"
-                    value={data.high_threat_cases}
+                    value={
+                      data.high_threat_cases
+                    }
                   />
 
                 </div>
@@ -3133,12 +5228,14 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <p>
                     Current distribution of
-                    state cases by risk level
+                    district cases by risk level
                   </p>
 
                 </div>
 
-                <ShieldAlert size={20} />
+                <ShieldAlert
+                  size={20}
+                />
 
               </div>
 
@@ -3147,29 +5244,39 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="High Risk"
-                  value={data.high_risk_victims}
+                  value={
+                    data.high_risk_victims
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="Moderate Risk"
-                  value={data.moderate_risk_victims}
+                  value={
+                    data.moderate_risk_victims
+                  }
                 />
 
                 <SupportItem
                   label="Low Risk"
-                  value={data.low_risk_victims}
+                  value={
+                    data.low_risk_victims
+                  }
                 />
 
                 <SupportItem
                   label="Crisis Cases"
-                  value={data.crisis_cases}
+                  value={
+                    data.crisis_cases
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="Total Cases"
-                  value={riskTotal}
+                  value={
+                    riskTotal
+                  }
                 />
 
               </div>
@@ -3190,13 +5297,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      Current state wellbeing
+                      Current district wellbeing
                       movement
                     </p>
 
                   </div>
 
-                  <TrendingUp size={20} />
+                  <TrendingUp
+                    size={20}
+                  />
 
                 </div>
 
@@ -3205,17 +5314,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <SupportItem
                     label="Improving"
-                    value={data.improving_wellbeing}
+                    value={
+                      data.improving_wellbeing
+                    }
                   />
 
                   <SupportItem
                     label="Stable"
-                    value={data.stable_wellbeing}
+                    value={
+                      data.stable_wellbeing
+                    }
                   />
 
                   <SupportItem
                     label="Declining"
-                    value={data.declining_wellbeing}
+                    value={
+                      data.declining_wellbeing
+                    }
                     danger
                   />
 
@@ -3235,13 +5350,15 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                     </h3>
 
                     <p>
-                      State welfare
+                      District welfare
                       intervention status
                     </p>
 
                   </div>
 
-                  <ClipboardCheck size={20} />
+                  <ClipboardCheck
+                    size={20}
+                  />
 
                 </div>
 
@@ -3250,17 +5367,23 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                   <SupportItem
                     label="Total"
-                    value={data.total_interventions}
+                    value={
+                      data.total_interventions
+                    }
                   />
 
                   <SupportItem
                     label="Completed"
-                    value={data.completed_interventions}
+                    value={
+                      data.completed_interventions
+                    }
                   />
 
                   <SupportItem
                     label="Pending"
-                    value={data.pending_interventions}
+                    value={
+                      data.pending_interventions
+                    }
                     danger
                   />
 
@@ -3288,7 +5411,9 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 </div>
 
-                <MessageCircle size={20} />
+                <MessageCircle
+                  size={20}
+                />
 
               </div>
 
@@ -3297,28 +5422,38 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Required"
-                  value={data.counselling_required}
+                  value={
+                    data.counselling_required
+                  }
                 />
 
                 <SupportItem
                   label="Completed"
-                  value={data.counselling_completed}
+                  value={
+                    data.counselling_completed
+                  }
                 />
 
                 <SupportItem
                   label="Pending"
-                  value={data.pending_counselling}
+                  value={
+                    data.pending_counselling
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="Follow-ups"
-                  value={data.pending_followups}
+                  value={
+                    data.pending_followups
+                  }
                 />
 
                 <SupportItem
                   label="Overdue"
-                  value={data.overdue_followups}
+                  value={
+                    data.overdue_followups
+                  }
                   danger
                 />
 
@@ -3338,7 +5473,7 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
                   </h3>
 
                   <p>
-                    State risk-alert activity
+                    District risk-alert activity
                   </p>
 
                 </div>
@@ -3352,29 +5487,39 @@ function CounsellorDashboard({ onLogout, data: dashboardData, profile, searchIte
 
                 <SupportItem
                   label="Total Alerts"
-                  value={data.total_alerts}
+                  value={
+                    data.total_alerts
+                  }
                 />
 
                 <SupportItem
                   label="Critical"
-                  value={data.critical_alerts}
+                  value={
+                    data.critical_alerts
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="High Risk"
-                  value={data.high_risk_alerts}
+                  value={
+                    data.high_risk_alerts
+                  }
                 />
 
                 <SupportItem
                   label="Unresolved"
-                  value={data.unresolved_alerts}
+                  value={
+                    data.unresolved_alerts
+                  }
                   danger
                 />
 
                 <SupportItem
                   label="Resolved"
-                  value={data.resolved_alerts}
+                  value={
+                    data.resolved_alerts
+                  }
                 />
 
               </div>
@@ -3431,7 +5576,9 @@ function SummaryCard({
       </div>
 
     </div>
+
   );
+
 }
 
 
@@ -3466,7 +5613,9 @@ function Metric({
       </div>
 
     </div>
+
   );
+
 }
 
 
@@ -3493,7 +5642,9 @@ function StatusItem({
       </strong>
 
     </div>
+
   );
+
 }
 
 
@@ -3520,7 +5671,9 @@ function RiskLegend({
       </strong>
 
     </div>
+
   );
+
 }
 
 
@@ -3537,11 +5690,15 @@ function AlertItem({
 
       <div
         className={`alert-icon ${
-          critical ? "critical" : ""
+          critical
+            ? "critical"
+            : ""
         }`}
       >
 
-        <ShieldAlert size={17} />
+        <ShieldAlert
+          size={17}
+        />
 
       </div>
 
@@ -3561,10 +5718,14 @@ function AlertItem({
 
       </div>
 
-      <ChevronRight size={17} />
+      <ChevronRight
+        size={17}
+      />
 
     </div>
+
   );
+
 }
 
 
@@ -3578,7 +5739,9 @@ function SupportItem({
 
     <div
       className={`support-item ${
-        danger ? "danger" : ""
+        danger
+          ? "danger"
+          : ""
       }`}
     >
 
@@ -3595,7 +5758,9 @@ function SupportItem({
       </small>
 
     </div>
+
   );
+
 }
 
 
