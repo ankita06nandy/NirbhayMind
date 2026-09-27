@@ -822,13 +822,13 @@ button {
 .brand-text h1 {
   margin: 0;
 
-  font-family: 'Playfair Display', serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 
   font-size: 32px;
   font-weight: 600;
   letter-spacing: 0.2px;
   color: #401b3d;
-  
 }
 
 .brand-text p {
@@ -1861,7 +1861,8 @@ button {
   .brand-text h1 {
    margin: 0;
 
-  font-family: "DM Serif Display", serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  sans-serif;
   font-size: 32px;
   font-weight: 400;
   letter-spacing: 0.3px;
@@ -1870,8 +1871,8 @@ button {
   }
 
   .brand-text p {
-   font-family: "Manrope", sans-serif;
-  }
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
   .header-actions {
     gap: 6px;

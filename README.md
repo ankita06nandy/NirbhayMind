@@ -12,11 +12,10 @@
 </div>
 
 <div align="center">
-  
-![AI](https://img.shields.io/badge/AI-Dynamic_Distress_Prediction-FFDB58?style=flat-square)
-![ML](https://img.shields.io/badge/ML-Google_Gemini_API-FFDB58?style=flat-square)
+
 ![Frontend](https://img.shields.io/badge/Frontend-React-FFDB58?style=flat-square)
 ![Backend](https://img.shields.io/badge/Backend-Node.js-FFDB58?style=flat-square)
+[![AI](https://img.shields.io/badge/AI-Gemini%203.5%20Flash%20Lite-FFDB58?style=flat-square)](https://ai.google.dev/)
 ![Database](https://img.shields.io/badge/Database-Google_Sheets_%2B_CSV-FFDB58?style=flat-square)
 ![Security](https://img.shields.io/badge/Security-CORS-FFDB58?style=flat-square)
 ![Deployment](https://img.shields.io/badge/Deployment-Vercel-FFDB58?style=flat-square)

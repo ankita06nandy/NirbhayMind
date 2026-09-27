@@ -12,6 +12,7 @@ import {
   Home,
 } from "lucide-react";
 import { useI18n } from "../i18n";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 
 function MyCase({ onBack, caseData, onSupport }) {
   const { t } = useI18n();
@@ -75,7 +76,7 @@ function MyCase({ onBack, caseData, onSupport }) {
         <div className="my-case-title">
           <div className="my-case-logo">
             <img
-              src="/nirbhaymind_logo.jpeg"
+              src={nirbhaymindLogo}
               alt="NirbhayMind"
             />
           </div>

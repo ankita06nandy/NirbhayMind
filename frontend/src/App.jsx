@@ -2,7 +2,7 @@ import SplashScreen from "./pages/SplashScreen";
 import VoiceSupport from "./pages/VoiceSupport";
 import AIChat from "./pages/AIChat";
 import welcomeScene from "./assets/welcome_scenario.jpg";
-import nirbhaymindLogo from "./assets/nirbhaymind_logo.jpeg";
+import nirbhaymindLogo from "./assets/nirbhaymind_logo.jpg";
 import { useEffect, useState } from "react";
 import MoodCheck from "./pages/MoodCheck";
 import History from "./pages/History";
@@ -154,6 +154,8 @@ function App() {
     data={counsellorDashboard.data}
     profile={counsellorDashboard.profile}
     searchItems={counsellorDashboard.searchItems}
+    stateRiskData={counsellorDashboard.stateRiskData}
+    districtRiskData={counsellorDashboard.districtRiskData}
     onLogout={handleLogout}
   />
   );
