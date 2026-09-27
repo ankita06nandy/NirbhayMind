@@ -530,35 +530,28 @@ function normalizeStateName(stateName) {
     return "";
   }
 
-  return stateName
+  const normalizedName = stateName
     .trim()
     .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\s*\((?:ut|nct)\)\s*$/i, "")
+    .replace(/^nct of\s+/, "")
     .replace(/\s+/g, " ");
+
+  if (/^andaman and nicobar islands?$/.test(normalizedName)) {
+    return "andaman and nicobar islands";
+  }
+
+  if (
+    normalizedName === "dadara and nagar havelli" ||
+    normalizedName === "daman and diu" ||
+    normalizedName === "dadra and nagar haveli"
+  ) {
+    return "dadra and nagar haveli and daman and diu";
+  }
+
+  return normalizedName;
 }
-
-
-/* =====================================================
-   STATE DATA LOOKUP
-===================================================== */
-
-function getStateData(stateName) {
-  const normalizedName =
-    normalizeStateName(stateName);
-
-  const matchingEntry =
-    Object.entries(
-      demoStateRiskData
-    ).find(
-      ([name]) =>
-        normalizeStateName(name) ===
-        normalizedName
-    );
-
-  return matchingEntry
-    ? matchingEntry[1]
-    : null;
-}
-
 
 /* =====================================================
    STATE RISK CALCULATION
@@ -580,6 +573,7 @@ function getStateRisk(stateName) {
   }
 
   const total =
+    stateData.registered ||
     stateData.high +
     stateData.moderate +
     stateData.low;
@@ -595,33 +589,17 @@ function getStateRisk(stateName) {
     };
   }
 
-  const riskPercentage =
-    (
-      (
-        stateData.high +
-        stateData.moderate
-      ) /
-      total
-    ) *
-    100;
-
-  let level;
-
-  if (riskPercentage >= 45) {
-    level = "High Risk";
-  } else if (riskPercentage >= 25) {
-    level = "Moderate Risk";
-  } else {
-    level = "Low Risk";
-  }
+  const highRiskPercentage = (stateData.high / total) * 100;
+  const level =
+    highRiskPercentage >= 50
+      ? "High Risk"
+      : highRiskPercentage >= 35
+        ? "Moderate Risk"
+        : "Low Risk";
 
   return {
     level,
-
-    percentage:
-      Math.round(
-        riskPercentage
-      ),
+    percentage: Math.round(highRiskPercentage),
 
     total,
 
