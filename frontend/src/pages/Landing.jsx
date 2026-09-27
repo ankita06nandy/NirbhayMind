@@ -5,7 +5,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useRef, useState } from "react";
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 import "./Landing.css";
 
 function Landing({ onLogin }) {

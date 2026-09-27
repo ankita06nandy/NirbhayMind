@@ -6,7 +6,7 @@ import {
   User,
 } from "lucide-react";
 
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 import { sendChatMessage } from "../api";
 import { useI18n } from "../i18n";
 

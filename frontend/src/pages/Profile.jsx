@@ -14,7 +14,7 @@ import {
   Lock,
 } from "lucide-react";
 
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 
 function Profile({ onBack, profile, language, onLanguageChange, onNavigate, onLogout }) {
   const { t } = useI18n();

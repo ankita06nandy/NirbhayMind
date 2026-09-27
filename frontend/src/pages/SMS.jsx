@@ -8,7 +8,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 import { SUPPORT_NUMBERS } from "../support";
 
 function SMS({ onBack }) {

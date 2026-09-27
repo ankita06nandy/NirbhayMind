@@ -1,4 +1,4 @@
-import nirbhaymindLogo from "../assets/nirbhaymind_logo.png";
+import nirbhaymindLogo from "../assets/nirbhaymind_logo.jpg";
 
 import {
   Bell,
@@ -520,6 +520,12 @@ const demoStateRiskData = {
   },
 };
 
+const stateRiskLayers = [
+  { key: "high", label: "High Risk", color: "#7A2638" },
+  { key: "moderate", label: "Moderate Risk", color: "#D9825B" },
+  { key: "low", label: "Low Risk", color: "#C9A6A0" },
+];
+
 
 /* =====================================================
    STATE NAME NORMALIZATION
@@ -581,6 +587,17 @@ function getStateData(stateName, stateRiskData) {
     : { high: totals.high, moderate: totals.moderate, low: totals.low };
 }
 
+function getStateRiskPercentages(stateData, total) {
+  if (total <= 0) {
+    return { high: null, moderate: null, low: null };
+  }
+  return {
+    high: (stateData.high / total) * 100,
+    moderate: (stateData.moderate / total) * 100,
+    low: (stateData.low / total) * 100,
+  };
+}
+
 /* =====================================================
    STATE RISK CALCULATION
 ===================================================== */
@@ -597,6 +614,7 @@ function getStateRisk(stateName, stateRiskData) {
       high: 0,
       moderate: 0,
       low: 0,
+      shares: { high: null, moderate: null, low: null },
     };
   }
 
@@ -614,54 +632,33 @@ function getStateRisk(stateName, stateRiskData) {
       high: 0,
       moderate: 0,
       low: 0,
+      shares: { high: null, moderate: null, low: null },
     };
   }
 
-  const riskPercentage =
-    ((stateData.high + stateData.moderate) / total) * 100;
-  const level =
-    riskPercentage >= 45
-      ? "High Risk"
-      : riskPercentage >= 25
-        ? "Moderate Risk"
-        : "Low Risk";
-
   return {
-    level,
-    percentage: Math.round(riskPercentage),
-
     total,
-
     high:
       stateData.high,
-
     moderate:
       stateData.moderate,
-
     low:
       stateData.low,
+    shares: getStateRiskPercentages(stateData, total),
   };
 }
 
 
-/* =====================================================
-   STATE RISK COLOUR
-===================================================== */
+function getStateShareColor(share, riskColor) {
+  if (share === null) return "#F1E7E3";
 
-function getStateRiskColor(riskLevel) {
-  switch (riskLevel) {
-    case "High Risk":
-      return "#7A2638";
-
-    case "Moderate Risk":
-      return "#D9825B";
-
-    case "Low Risk":
-      return "#C9A6A0";
-
-    default:
-      return "#F1E7E3";
-  }
+  const start = [249, 246, 239];
+  const end = riskColor.match(/\w\w/g).map((channel) => parseInt(channel, 16));
+  const intensity = Math.max(0, Math.min(1, share / 100));
+  const color = start.map((channel, index) =>
+    Math.round(channel + (end[index] - channel) * intensity)
+  );
+  return `#${color.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
 }
 
 /* =====================================================
@@ -740,14 +737,14 @@ function getDistrictRisk(
       return "No Data";
     }
 
-    const elevatedRiskPercentage =
-      ((matchingDistrict.high + matchingDistrict.moderate) / total) *
-      100;
-    return elevatedRiskPercentage >= 45
-      ? "High Risk"
-      : elevatedRiskPercentage >= 25
-        ? "Moderate Risk"
-        : "Low Risk";
+    const highestCount = Math.max(
+      matchingDistrict.high,
+      matchingDistrict.moderate,
+      matchingDistrict.low
+    );
+    if (matchingDistrict.high === highestCount) return "High Risk";
+    if (matchingDistrict.moderate === highestCount) return "Moderate Risk";
+    return "Low Risk";
   }
 
   const matchingEntry =
@@ -1765,6 +1762,7 @@ function CounsellorDashboard({
   stateRiskData: dashboardStateRiskData,
   districtRiskData,
 }) {
+  const [stateMapLayer, setStateMapLayer] = useState("high");
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
 
@@ -1787,6 +1785,9 @@ function CounsellorDashboard({
   const stateRiskData =
     dashboardStateRiskData ??
     demoStateRiskData;
+  const activeStateRiskLayer =
+    stateRiskLayers.find((layer) => layer.key === stateMapLayer) ??
+    stateRiskLayers[0];
 
 
   /* =====================================================
@@ -3511,9 +3512,12 @@ function CounsellorDashboard({
                               );
 
 
+                            const share =
+                              risk.shares[activeStateRiskLayer.key];
                             const stateColor =
-                              getStateRiskColor(
-                                risk.level
+                              getStateShareColor(
+                                share,
+                                activeStateRiskLayer.color
                               );
 
 
@@ -3537,12 +3541,12 @@ function CounsellorDashboard({
                                   geo
                                 }
 
-                                title={`${stateName}: ${risk.level} (${risk.high} high, ${risk.moderate} moderate, ${risk.low} low of ${risk.total} registered victims)`}
+                                title={`${stateName}: ${activeStateRiskLayer.label} ${share === null ? "No Data" : `${share.toFixed(1)}%`} (${risk.high} high / ${risk.moderate} moderate / ${risk.low} low of ${risk.total} registered victims)`}
 
-                                data-risk-level={
-                                  risk.level
-                                    .toLowerCase()
-                                    .replace(/\s+/g, "-")
+                                data-risk-layer={activeStateRiskLayer.key}
+
+                                data-risk-share={
+                                  share === null ? "no-data" : share.toFixed(2)
                                 }
 
                                 className={
@@ -3585,79 +3589,59 @@ function CounsellorDashboard({
                 <div className="state-map-risk-legend">
 
                   <div className="state-map-risk-title">
-                    State Risk Level
+                    Risk share by state
                   </div>
 
+                  <div
+                    className="state-map-layer-controls"
+                    role="group"
+                    aria-label="Select risk category shown on the India map"
+                  >
+                    {stateRiskLayers.map((layer) => (
+                      <button
+                        key={layer.key}
+                        type="button"
+                        className={
+                          stateMapLayer === layer.key
+                            ? "state-map-layer-button active"
+                            : "state-map-layer-button"
+                        }
+                        aria-pressed={stateMapLayer === layer.key}
+                        onClick={() => setStateMapLayer(layer.key)}
+                      >
+                        <span
+                          className="state-map-risk-dot"
+                          style={{ background: layer.color }}
+                        />
+                        {layer.label}
+                      </button>
+                    ))}
+                  </div>
 
-                  <div className="map-risk-legend">
-
+                  <div className="state-map-share-legend">
+                    <span>{activeStateRiskLayer.label} victims</span>
+                    <div
+                      className="state-map-share-gradient"
+                      role="img"
+                      aria-label={`${activeStateRiskLayer.label} share color scale from 0 to 100 percent`}
+                      style={{
+                        background: `linear-gradient(to right, #F9F6EF, ${activeStateRiskLayer.color})`,
+                      }}
+                    />
+                    <div className="state-map-share-ticks" aria-hidden="true">
+                      <span>0%</span>
+                      <span>25%</span>
+                      <span>50%</span>
+                      <span>75%</span>
+                      <span>100%</span>
+                    </div>
                     <div className="map-risk-legend-item">
-
                       <span
                         className="state-map-risk-dot"
-                        style={{
-                          background:
-                            "#7A2638",
-                        }}
+                        style={{ background: "#F1E7E3" }}
                       />
-
-                      <span>
-                        High Risk
-                      </span>
-
+                      <span>No registered data</span>
                     </div>
-
-
-                    <div className="map-risk-legend-item">
-
-                      <span
-                        className="state-map-risk-dot"
-                        style={{
-                          background:
-                            "#D9825B",
-                        }}
-                      />
-
-                      <span>
-                        Moderate Risk
-                      </span>
-
-                    </div>
-
-
-                    <div className="map-risk-legend-item">
-
-                      <span
-                        className="state-map-risk-dot"
-                        style={{
-                          background:
-                            "#C9A6A0",
-                        }}
-                      />
-
-                      <span>
-                        Low Risk
-                      </span>
-
-                    </div>
-
-
-                    <div className="map-risk-legend-item">
-
-                      <span
-                        className="state-map-risk-dot"
-                        style={{
-                          background:
-                            "#F1E7E3",
-                        }}
-                      />
-
-                      <span>
-                        No Data
-                      </span>
-
-                    </div>
-
                   </div>
 
 
@@ -3672,11 +3656,15 @@ function CounsellorDashboard({
                     </strong>
 
                     <small>
-                      {
-                        getStateRisk(
-                          assignedState,
-                          stateRiskData
-                        ).level
+                      {activeStateRiskLayer.label}: {
+                        getStateRisk(assignedState, stateRiskData).shares[
+                          activeStateRiskLayer.key
+                        ] === null
+                          ? "No Data"
+                          : `${Math.round(
+                              getStateRisk(assignedState, stateRiskData)
+                                .shares[activeStateRiskLayer.key]
+                            )}%`
                       }
                     </small>
 
@@ -3717,6 +3705,11 @@ function CounsellorDashboard({
                           ).high
                         }
                       </strong>
+                      <small>
+                        {getStateRisk(assignedState, stateRiskData).shares.high === null
+                          ? "No Data"
+                          : `${Math.round(getStateRisk(assignedState, stateRiskData).shares.high)}%`}
+                      </small>
 
                     </div>
 
@@ -3735,6 +3728,11 @@ function CounsellorDashboard({
                           ).moderate
                         }
                       </strong>
+                      <small>
+                        {getStateRisk(assignedState, stateRiskData).shares.moderate === null
+                          ? "No Data"
+                          : `${Math.round(getStateRisk(assignedState, stateRiskData).shares.moderate)}%`}
+                      </small>
 
                     </div>
 
@@ -3753,6 +3751,11 @@ function CounsellorDashboard({
                           ).low
                         }
                       </strong>
+                      <small>
+                        {getStateRisk(assignedState, stateRiskData).shares.low === null
+                          ? "No Data"
+                          : `${Math.round(getStateRisk(assignedState, stateRiskData).shares.low)}%`}
+                      </small>
 
                     </div>
 

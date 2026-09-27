@@ -4795,6 +4795,68 @@
   font-size: 15px;
   font-weight: 800;
 }
+
+.state-map-layer-controls {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 16px;
+}
+
+.state-map-layer-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid rgba(122, 38, 56, 0.16);
+  border-radius: 9px;
+  background: #fffdf9;
+  color: #5e5053;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.state-map-layer-button.active {
+  border-color: #7a2638;
+  background: #f6eeeb;
+  color: #50202c;
+  font-weight: 700;
+}
+
+.state-map-layer-button:focus-visible {
+  outline: 2px solid #7a2638;
+  outline-offset: 2px;
+}
+
+.state-map-share-legend {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 20px;
+  color: #5e5053;
+  font-size: 11px;
+}
+
+.state-map-share-gradient {
+  height: 13px;
+  border: 1px solid rgba(122, 38, 56, 0.16);
+  border-radius: 999px;
+}
+
+.state-map-share-ticks {
+  display: flex;
+  justify-content: space-between;
+  color: #786d6b;
+  font-size: 10px;
+}
+
+.map-selected-breakdown small {
+  color: #8b7d79;
+  font-size: 10px;
+  font-weight: 600;
+}
+
 /* =====================================================
    DISTRICT-WISE RISK OVERVIEW
 ===================================================== */
