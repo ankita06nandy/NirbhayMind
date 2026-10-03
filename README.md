@@ -137,7 +137,11 @@ flowchart TD
 The system follows a continuous pipeline from victim interaction and data collection to distress prediction, risk assessment, human intervention, and future risk re-evaluation.
 
 ```mermaid
-flowchart LR
+flowchart TD
+
+    %% =====================================================
+    %% CORE WORKFLOW
+    %% =====================================================
 
     C["Victim / Data Collection"]
     P["Preprocessing"]
@@ -153,6 +157,10 @@ flowchart LR
     L["Outcome Logging"]
     M2["Continuous Monitoring"]
 
+    %% =====================================================
+    %% PRIMARY WORKFLOW
+    %% =====================================================
+
     C --> P
     P --> F
     F --> T
@@ -165,7 +173,25 @@ flowchart LR
     S --> I
     I --> L
     L --> M2
+
+    %% =====================================================
+    %% CONTINUOUS MONITORING LOOP
+    %% =====================================================
+
     M2 --> T
+
+
+    %% =====================================================
+    %% FORMAL ARCHITECTURE-STYLE COLOURING
+    %% =====================================================
+
+    classDef main fill:#EAF3FF,stroke:#1F5A94,stroke-width:1.5px,color:#123B5D;
+    classDef analysis fill:#D7E9FF,stroke:#174A7A,stroke-width:2px,color:#0D3152;
+    classDef outcome fill:#F4F8FC,stroke:#3D6F9E,stroke-width:1.5px,color:#123B5D;
+
+    class C,P,F,T,M,R,X main;
+    class A,H,S analysis;
+    class I,L,M2 outcome;
 ```
 
 ### Workflow Stages
