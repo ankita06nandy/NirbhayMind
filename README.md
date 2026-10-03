@@ -70,194 +70,64 @@ The system is designed as a **support and early-warning mechanism**, where AI as
 # Solution Architecture
 
 ```mermaid
-flowchart TB
+flowchart TD
 
-    subgraph DATA["1. USER / DATA SOURCES"]
-        D1["Registered Victim"]
-        D2["AI Conversation"]
-        D3["IVRS / Voice"]
-        D4["SMS"]
-        D5["Periodic Mood Check-ins"]
-        D6["Case Information"]
-        D7["Threat Information"]
-        D8["Support History"]
-        D9["Rehabilitation Status"]
-    end
+    A["Victim / Complainant"] --> B["Periodic Data Collection"]
 
-    subgraph ACQUISITION["2. DATA ACQUISITION"]
-        A1["Data Collection"]
-        A2["Data Validation"]
-        A3["Voice Feature Extraction"]
-        A4["Temporal Data Alignment"]
-        A5["Anonymisation / Privacy Filtering"]
-    end
+    B --> B1["Mood & Self-Assessment"]
+    B --> B2["Chatbot / Text Responses"]
+    B --> B3["Voice Interaction"]
+    B --> B4["Previous Case & Interaction Data"]
 
-    subgraph PROCESSING["3. DATA PREPROCESSING"]
-        P1["Data Cleaning"]
-        P2["Privacy Filtering"]
-        P3["Data Validation"]
-        P4["Structured Feature Preparation"]
-    end
+    B1 --> C["Data Preprocessing"]
+    B2 --> C
+    B3 --> C
+    B4 --> C
 
-    subgraph FEATURES["4. FEATURE ENGINEERING"]
-        F1["Psychological Features"]
-        F2["NLP / Sentiment Features"]
-        F3["Behavioural Features"]
-        F4["Temporal Features"]
-        F5["Case Features"]
-        F6["Voice Stress Indicators"]
-    end
+    C --> D["Feature Extraction"]
 
-    subgraph ML["5. AI / ML ENGINE"]
-        M1["Dynamic Distress Prediction"]
-        M2["Current Distress Prediction"]
-        M3["Risk Classification"]
-        M4["Trend Analysis"]
-        M5["Crisis Detection"]
-    end
+    D --> D1["Sentiment"]
+    D --> D2["Emotion"]
+    D --> D3["Stress & Anxiety"]
+    D --> D4["Behavioural Indicators"]
 
-    subgraph RISK["6. RISK ASSESSMENT"]
-        R1["Low Risk"]
-        R2["Moderate Risk"]
-        R3["High Risk"]
-        R4["Explainable Risk Factors"]
-        R5["Risk Trend"]
-    end
+    D1 --> E["Distress Score Generation"]
+    D2 --> E
+    D3 --> E
+    D4 --> E
 
-    subgraph ALERT["7. ALERT & SUPPORT"]
-        AL1["Risk Alert"]
-        AL2["Crisis Alert"]
-        AL3["Escalation"]
-        AL4["Counselling"]
-        AL5["Legal Aid"]
-        AL6["Protection / Relocation"]
-        AL7["Medical / Psychological Support"]
-    end
+    E --> F["Time-Stamped Distress Scores"]
 
-    subgraph APPLICATION["8. APPLICATION"]
-        U1["Victim Interface"]
-        U2["Mood Check"]
-        U3["AI Chat"]
-        U4["Case Status"]
-        U5["Support Resources"]
-        U6["Authority / Counsellor Dashboard"]
-        U7["Risk Dashboard"]
-        U8["Case Monitoring"]
-        U9["Distress Trends"]
-        U10["Intervention & Follow-ups"]
-    end
+    F --> G["Longitudinal Trend Analysis"]
 
-    subgraph STORAGE["9. DATA STORAGE & SECURITY"]
-        S1["Secure Database"]
-        S2["Longitudinal Victim Records"]
-        S3["Mental Health Check-in History"]
-        S4["Risk & Alert History"]
-        S5["Intervention Records"]
-        S6["Authentication & Authorization"]
-        S7["Encryption"]
-        S8["Role-Based Access Control"]
-    end
+    G --> H{"Distress Trend"}
 
-    subgraph FEEDBACK["10. CONTINUOUS FEEDBACK"]
-        C1["New Check-in"]
-        C2["Risk Trend Updated"]
-        C3["Intervention Adjusted"]
-        C4["Future Risk Re-evaluated"]
-        C5["Continuous Monitoring"]
-    end
+    H --> H1["Improving"]
+    H --> H2["Stable"]
+    H --> H3["Increasing"]
+    H --> H4["Sudden Spike"]
 
-    D1 --> A1
-    D2 --> A1
-    D3 --> A1
-    D4 --> A1
-    D5 --> A1
-    D6 --> A1
-    D7 --> A1
-    D8 --> A1
-    D9 --> A1
+    H1 --> I["Routine Follow-Up"]
+    H2 --> I
+    H3 --> J["Enhanced Monitoring"]
+    H4 --> K["Priority Alert / Escalation"]
 
-    A1 --> A2
-    A2 --> A3
-    A3 --> A4
-    A4 --> A5
+    J --> L["Counsellor Review"]
+    K --> L
 
-    A5 --> P1
-    P1 --> P2
-    P2 --> P3
-    P3 --> P4
+    L --> M["Support / Intervention"]
 
-    P4 --> F1
-    P4 --> F2
-    P4 --> F3
-    P4 --> F4
-    P4 --> F5
-    P4 --> F6
+    M --> N["Follow-Up Assessment"]
 
-    F1 --> M1
-    F2 --> M1
-    F3 --> M1
-    F4 --> M1
-    F5 --> M1
-    F6 --> M1
+    N --> G
 
-    M1 --> M2
-    M1 --> M3
-    M1 --> M4
-    M1 --> M5
+    classDef main fill:#EAF3FF,stroke:#1F5A94,stroke-width:1.5px,color:#123B5D;
+    classDef analysis fill:#D7E9FF,stroke:#174A7A,stroke-width:2px,color:#0D3152;
+    classDef outcome fill:#F4F8FC,stroke:#3D6F9E,stroke-width:1.5px,color:#123B5D;
 
-    M3 --> R1
-    M3 --> R2
-    M3 --> R3
-    M1 --> R4
-    M4 --> R5
-
-    R1 --> AL1
-    R2 --> AL1
-    R3 --> AL2
-    R4 --> AL1
-    R5 --> AL1
-
-    AL2 --> AL3
-
-    R2 --> AL4
-    R3 --> AL4
-    AL3 --> AL5
-    AL3 --> AL6
-    R3 --> AL7
-
-    AL1 --> U7
-    AL2 --> U7
-    AL4 --> U10
-    AL5 --> U10
-    AL6 --> U10
-    AL7 --> U10
-
-    U1 --> U2
-    U1 --> U3
-    U1 --> U4
-    U1 --> U5
-
-    U6 --> U7
-    U7 --> U8
-    U7 --> U9
-    U7 --> U10
-
-    U10 --> S5
-
-    S1 --> S2
-    S1 --> S3
-    S1 --> S4
-    S1 --> S5
-    S1 --> S6
-    S1 --> S7
-    S1 --> S8
-
-    S5 --> C1
-    C1 --> C2
-    C2 --> C3
-    C3 --> C4
-    C4 --> C5
-    C5 --> M1
+    class A,B,C,D,E,F,G,L,M,N main;
+    class D1,D2,D3,D4,H1,H2,H3,H4 analysis;
+    class I,J,K outcome;
 ```
 
 ---
